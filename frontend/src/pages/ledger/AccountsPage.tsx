@@ -6,7 +6,6 @@ import {
   Chip,
   Grid,
   InputAdornment,
-  MenuItem,
   TextField,
   Typography,
 } from '@mui/material';

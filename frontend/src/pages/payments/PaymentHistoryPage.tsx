@@ -14,7 +14,6 @@ import {
 import {
   History,
   Search as SearchIcon,
-  Receipt as ReceiptIcon,
   FileDownload,
 } from '@mui/icons-material';
 

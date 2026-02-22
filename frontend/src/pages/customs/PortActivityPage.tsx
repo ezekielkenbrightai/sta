@@ -14,8 +14,6 @@ import {
   DirectionsBoat,
   Flight,
   LocalShipping,
-  CheckCircle,
-  Schedule,
 } from '@mui/icons-material';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────

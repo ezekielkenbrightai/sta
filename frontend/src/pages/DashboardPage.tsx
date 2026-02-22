@@ -1,11 +1,9 @@
 import { Box, Card, Grid, Typography } from '@mui/material';
 import {
   Description as DescriptionIcon,
-  Payment as PaymentIcon,
   LocalShipping as ShippingIcon,
   TrendingUp as TrendingIcon,
   AttachMoney as MoneyIcon,
-  Public as PublicIcon,
 } from '@mui/icons-material';
 import { useAuthStore } from '../stores/authStore';
 

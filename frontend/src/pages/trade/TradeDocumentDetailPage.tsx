@@ -81,7 +81,7 @@ function formatDate(dateStr: string) {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function TradeDocumentDetailPage() {
-  const { id } = useParams();
+  const { id: _id } = useParams();
   const navigate = useNavigate();
   const doc = MOCK_DOC; // In production, fetch by id
 

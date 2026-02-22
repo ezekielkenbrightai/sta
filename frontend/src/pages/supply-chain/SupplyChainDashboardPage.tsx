@@ -9,7 +9,6 @@ import {
 import {
   LocalShipping,
   Inventory,
-  Warehouse as WarehouseIcon,
   FlightTakeoff,
   FlightLand,
   DirectionsBoat,

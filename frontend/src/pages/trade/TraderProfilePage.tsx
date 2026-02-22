@@ -75,7 +75,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function TraderProfilePage() {
-  const { id } = useParams();
+  const { id: _id } = useParams();
   const navigate = useNavigate();
   const trader = TRADER; // In production, fetch by id
 

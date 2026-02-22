@@ -127,7 +127,7 @@ export default function SidebarContent({
   };
 
   const userRole = user?.role || 'trader';
-  const allowedModules = ROLE_MODULES[userRole] || [];
+  void ROLE_MODULES[userRole];
   const navSections: NavSection[] = MODULE_NAV[selectedModule] || [];
 
   // Filter nav items by role

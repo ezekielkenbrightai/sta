@@ -15,11 +15,8 @@ import {
 } from '@mui/material';
 import {
   Add as AddIcon,
-  Description as DocIcon,
-  FilterList as FilterIcon,
   OpenInNew as OpenIcon,
   Search as SearchIcon,
-  TrendingUp,
 } from '@mui/icons-material';
 import { useAuthStore } from '../../stores/authStore';
 import type { TradeDocument, TradeDocumentStatus, TradeDocumentType } from '../../types';
