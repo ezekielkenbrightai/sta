@@ -61,11 +61,18 @@ interface AuthState {
   loadFromStorage: () => Promise<void>;
 }
 
+// Guard against stored "undefined" strings from earlier bugs
+function getValidToken(): string | null {
+  const t = localStorage.getItem('auth_token');
+  if (!t || t === 'undefined' || t === 'null') return null;
+  return t;
+}
+
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
-  token: localStorage.getItem('auth_token'),
-  isAuthenticated: !!localStorage.getItem('auth_token'),
-  isAuthLoading: !!localStorage.getItem('auth_token'),
+  token: getValidToken(),
+  isAuthenticated: !!getValidToken(),
+  isAuthLoading: !!getValidToken(),
 
   login: async (email: string, password: string) => {
     if (IS_MOCK) {
@@ -78,7 +85,8 @@ export const useAuthStore = create<AuthState>((set) => ({
       return;
     }
     const response = await auth.login(email, password);
-    const token = response.access_token;
+    const token = response?.access_token;
+    if (!token) throw new Error('No access token in login response');
     localStorage.setItem('auth_token', token);
     set({ token, isAuthenticated: true, isAuthLoading: false, user: response.user });
   },
@@ -90,8 +98,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   loadFromStorage: async () => {
-    const token = localStorage.getItem('auth_token');
+    const token = getValidToken();
     if (!token) {
+      localStorage.removeItem('auth_token');
       set({ user: null, token: null, isAuthenticated: false, isAuthLoading: false });
       return;
     }

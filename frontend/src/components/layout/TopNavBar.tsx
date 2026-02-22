@@ -246,9 +246,8 @@ export default function TopNavBar() {
         overflow: 'hidden',
       }}
     >
-      {isAdmin && <AdminBadge />}
-      {!isAdmin && <CountryBadge />}
-      {!isAdmin && <Separator />}
+      {isAdmin ? <AdminBadge /> : <CountryBadge />}
+      <Separator />
       <ModuleSelector />
     </Box>
   );

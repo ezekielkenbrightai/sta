@@ -228,7 +228,7 @@ export default function SidebarContent({
             Module
           </Typography>
           <Typography sx={{ fontSize: 13, fontWeight: 600, color: COLORS.accentGold, mt: 0.25 }}>
-            {selectedModule.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
+            {(selectedModule || 'trade').replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
           </Typography>
         </Box>
       )}
@@ -362,7 +362,7 @@ export default function SidebarContent({
             {user.organization_name || 'Smart Trade Africa'}
           </Typography>
           <Typography sx={{ fontSize: 12, fontWeight: 600, color: COLORS.accentGold }}>
-            {user.role.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
+            {(user.role || 'trader').replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
           </Typography>
         </Box>
       )}
