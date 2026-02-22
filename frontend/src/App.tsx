@@ -148,7 +148,6 @@ function P({ children, roles }: { children: React.ReactNode; roles?: string[] })
 
 const ADMIN = ['super_admin', 'govt_admin'];
 const SUPER = ['super_admin'];
-const GOVT = ['super_admin', 'govt_admin', 'govt_analyst'];
 const BANK = ['super_admin', 'bank_officer'];
 const TRADER_ROLES = ['super_admin', 'trader', 'customs_officer', 'govt_admin'];
 const CUSTOMS = ['super_admin', 'customs_officer', 'govt_admin', 'auditor'];
