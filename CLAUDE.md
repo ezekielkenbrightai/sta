@@ -39,7 +39,7 @@ sta.com/
 │   │   ├── main.tsx         # React 19 entry point
 │   │   ├── api/             # client.ts (Axios), endpoints.ts
 │   │   ├── components/layout/ # AppLayout, ProtectedRoute, Sidebar, TopNav
-│   │   ├── pages/           # 58+ pages across 10 modules
+│   │   ├── pages/           # 77 pages across 12 modules
 │   │   ├── stores/          # authStore.ts, appStore.ts (Zustand)
 │   │   ├── theme/           # theme.ts (MUI black/gold)
 │   │   ├── types/           # index.ts (all TypeScript interfaces)
@@ -189,13 +189,32 @@ Role groups used in route guards: ADMIN, GOVT, BANK, TRADER_ROLES, CUSTOMS, LOGI
 7. **Check deploy logs per deployment ID**: `railway logs --service BackEnd` shows latest active deploy. Use `railway logs --service BackEnd <deploy-id>` to see logs for a specific deploy (the ID is returned by `railway up`).
 8. **Never commit Railway tokens**: Railway auth tokens are stored in `~/.railway/config.json`. The `.gitignore` includes `.railway/` and `railway-token.txt`. Never set `RAILWAY_TOKEN` in committed files.
 
+## Frontend Pages (77 total across 12 modules)
+| Module | Pages | Directory |
+|--------|-------|-----------|
+| Core (Dashboard, Login, Landing) | 3 | `pages/` |
+| Trade Documents & Registry | 9 | `pages/trade/` |
+| Tax Engine & Administration | 7 | `pages/tax/` |
+| Payments & Settlement + Bank | 11 | `pages/payments/` |
+| Automated Ledger | 6 | `pages/ledger/` |
+| Supply Chain & Logistics | 8 | `pages/supply-chain/` |
+| Customs & Port Management | 4 | `pages/customs/` |
+| Insurance | 5 | `pages/insurance/` |
+| Analytics & Government | 10 | `pages/analytics/` |
+| CBDC & Future Finance | 5 | `pages/cbdc/` |
+| Admin & Platform Management | 8 | `pages/admin/` |
+| Profile & Settings | 1 | `pages/profile/` |
+
+All pages use mock data with realistic East African trade scenarios. No PlaceholderPage routes remain.
+
 ## Current Gaps (areas needing implementation)
 - Most API endpoints (trade, tax, payments, ledger, supply_chain, customs, insurance)
 - Alembic migrations (currently using `create_all`)
 - Frontend Dockerfile
 - Tests (both frontend and backend)
-- Real dashboard data (currently mock/hardcoded)
-- Search/filter/pagination on list pages
+- Real dashboard data (currently mock/hardcoded on each page)
+- Search/filter/pagination on list pages (UI exists, not wired to backend)
 - i18n translations (minimal)
-- CBDC/blockchain integration (placeholder)
+- CBDC/blockchain integration (simulated with mock data)
 - Audit trail population
+- Recharts visualizations (chart placeholders exist, actual charts not yet added)

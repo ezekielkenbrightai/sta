@@ -9,7 +9,6 @@ import { useAuthStore } from './stores/authStore';
 
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
-const PlaceholderPage = lazy(() => import('./pages/PlaceholderPage'));
 
 // Trade pages (Phase 2)
 const TradeDocumentListPage = lazy(() => import('./pages/trade/TradeDocumentListPage'));
@@ -74,6 +73,38 @@ const PolicyManagementPage = lazy(() => import('./pages/insurance/PolicyManageme
 const ClaimsPage = lazy(() => import('./pages/insurance/ClaimsPage'));
 const RiskScoringPage = lazy(() => import('./pages/insurance/RiskScoringPage'));
 const PremiumCalculatorPage = lazy(() => import('./pages/insurance/PremiumCalculatorPage'));
+
+// Profile page
+const ProfilePage = lazy(() => import('./pages/profile/ProfilePage'));
+
+// CBDC & Future Finance pages (Phase 9)
+const CBDCDashboardPage = lazy(() => import('./pages/cbdc/CBDCDashboardPage'));
+const DiscountingPage = lazy(() => import('./pages/cbdc/DiscountingPage'));
+const InvoiceFinancePage = lazy(() => import('./pages/cbdc/InvoiceFinancePage'));
+const TokenizationPage = lazy(() => import('./pages/cbdc/TokenizationPage'));
+const P2PLendingPage = lazy(() => import('./pages/cbdc/P2PLendingPage'));
+
+// Analytics pages (Phase 8)
+const AnalyticsDashboardPage = lazy(() => import('./pages/analytics/AnalyticsDashboardPage'));
+const RevenueAnalyticsPage = lazy(() => import('./pages/analytics/RevenueAnalyticsPage'));
+const TradeFlowsPage = lazy(() => import('./pages/analytics/TradeFlowsPage'));
+const ComplianceMonitorPage = lazy(() => import('./pages/analytics/ComplianceMonitorPage'));
+const InformalEconomyPage = lazy(() => import('./pages/analytics/InformalEconomyPage'));
+const ReportBuilderPage = lazy(() => import('./pages/analytics/ReportBuilderPage'));
+const ScheduledReportsPage = lazy(() => import('./pages/analytics/ScheduledReportsPage'));
+const DataExportPage = lazy(() => import('./pages/analytics/DataExportPage'));
+const EconomicImpactPage = lazy(() => import('./pages/analytics/EconomicImpactPage'));
+const AfCFTAProgressPage = lazy(() => import('./pages/analytics/AfCFTAProgressPage'));
+
+// Admin pages (Phase 9)
+const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'));
+const CountriesPage = lazy(() => import('./pages/admin/CountriesPage'));
+const OrganizationsPage = lazy(() => import('./pages/admin/OrganizationsPage'));
+const UsersPage = lazy(() => import('./pages/admin/UsersPage'));
+const SystemMetricsPage = lazy(() => import('./pages/admin/SystemMetricsPage'));
+const FeatureFlagsPage = lazy(() => import('./pages/admin/FeatureFlagsPage'));
+const IntegrationSettingsPage = lazy(() => import('./pages/admin/IntegrationSettingsPage'));
+const JobDashboardPage = lazy(() => import('./pages/admin/JobDashboardPage'));
 
 // Layout
 const AppLayout = lazy(() => import('./components/layout/AppLayout'));
@@ -225,36 +256,36 @@ export default function App() {
                 <Route path="/insurance/calculator" element={<P roles={INSURANCE}><PremiumCalculatorPage /></P>} />
 
                 {/* ── Analytics (Government) ─────────────────────────── */}
-                <Route path="/analytics/dashboard" element={<P roles={GOVT}><PlaceholderPage /></P>} />
-                <Route path="/analytics/revenue" element={<P roles={GOVT}><PlaceholderPage /></P>} />
-                <Route path="/analytics/trade-flows" element={<P roles={GOVT}><PlaceholderPage /></P>} />
-                <Route path="/analytics/compliance" element={<P roles={GOVT}><PlaceholderPage /></P>} />
-                <Route path="/analytics/unregistered" element={<P roles={GOVT}><PlaceholderPage /></P>} />
-                <Route path="/analytics/reports" element={<P roles={GOVT}><PlaceholderPage /></P>} />
-                <Route path="/analytics/scheduled" element={<P roles={ADMIN}><PlaceholderPage /></P>} />
-                <Route path="/analytics/export" element={<P roles={GOVT}><PlaceholderPage /></P>} />
-                <Route path="/analytics/economic-impact" element={<P roles={GOVT}><PlaceholderPage /></P>} />
-                <Route path="/analytics/afcfta-progress" element={<P roles={GOVT}><PlaceholderPage /></P>} />
+                <Route path="/analytics/dashboard" element={<P roles={GOVT}><AnalyticsDashboardPage /></P>} />
+                <Route path="/analytics/revenue" element={<P roles={GOVT}><RevenueAnalyticsPage /></P>} />
+                <Route path="/analytics/trade-flows" element={<P roles={GOVT}><TradeFlowsPage /></P>} />
+                <Route path="/analytics/compliance" element={<P roles={GOVT}><ComplianceMonitorPage /></P>} />
+                <Route path="/analytics/unregistered" element={<P roles={GOVT}><InformalEconomyPage /></P>} />
+                <Route path="/analytics/reports" element={<P roles={GOVT}><ReportBuilderPage /></P>} />
+                <Route path="/analytics/scheduled" element={<P roles={ADMIN}><ScheduledReportsPage /></P>} />
+                <Route path="/analytics/export" element={<P roles={GOVT}><DataExportPage /></P>} />
+                <Route path="/analytics/economic-impact" element={<P roles={GOVT}><EconomicImpactPage /></P>} />
+                <Route path="/analytics/afcfta-progress" element={<P roles={GOVT}><AfCFTAProgressPage /></P>} />
 
                 {/* ── CBDC & Future Finance ──────────────────────────── */}
-                <Route path="/cbdc/dashboard" element={<P><PlaceholderPage /></P>} />
-                <Route path="/cbdc/discounting" element={<P><PlaceholderPage /></P>} />
-                <Route path="/cbdc/invoice-finance" element={<P><PlaceholderPage /></P>} />
-                <Route path="/cbdc/tokenization" element={<P><PlaceholderPage /></P>} />
-                <Route path="/cbdc/p2p-lending" element={<P><PlaceholderPage /></P>} />
+                <Route path="/cbdc/dashboard" element={<P><CBDCDashboardPage /></P>} />
+                <Route path="/cbdc/discounting" element={<P><DiscountingPage /></P>} />
+                <Route path="/cbdc/invoice-finance" element={<P><InvoiceFinancePage /></P>} />
+                <Route path="/cbdc/tokenization" element={<P><TokenizationPage /></P>} />
+                <Route path="/cbdc/p2p-lending" element={<P><P2PLendingPage /></P>} />
 
                 {/* ── Admin ──────────────────────────────────────────── */}
-                <Route path="/admin/dashboard" element={<P roles={ADMIN}><PlaceholderPage /></P>} />
-                <Route path="/admin/countries" element={<P roles={SUPER}><PlaceholderPage /></P>} />
-                <Route path="/admin/organizations" element={<P roles={ADMIN}><PlaceholderPage /></P>} />
-                <Route path="/admin/users" element={<P roles={ADMIN}><PlaceholderPage /></P>} />
-                <Route path="/admin/metrics" element={<P roles={SUPER}><PlaceholderPage /></P>} />
-                <Route path="/admin/features" element={<P roles={SUPER}><PlaceholderPage /></P>} />
-                <Route path="/admin/integrations" element={<P roles={SUPER}><PlaceholderPage /></P>} />
-                <Route path="/admin/jobs" element={<P roles={SUPER}><PlaceholderPage /></P>} />
+                <Route path="/admin/dashboard" element={<P roles={ADMIN}><AdminDashboardPage /></P>} />
+                <Route path="/admin/countries" element={<P roles={SUPER}><CountriesPage /></P>} />
+                <Route path="/admin/organizations" element={<P roles={ADMIN}><OrganizationsPage /></P>} />
+                <Route path="/admin/users" element={<P roles={ADMIN}><UsersPage /></P>} />
+                <Route path="/admin/metrics" element={<P roles={SUPER}><SystemMetricsPage /></P>} />
+                <Route path="/admin/features" element={<P roles={SUPER}><FeatureFlagsPage /></P>} />
+                <Route path="/admin/integrations" element={<P roles={SUPER}><IntegrationSettingsPage /></P>} />
+                <Route path="/admin/jobs" element={<P roles={SUPER}><JobDashboardPage /></P>} />
 
                 {/* ── Profile ────────────────────────────────────────── */}
-                <Route path="/profile" element={<P><PlaceholderPage /></P>} />
+                <Route path="/profile" element={<P><ProfilePage /></P>} />
 
                 {/* ── Catch-all ──────────────────────────────────────── */}
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
