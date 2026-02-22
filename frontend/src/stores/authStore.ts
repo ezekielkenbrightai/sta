@@ -45,6 +45,38 @@ const DEV_USERS: Record<string, User> = {
     country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
     modules: ['insurance'],
   },
+  'analyst@kra.go.ke': {
+    id: 'u-analyst', email: 'analyst@kra.go.ke',
+    first_name: 'David', last_name: 'Ochieng', role: 'govt_analyst',
+    organization_id: 'o-kra', organization_name: 'Kenya Revenue Authority',
+    organization_type: 'government', country_id: 'c-ken', country_name: 'Kenya',
+    country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
+    modules: ['trade', 'tax', 'analytics'],
+  },
+  'customs@kpa.go.ke': {
+    id: 'u-customs', email: 'customs@kpa.go.ke',
+    first_name: 'Peter', last_name: 'Njoroge', role: 'customs_officer',
+    organization_id: 'o-kpa', organization_name: 'Kenya Ports Authority',
+    organization_type: 'government', country_id: 'c-ken', country_name: 'Kenya',
+    country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
+    modules: ['trade', 'customs'],
+  },
+  'logistics@bollore.co.ke': {
+    id: 'u-logistics', email: 'logistics@bollore.co.ke',
+    first_name: 'Amina', last_name: 'Hassan', role: 'logistics_officer',
+    organization_id: 'o-bol', organization_name: 'Bolloré Logistics Kenya',
+    organization_type: 'logistics', country_id: 'c-ken', country_name: 'Kenya',
+    country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
+    modules: ['supply_chain'],
+  },
+  'auditor@oag.go.ke': {
+    id: 'u-auditor', email: 'auditor@oag.go.ke',
+    first_name: 'Michael', last_name: 'Wekesa', role: 'auditor',
+    organization_id: 'o-oag', organization_name: 'Office of the Auditor General',
+    organization_type: 'government', country_id: 'c-ken', country_name: 'Kenya',
+    country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
+    modules: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics'],
+  },
 };
 
 const IS_MOCK = import.meta.env.VITE_MOCK_AUTH === 'true';

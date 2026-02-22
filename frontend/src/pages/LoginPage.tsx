@@ -4,13 +4,29 @@ import {
   Box,
   Button,
   Card,
+  Chip,
   CircularProgress,
+  Divider,
   TextField,
   Typography,
   Alert,
 } from '@mui/material';
 import { useAuthStore } from '../stores/authStore';
 import { useAppStore } from '../stores/appStore';
+
+const IS_MOCK = import.meta.env.VITE_MOCK_AUTH === 'true';
+
+const DEMO_ACCOUNTS = [
+  { email: 'trader@nairobiexports.co.ke', label: 'Trader', color: '#D4AF37' },
+  { email: 'govt@kra.go.ke', label: 'Govt Admin', color: '#22C55E' },
+  { email: 'analyst@kra.go.ke', label: 'Analyst', color: '#3B82F6' },
+  { email: 'officer@kcb.co.ke', label: 'Bank Officer', color: '#8B5CF6' },
+  { email: 'customs@kpa.go.ke', label: 'Customs', color: '#F59E0B' },
+  { email: 'logistics@bollore.co.ke', label: 'Logistics', color: '#06B6D4' },
+  { email: 'agent@apa.co.ke', label: 'Insurance', color: '#EC4899' },
+  { email: 'auditor@oag.go.ke', label: 'Auditor', color: '#EF4444' },
+  { email: 'admin@sta.africa', label: 'Super Admin', color: '#D4AF37' },
+];
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -122,7 +138,34 @@ export default function LoginPage() {
           </Button>
         </Box>
 
-        <Typography sx={{ mt: 3, fontSize: 12, color: '#555' }}>
+        {IS_MOCK && (
+          <>
+            <Divider sx={{ my: 2.5, borderColor: 'rgba(212,175,55,0.1)' }}>
+              <Typography sx={{ fontSize: 11, color: '#555', px: 1 }}>Demo Accounts</Typography>
+            </Divider>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, justifyContent: 'center' }}>
+              {DEMO_ACCOUNTS.map((acct) => (
+                <Chip
+                  key={acct.email}
+                  label={acct.label}
+                  size="small"
+                  onClick={() => { setEmail(acct.email); setPassword('password123'); }}
+                  sx={{
+                    fontSize: 11,
+                    height: 26,
+                    cursor: 'pointer',
+                    backgroundColor: `${acct.color}15`,
+                    color: acct.color,
+                    border: `1px solid ${acct.color}30`,
+                    '&:hover': { backgroundColor: `${acct.color}25` },
+                  }}
+                />
+              ))}
+            </Box>
+          </>
+        )}
+
+        <Typography sx={{ mt: 2.5, fontSize: 12, color: '#555' }}>
           Aligned with AfCFTA. Powered by Smart Trade Africa.
         </Typography>
       </Card>
