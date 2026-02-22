@@ -151,10 +151,14 @@ const SUPER = ['super_admin'];
 const GOVT = ['super_admin', 'govt_admin', 'govt_analyst'];
 const BANK = ['super_admin', 'bank_officer'];
 const TRADER_ROLES = ['super_admin', 'trader', 'customs_officer', 'govt_admin'];
-const CUSTOMS = ['super_admin', 'customs_officer', 'govt_admin'];
+const CUSTOMS = ['super_admin', 'customs_officer', 'govt_admin', 'auditor'];
 const LOGISTICS = ['super_admin', 'logistics_officer', 'trader'];
 const INSURANCE = ['super_admin', 'insurance_agent', 'trader'];
 const AUDITOR_ROLES = ['super_admin', 'auditor', 'govt_admin', 'govt_analyst'];
+// Tax: govt + trader (view their own) + auditor (read-only)
+const TAX_VIEW = ['super_admin', 'govt_admin', 'govt_analyst', 'trader', 'auditor'];
+// Analytics: govt + auditor (read-only access per ROLE_MODULES)
+const ANALYTICS_VIEW = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor'];
 
 // ─── App ────────────────────────────────────────────────────────────────────────
 
@@ -198,13 +202,13 @@ export default function App() {
                 <Route path="/trade/traders/:id" element={<P><TraderProfilePage /></P>} />
 
                 {/* ── Tax ────────────────────────────────────────────── */}
-                <Route path="/tax/dashboard" element={<P roles={GOVT}><TaxDashboardPage /></P>} />
-                <Route path="/tax/assessments" element={<P><TaxAssessmentPage /></P>} />
-                <Route path="/tax/payments" element={<P><TaxPaymentPage /></P>} />
-                <Route path="/tax/reports" element={<P roles={GOVT}><TaxReportsPage /></P>} />
+                <Route path="/tax/dashboard" element={<P roles={TAX_VIEW}><TaxDashboardPage /></P>} />
+                <Route path="/tax/assessments" element={<P roles={TAX_VIEW}><TaxAssessmentPage /></P>} />
+                <Route path="/tax/payments" element={<P roles={TAX_VIEW}><TaxPaymentPage /></P>} />
+                <Route path="/tax/reports" element={<P roles={TAX_VIEW}><TaxReportsPage /></P>} />
                 <Route path="/tax/duty-rates" element={<P roles={ADMIN}><DutyRateManagementPage /></P>} />
                 <Route path="/tax/exemptions" element={<P roles={ADMIN}><TaxExemptionsPage /></P>} />
-                <Route path="/tax/afcfta-tariffs" element={<P roles={GOVT}><AfCFTATariffPage /></P>} />
+                <Route path="/tax/afcfta-tariffs" element={<P roles={TAX_VIEW}><AfCFTATariffPage /></P>} />
 
                 {/* ── Payments ───────────────────────────────────────── */}
                 <Route path="/payments/dashboard" element={<P><PaymentDashboardPage /></P>} />
@@ -255,17 +259,17 @@ export default function App() {
                 <Route path="/insurance/risk" element={<P roles={['super_admin', 'insurance_agent']}><RiskScoringPage /></P>} />
                 <Route path="/insurance/calculator" element={<P roles={INSURANCE}><PremiumCalculatorPage /></P>} />
 
-                {/* ── Analytics (Government) ─────────────────────────── */}
-                <Route path="/analytics/dashboard" element={<P roles={GOVT}><AnalyticsDashboardPage /></P>} />
-                <Route path="/analytics/revenue" element={<P roles={GOVT}><RevenueAnalyticsPage /></P>} />
-                <Route path="/analytics/trade-flows" element={<P roles={GOVT}><TradeFlowsPage /></P>} />
-                <Route path="/analytics/compliance" element={<P roles={GOVT}><ComplianceMonitorPage /></P>} />
-                <Route path="/analytics/unregistered" element={<P roles={GOVT}><InformalEconomyPage /></P>} />
-                <Route path="/analytics/reports" element={<P roles={GOVT}><ReportBuilderPage /></P>} />
+                {/* ── Analytics (Government + Auditor) ─────────────────── */}
+                <Route path="/analytics/dashboard" element={<P roles={ANALYTICS_VIEW}><AnalyticsDashboardPage /></P>} />
+                <Route path="/analytics/revenue" element={<P roles={ANALYTICS_VIEW}><RevenueAnalyticsPage /></P>} />
+                <Route path="/analytics/trade-flows" element={<P roles={ANALYTICS_VIEW}><TradeFlowsPage /></P>} />
+                <Route path="/analytics/compliance" element={<P roles={ANALYTICS_VIEW}><ComplianceMonitorPage /></P>} />
+                <Route path="/analytics/unregistered" element={<P roles={ANALYTICS_VIEW}><InformalEconomyPage /></P>} />
+                <Route path="/analytics/reports" element={<P roles={ANALYTICS_VIEW}><ReportBuilderPage /></P>} />
                 <Route path="/analytics/scheduled" element={<P roles={ADMIN}><ScheduledReportsPage /></P>} />
-                <Route path="/analytics/export" element={<P roles={GOVT}><DataExportPage /></P>} />
-                <Route path="/analytics/economic-impact" element={<P roles={GOVT}><EconomicImpactPage /></P>} />
-                <Route path="/analytics/afcfta-progress" element={<P roles={GOVT}><AfCFTAProgressPage /></P>} />
+                <Route path="/analytics/export" element={<P roles={ANALYTICS_VIEW}><DataExportPage /></P>} />
+                <Route path="/analytics/economic-impact" element={<P roles={ANALYTICS_VIEW}><EconomicImpactPage /></P>} />
+                <Route path="/analytics/afcfta-progress" element={<P roles={ANALYTICS_VIEW}><AfCFTAProgressPage /></P>} />
 
                 {/* ── CBDC & Future Finance ──────────────────────────── */}
                 <Route path="/cbdc/dashboard" element={<P><CBDCDashboardPage /></P>} />
