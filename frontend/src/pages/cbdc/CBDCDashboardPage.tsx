@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import {
   Box,
   Card,
@@ -11,10 +10,19 @@ import {
   SwapHoriz,
   Speed,
   People,
-  BarChart,
+  BarChart as BarChartIcon,
   Public,
   TrendingUp,
 } from '@mui/icons-material';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 
 // ── TypeScript Interfaces ────────────────────────────────────────────────────
 
@@ -109,7 +117,6 @@ const STATUS_COLORS: Record<string, { color: string; bg: string }> = {
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export default function CBDCDashboardPage() {
-  const maxVolume = useMemo(() => Math.max(...MONTHLY_VOLUMES.map((m) => m.volume)), []);
 
   return (
     <Box>
@@ -147,7 +154,7 @@ export default function CBDCDashboardPage() {
           <Card sx={{ p: 2.5, height: '100%' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Typography sx={{ fontSize: 14, fontWeight: 600, color: '#f0f0f0' }}>
-                <BarChart sx={{ fontSize: 16, verticalAlign: 'middle', mr: 0.5, color: '#D4AF37' }} />
+                <BarChartIcon sx={{ fontSize: 16, verticalAlign: 'middle', mr: 0.5, color: '#D4AF37' }} />
                 CBDC Transaction Volume (6-Month)
               </Typography>
               <Typography sx={{ fontSize: 11, color: '#555' }}>
@@ -155,35 +162,25 @@ export default function CBDCDashboardPage() {
                 +217% growth
               </Typography>
             </Box>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {MONTHLY_VOLUMES.map((m) => (
-                <Box key={m.month} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                  <Typography sx={{ fontSize: 12, color: '#888', width: 30, flexShrink: 0 }}>{m.month}</Typography>
-                  <Box sx={{ flex: 1, position: 'relative', height: 28 }}>
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        height: '100%',
-                        width: `${(m.volume / maxVolume) * 100}%`,
-                        background: 'linear-gradient(90deg, rgba(212,175,55,0.25) 0%, rgba(212,175,55,0.08) 100%)',
-                        borderRadius: 1,
-                        border: '1px solid rgba(212,175,55,0.15)',
-                      }}
-                    />
-                    <Box sx={{ position: 'absolute', top: 0, left: 0, height: '100%', display: 'flex', alignItems: 'center', px: 1 }}>
-                      <Typography sx={{ fontSize: 11, fontWeight: 600, color: '#D4AF37', fontFamily: "'Lora', serif" }}>
-                        {formatKES(m.volume)}
-                      </Typography>
-                    </Box>
-                  </Box>
-                  <Typography sx={{ fontSize: 10, color: '#555', width: 55, textAlign: 'right', flexShrink: 0 }}>
-                    {m.transactions.toLocaleString()} txns
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={MONTHLY_VOLUMES} margin={{ top: 4, right: 8, left: -10, bottom: 0 }}>
+                <CartesianGrid stroke="rgba(212,175,55,0.06)" strokeDasharray="3 3" />
+                <XAxis dataKey="month" tick={{ fill: '#555', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis
+                  tickFormatter={(v: number) => `${(v / 1_000_000_000).toFixed(1)}B`}
+                  tick={{ fill: '#555', fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(212,175,55,0.15)', borderRadius: 8 }}
+                  labelStyle={{ color: '#D4AF37' }}
+                  itemStyle={{ color: '#b0b0b0' }}
+                  formatter={(value: number) => [formatKES(value), 'Volume']}
+                />
+                <Bar dataKey="volume" fill="#D4AF37" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </Card>
         </Grid>
 

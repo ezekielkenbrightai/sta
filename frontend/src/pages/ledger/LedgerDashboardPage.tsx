@@ -4,7 +4,6 @@ import {
   Card,
   Chip,
   Grid,
-  LinearProgress,
   Typography,
 } from '@mui/material';
 import {
@@ -15,6 +14,15 @@ import {
   CheckCircle,
   Schedule,
 } from '@mui/icons-material';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from 'recharts';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -119,8 +127,6 @@ export default function LedgerDashboardPage() {
   const journalChange = ((todayEntry.journals - yesterdayEntry.journals) / yesterdayEntry.journals * 100).toFixed(1);
   const isUp = todayEntry.journals >= yesterdayEntry.journals;
 
-  const maxDaily = Math.max(...DAILY_ENTRIES.map((d) => d.totalDebits));
-
   const postedCount = useMemo(() => RECENT_JOURNALS.filter((j) => j.status === 'posted').length, []);
   const pendingCount = useMemo(() => RECENT_JOURNALS.filter((j) => j.status === 'pending').length, []);
 
@@ -177,25 +183,24 @@ export default function LedgerDashboardPage() {
             <Typography sx={{ fontSize: 14, fontWeight: 600, color: '#f0f0f0', mb: 2 }}>
               7-Day Journal Volume
             </Typography>
-            {DAILY_ENTRIES.map((d) => {
-              const pct = (d.totalDebits / maxDaily) * 100;
-              return (
-                <Box key={d.date} sx={{ mb: 1.5 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                    <Typography sx={{ fontSize: 12, color: '#999', minWidth: 55 }}>{d.date}</Typography>
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                      <Typography sx={{ fontSize: 11, color: '#777' }}>{d.journals} journals</Typography>
-                      <Typography sx={{ fontSize: 12, fontWeight: 600, color: '#f0f0f0' }}>{formatAmount(d.totalDebits)}</Typography>
-                    </Box>
-                  </Box>
-                  <LinearProgress
-                    variant="determinate"
-                    value={pct}
-                    sx={{ height: 8, borderRadius: 4, backgroundColor: 'rgba(212,175,55,0.08)', '& .MuiLinearProgress-bar': { backgroundColor: '#D4AF37', borderRadius: 4 } }}
-                  />
-                </Box>
-              );
-            })}
+            <ResponsiveContainer width="100%" height={160}>
+              <BarChart data={DAILY_ENTRIES} margin={{ top: 4, right: 8, bottom: 0, left: -12 }}>
+                <CartesianGrid stroke="rgba(212,175,55,0.06)" strokeDasharray="3 3" />
+                <XAxis dataKey="date" tick={{ fill: '#555', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis
+                  tick={{ fill: '#555', fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(212,175,55,0.15)', borderRadius: 8 }}
+                  labelStyle={{ color: '#D4AF37' }}
+                  itemStyle={{ color: '#b0b0b0' }}
+                  formatter={(value: number) => [value, 'Journals']}
+                />
+                <Bar dataKey="journals" fill="#D4AF37" radius={[4, 4, 0, 0]} barSize={24} />
+              </BarChart>
+            </ResponsiveContainer>
           </Card>
         </Grid>
 

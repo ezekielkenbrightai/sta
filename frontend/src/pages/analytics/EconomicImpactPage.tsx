@@ -15,6 +15,16 @@ import {
   MonetizationOn,
   Assessment,
 } from '@mui/icons-material';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 
 // --- Mock data ---------------------------------------------------------------
 
@@ -196,38 +206,30 @@ export default function EconomicImpactPage() {
                 <TrendingUp sx={{ fontSize: 16, verticalAlign: 'middle', mr: 0.5, color: '#D4AF37' }} />
                 GDP Growth Attributable to Trade Facilitation
               </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {GDP_GROWTH.map((g) => (
-                  <Box key={g.year} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 0.75, borderBottom: '1px solid rgba(212,175,55,0.03)' }}>
-                    <Typography sx={{ fontSize: 12, color: g.year.includes('P') ? '#D4AF37' : '#888', fontWeight: g.year.includes('P') ? 600 : 400, fontFamily: 'monospace', width: 60 }}>
-                      {g.year}
-                    </Typography>
-                    <Box sx={{ flex: 1 }}>
-                      {/* Total GDP bar */}
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.25 }}>
-                        <Box sx={{ width: `${(g.totalGDP_growth / 8) * 100}%`, height: 6, borderRadius: 3, backgroundColor: 'rgba(212,175,55,0.2)' }} />
-                        <Typography sx={{ fontSize: 10, color: '#888' }}>{g.totalGDP_growth}%</Typography>
-                      </Box>
-                      {/* Trade facilitation bar */}
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Box sx={{ width: `${(g.tradeFacilitation_growth / 8) * 100}%`, height: 6, borderRadius: 3, backgroundColor: '#D4AF37' }} />
-                        <Typography sx={{ fontSize: 10, color: '#D4AF37' }}>{g.tradeFacilitation_growth}%</Typography>
-                      </Box>
-                    </Box>
-                    <Typography sx={{ fontSize: 10, color: '#777', width: 32, textAlign: 'right' }}>{g.tradeFacilitation_share}%</Typography>
-                  </Box>
-                ))}
-              </Box>
-              <Box sx={{ display: 'flex', gap: 3, mt: 1.5, pt: 1, borderTop: '1px solid rgba(212,175,55,0.05)' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <Box sx={{ width: 12, height: 6, borderRadius: 3, backgroundColor: 'rgba(212,175,55,0.2)' }} />
-                  <Typography sx={{ fontSize: 10, color: '#555' }}>Total GDP Growth</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <Box sx={{ width: 12, height: 6, borderRadius: 3, backgroundColor: '#D4AF37' }} />
-                  <Typography sx={{ fontSize: 10, color: '#555' }}>Trade Facilitation Share</Typography>
-                </Box>
-              </Box>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={GDP_GROWTH} margin={{ top: 4, right: 8, left: -10, bottom: 0 }}>
+                  <CartesianGrid stroke="rgba(212,175,55,0.06)" strokeDasharray="3 3" />
+                  <XAxis dataKey="year" tick={{ fill: '#555', fontSize: 11 }} axisLine={false} tickLine={false} />
+                  <YAxis
+                    tickFormatter={(v: number) => `${v}%`}
+                    tick={{ fill: '#555', fontSize: 11 }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(212,175,55,0.15)', borderRadius: 8 }}
+                    labelStyle={{ color: '#D4AF37' }}
+                    itemStyle={{ color: '#b0b0b0' }}
+                    formatter={(value: number) => [`${value}%`]}
+                  />
+                  <Legend
+                    wrapperStyle={{ fontSize: 10, color: '#555' }}
+                    iconSize={10}
+                  />
+                  <Bar dataKey="totalGDP_growth" name="Total GDP Growth" stackId="gdp" fill="#D4AF37" radius={[0, 0, 0, 0]} />
+                  <Bar dataKey="tradeFacilitation_growth" name="Trade Facilitation" stackId="gdp" fill="#22C55E" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </Card>
 
             {/* Regional Economic Impact */}

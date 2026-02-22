@@ -17,6 +17,16 @@ import {
   Gavel,
   AttachMoney,
 } from '@mui/icons-material';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -90,9 +100,6 @@ export default function TaxDashboardPage() {
   const totalPrev = prevMonth.customs_duty + prevMonth.vat + prevMonth.excise + prevMonth.withholding;
   const growthPct = ((totalCurrent - totalPrev) / totalPrev * 100).toFixed(1);
   const isGrowth = totalCurrent >= totalPrev;
-
-  // Max for bar chart
-  const maxRevenue = Math.max(...MONTHLY_REVENUE.map((m) => m.customs_duty + m.vat + m.excise + m.withholding));
 
   const collectionRate = 87.3;
   const complianceRate = 92.1;
@@ -227,34 +234,40 @@ export default function TaxDashboardPage() {
             <Typography sx={{ fontSize: 14, fontWeight: 600, color: '#f0f0f0', mb: 2 }}>
               Monthly Revenue Trend
             </Typography>
-            {MONTHLY_REVENUE.map((m) => {
-              const total = m.customs_duty + m.vat + m.excise + m.withholding;
-              const pct = (total / maxRevenue) * 100;
-              return (
-                <Box key={m.month} sx={{ mb: 1.5 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                    <Typography sx={{ fontSize: 12, color: '#999', minWidth: 70 }}>{m.month}</Typography>
-                    <Typography sx={{ fontSize: 12, fontWeight: 600, color: '#f0f0f0' }}>{formatCurrency(total)}</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', gap: '1px', height: 8, borderRadius: 4, overflow: 'hidden' }}>
-                    <Box sx={{ width: `${(m.customs_duty / total) * pct}%`, backgroundColor: '#D4AF37' }} />
-                    <Box sx={{ width: `${(m.vat / total) * pct}%`, backgroundColor: '#3B82F6' }} />
-                    <Box sx={{ width: `${(m.excise / total) * pct}%`, backgroundColor: '#22C55E' }} />
-                    <Box sx={{ width: `${(m.withholding / total) * pct}%`, backgroundColor: '#E6A817' }} />
-                    <Box sx={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.03)' }} />
-                  </Box>
-                </Box>
-              );
-            })}
-            {/* Legend */}
-            <Box sx={{ display: 'flex', gap: 2, mt: 2, flexWrap: 'wrap' }}>
-              {TAX_CATEGORIES.map((cat) => (
-                <Box key={cat.key} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: cat.color }} />
-                  <Typography sx={{ fontSize: 10, color: '#777' }}>{cat.label}</Typography>
-                </Box>
-              ))}
-            </Box>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={MONTHLY_REVENUE} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
+                <CartesianGrid stroke="rgba(212,175,55,0.06)" strokeDasharray="3 3" vertical={false} />
+                <XAxis
+                  dataKey="month"
+                  tick={{ fill: '#555', fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v: string) => v.split(' ')[0]}
+                />
+                <YAxis
+                  tick={{ fill: '#555', fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v: number) => `${(v / 1_000_000).toFixed(0)}M`}
+                />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(212,175,55,0.15)', borderRadius: 8 }}
+                  labelStyle={{ color: '#D4AF37' }}
+                  itemStyle={{ color: '#b0b0b0' }}
+                  formatter={(value: number) => [formatCurrency(value)]}
+                />
+                <Legend
+                  verticalAlign="bottom"
+                  iconType="circle"
+                  iconSize={8}
+                  wrapperStyle={{ fontSize: 10, color: '#777', paddingTop: 8 }}
+                />
+                <Bar dataKey="customs_duty" stackId="revenue" fill="#D4AF37" name="Customs Duty" radius={[0, 0, 0, 0]} />
+                <Bar dataKey="vat" stackId="revenue" fill="#22C55E" name="VAT" />
+                <Bar dataKey="excise" stackId="revenue" fill="#3B82F6" name="Excise" />
+                <Bar dataKey="withholding" stackId="revenue" fill="#8B5CF6" name="Withholding" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </Card>
         </Grid>
 

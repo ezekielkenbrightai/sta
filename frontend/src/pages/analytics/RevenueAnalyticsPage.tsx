@@ -15,6 +15,16 @@ import {
   Receipt,
   PieChart,
 } from '@mui/icons-material';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from 'recharts';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -179,19 +189,27 @@ export default function RevenueAnalyticsPage() {
             {/* 6-Month Trend */}
             <Card sx={{ p: 2.5 }}>
               <Typography sx={{ fontSize: 14, fontWeight: 600, color: '#f0f0f0', mb: 2 }}>Monthly Collection Trend (KES B)</Typography>
-              <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 1.5, height: 120 }}>
-                {MONTHLY_TREND.map((m) => (
-                  <Box key={m.month} sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <Typography sx={{ fontSize: 10, color: '#888', mb: 0.5 }}>{m.value}B</Typography>
-                    <Box sx={{
-                      width: '100%', height: `${(m.value / 10) * 100}%`, borderRadius: '4px 4px 0 0',
-                      backgroundColor: m.month === 'Feb' ? '#D4AF37' : 'rgba(212,175,55,0.2)',
-                      transition: 'height 0.3s ease',
-                    }} />
-                    <Typography sx={{ fontSize: 10, color: '#555', mt: 0.5 }}>{m.month}</Typography>
-                  </Box>
-                ))}
-              </Box>
+              <ResponsiveContainer width="100%" height={120}>
+                <BarChart data={MONTHLY_TREND} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                  <CartesianGrid stroke="rgba(212,175,55,0.06)" strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="month" tick={{ fill: '#555', fontSize: 11 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: '#555', fontSize: 11 }} axisLine={false} tickLine={false} domain={[0, 10]} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(212,175,55,0.15)', borderRadius: 8 }}
+                    labelStyle={{ color: '#D4AF37' }}
+                    itemStyle={{ color: '#b0b0b0' }}
+                    formatter={(value: number) => [`${value}B`, 'Revenue']}
+                  />
+                  <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                    {MONTHLY_TREND.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={index === MONTHLY_TREND.length - 1 ? '#D4AF37' : 'rgba(212,175,55,0.25)'}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </Card>
 
             {/* Top Payers */}

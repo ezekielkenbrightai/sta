@@ -15,6 +15,16 @@ import {
   CheckCircle,
   Schedule,
 } from '@mui/icons-material';
+import {
+  ResponsiveContainer,
+  ComposedChart,
+  Bar,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from 'recharts';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -90,7 +100,6 @@ export default function PaymentDashboardPage() {
   const isUp = todayVolume.amount >= yesterdayVolume.amount;
 
   const totalMethodVolume = METHOD_BREAKDOWN.reduce((s, m) => s + m.volume, 0);
-  const maxDaily = Math.max(...DAILY_VOLUMES.map((d) => d.amount));
 
   const settledToday = useMemo(() => RECENT_PAYMENTS.filter((p) => p.status === 'completed').length, []);
   const pendingToday = useMemo(() => RECENT_PAYMENTS.filter((p) => p.status === 'pending' || p.status === 'processing').length, []);
@@ -145,25 +154,36 @@ export default function PaymentDashboardPage() {
             <Typography sx={{ fontSize: 14, fontWeight: 600, color: '#f0f0f0', mb: 2 }}>
               7-Day Payment Volume
             </Typography>
-            {DAILY_VOLUMES.map((d) => {
-              const pct = (d.amount / maxDaily) * 100;
-              return (
-                <Box key={d.date} sx={{ mb: 1.5 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                    <Typography sx={{ fontSize: 12, color: '#999', minWidth: 55 }}>{d.date}</Typography>
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                      <Typography sx={{ fontSize: 11, color: '#777' }}>{d.count} txns</Typography>
-                      <Typography sx={{ fontSize: 12, fontWeight: 600, color: '#f0f0f0' }}>{formatCurrency(d.amount)}</Typography>
-                    </Box>
-                  </Box>
-                  <LinearProgress
-                    variant="determinate"
-                    value={pct}
-                    sx={{ height: 8, borderRadius: 4, backgroundColor: 'rgba(212,175,55,0.08)', '& .MuiLinearProgress-bar': { backgroundColor: '#D4AF37', borderRadius: 4 } }}
-                  />
-                </Box>
-              );
-            })}
+            <ResponsiveContainer width="100%" height={180}>
+              <ComposedChart data={DAILY_VOLUMES} margin={{ top: 4, right: 8, bottom: 0, left: -12 }}>
+                <CartesianGrid stroke="rgba(212,175,55,0.06)" strokeDasharray="3 3" />
+                <XAxis dataKey="date" tick={{ fill: '#555', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis
+                  yAxisId="amount"
+                  tick={{ fill: '#555', fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v: number) => `${(v / 1_000_000).toFixed(1)}M`}
+                />
+                <YAxis
+                  yAxisId="count"
+                  orientation="right"
+                  tick={{ fill: '#555', fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(212,175,55,0.15)', borderRadius: 8 }}
+                  labelStyle={{ color: '#D4AF37' }}
+                  itemStyle={{ color: '#b0b0b0' }}
+                  formatter={(value: number, name: string) =>
+                    name === 'amount' ? [formatCurrency(value), 'Volume'] : [value, 'Transactions']
+                  }
+                />
+                <Bar yAxisId="amount" dataKey="amount" fill="#D4AF37" radius={[4, 4, 0, 0]} barSize={20} />
+                <Line yAxisId="count" dataKey="count" stroke="#22C55E" strokeWidth={2} dot={{ fill: '#22C55E', r: 3 }} />
+              </ComposedChart>
+            </ResponsiveContainer>
           </Card>
         </Grid>
 

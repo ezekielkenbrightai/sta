@@ -15,6 +15,13 @@ import {
   Public,
   CompareArrows,
 } from '@mui/icons-material';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -80,6 +87,8 @@ const HS_CATEGORIES: HSCategoryBreakdown[] = [
   { code: '30', category: 'Pharmaceutical Products', value_usd: 87_000_000, share_pct: 4.7, yoy_change: 12.3, color: '#EC4899' },
   { code: '15', category: 'Animal/Vegetable Fats', value_usd: 67_000_000, share_pct: 3.6, yoy_change: 3.9, color: '#6366F1' },
 ];
+
+const DONUT_COLORS = ['#D4AF37', '#22C55E', '#3B82F6', '#8B5CF6', '#E6A817', '#EF4444', '#06B6D4', '#F97316', '#EC4899', '#14B8A6'];
 
 const TRADE_SPLIT: TradeSplit[] = [
   { label: 'Intra-Africa (AfCFTA)', value_usd: 987_000_000, pct: 42.3, color: '#D4AF37' },
@@ -192,6 +201,31 @@ export default function TradeFlowsPage() {
                 <Category sx={{ fontSize: 16, verticalAlign: 'middle', mr: 0.5, color: '#D4AF37' }} />
                 HS Code Category Breakdown (Top 10)
               </Typography>
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart>
+                  <Pie
+                    data={HS_CATEGORIES}
+                    dataKey="share_pct"
+                    nameKey="category"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={55}
+                    outerRadius={95}
+                    paddingAngle={2}
+                    stroke="none"
+                  >
+                    {HS_CATEGORIES.map((_entry, index) => (
+                      <Cell key={`cell-${index}`} fill={DONUT_COLORS[index % DONUT_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(212,175,55,0.15)', borderRadius: 8 }}
+                    labelStyle={{ color: '#D4AF37' }}
+                    itemStyle={{ color: '#b0b0b0' }}
+                    formatter={(value: number, name: string) => [`${value}%`, name]}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                 {HS_CATEGORIES.map((h) => (
                   <Box key={h.code} sx={{ pb: 1, borderBottom: '1px solid rgba(212,175,55,0.03)' }}>

@@ -10,7 +10,7 @@ STA is a digital trade platform for Africa. It integrates tax collection, paymen
 - **Cache**: Redis 7 (configured, not yet used)
 - **Auth**: JWT (python-jose) + bcrypt (passlib)
 - **Containers**: Docker + docker-compose
-- **Deployment**: Railway (backend + Postgres + Redis), docker-compose (full stack)
+- **Deployment**: Railway (backend + frontend + Postgres + Redis), docker-compose (full stack)
 
 ## Project Structure
 ```
@@ -167,7 +167,7 @@ Role groups used in route guards: ADMIN, GOVT, BANK, TRADER_ROLES, CUSTOMS, LOGI
 | BackEnd | sta.railway.internal | FastAPI API server |
 | Postgres | postgres.railway.internal:5432 | PostgreSQL 16 database |
 | Redis | redis.railway.internal:6379 | Redis cache |
-| FrontEnd | (static) tradeafricanow.com | React SPA |
+| FrontEnd | tradeafricanow.com | React SPA (Vite build + serve) |
 
 ### Backend Environment Variables (Railway)
 | Variable | Value / Notes |
@@ -188,6 +188,8 @@ Role groups used in route guards: ADMIN, GOVT, BANK, TRADER_ROLES, CUSTOMS, LOGI
 6. **Pydantic `EmailStr` requires `pydantic[email]`**: The `email-validator` package must be installed. Use `pydantic[email]>=2.10.0` in pyproject.toml instead of bare `pydantic`.
 7. **Check deploy logs per deployment ID**: `railway logs --service BackEnd` shows latest active deploy. Use `railway logs --service BackEnd <deploy-id>` to see logs for a specific deploy (the ID is returned by `railway up`).
 8. **Never commit Railway tokens**: Railway auth tokens are stored in `~/.railway/config.json`. The `.gitignore` includes `.railway/` and `railway-token.txt`. Never set `RAILWAY_TOKEN` in committed files.
+9. **Frontend builds use `tsc -b` (strict)**: Vite's `npm run build` runs `tsc -b && vite build`. The `-b` flag uses project references mode which is stricter than `tsc --noEmit`. Always run `npm run build` locally before pushing to catch type errors that `tsc --noEmit` misses.
+10. **Frontend FrontEnd service uses `npx serve`**: Railway auto-detects the Vite build and runs `npx serve dist` on port 8080. The custom domain is `tradeafricanow.com`.
 
 ## Frontend Pages (77 total across 12 modules)
 | Module | Pages | Directory |
@@ -210,7 +212,6 @@ All pages use mock data with realistic East African trade scenarios. No Placehol
 ## Current Gaps (areas needing implementation)
 - Most API endpoints (trade, tax, payments, ledger, supply_chain, customs, insurance)
 - Alembic migrations (currently using `create_all`)
-- Frontend Dockerfile
 - Tests (both frontend and backend)
 - Real dashboard data (currently mock/hardcoded on each page)
 - Search/filter/pagination on list pages (UI exists, not wired to backend)

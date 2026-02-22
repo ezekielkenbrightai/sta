@@ -5,7 +5,31 @@ import {
   TrendingUp as TrendingIcon,
   AttachMoney as MoneyIcon,
 } from '@mui/icons-material';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 import { useAuthStore } from '../stores/authStore';
+
+const TRADE_VOLUME_TREND = [
+  { month: 'Mar', imports: 820, exports: 640 },
+  { month: 'Apr', imports: 910, exports: 720 },
+  { month: 'May', imports: 870, exports: 680 },
+  { month: 'Jun', imports: 950, exports: 760 },
+  { month: 'Jul', imports: 1020, exports: 810 },
+  { month: 'Aug', imports: 980, exports: 790 },
+  { month: 'Sep', imports: 1050, exports: 840 },
+  { month: 'Oct', imports: 1120, exports: 890 },
+  { month: 'Nov', imports: 1080, exports: 860 },
+  { month: 'Dec', imports: 1200, exports: 950 },
+  { month: 'Jan', imports: 1150, exports: 920 },
+  { month: 'Feb', imports: 1240, exports: 980 },
+];
 
 interface StatCardProps {
   label: string;
@@ -105,9 +129,36 @@ export default function DashboardPage() {
         <Grid size={{ xs: 12, lg: 8 }}>
           <Card sx={{ p: 3, minHeight: 300 }}>
             <Typography variant="h6" sx={{ mb: 2 }}>Trade Volume Trend</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 220, color: 'text.secondary' }}>
-              <Typography>Chart will be rendered here with Recharts</Typography>
-            </Box>
+            <ResponsiveContainer width="100%" height={220}>
+              <AreaChart data={TRADE_VOLUME_TREND} margin={{ top: 5, right: 20, left: 0, bottom: 0 }}>
+                <CartesianGrid stroke="rgba(212,175,55,0.06)" strokeDasharray="3 3" />
+                <XAxis dataKey="month" tick={{ fill: '#555', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: '#555', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(212,175,55,0.15)', borderRadius: 8 }}
+                  labelStyle={{ color: '#D4AF37' }}
+                  itemStyle={{ color: '#b0b0b0' }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="imports"
+                  stroke="#D4AF37"
+                  fill="#D4AF37"
+                  fillOpacity={0.15}
+                  strokeWidth={2}
+                  name="Imports"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="exports"
+                  stroke="#22C55E"
+                  fill="#22C55E"
+                  fillOpacity={0.15}
+                  strokeWidth={2}
+                  name="Exports"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </Card>
         </Grid>
         <Grid size={{ xs: 12, lg: 4 }}>

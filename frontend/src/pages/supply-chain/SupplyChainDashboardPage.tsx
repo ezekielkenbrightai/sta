@@ -13,6 +13,15 @@ import {
   FlightLand,
   DirectionsBoat,
 } from '@mui/icons-material';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from 'recharts';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -73,7 +82,7 @@ const MODE_ICONS: Record<string, typeof DirectionsBoat> = {
 export default function SupplyChainDashboardPage() {
   const inTransit = ACTIVE_SHIPMENTS.filter((s) => s.status === 'in_transit').length;
   const atPort = ACTIVE_SHIPMENTS.filter((s) => s.status === 'at_port' || s.status === 'customs_hold').length;
-  const maxVolume = Math.max(...ROUTE_VOLUMES.map((r) => r.volume));
+  // maxVolume removed — now handled by Recharts axis auto-scaling
 
   return (
     <Box>
@@ -148,28 +157,33 @@ export default function SupplyChainDashboardPage() {
         <Grid size={{ xs: 12, md: 5 }}>
           <Card sx={{ p: 2.5, height: '100%' }}>
             <Typography sx={{ fontSize: 14, fontWeight: 600, color: '#f0f0f0', mb: 2 }}>Top Trade Routes (MTD)</Typography>
-            {ROUTE_VOLUMES.map((r) => {
-              const pct = (r.volume / maxVolume) * 100;
-              return (
-                <Box key={r.route} sx={{ mb: 2.5 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: r.color }} />
-                      <Typography sx={{ fontSize: 13, color: '#f0f0f0' }}>{r.route}</Typography>
-                    </Box>
-                    <Box sx={{ textAlign: 'right' }}>
-                      <Typography sx={{ fontSize: 13, fontWeight: 600, color: r.color }}>{r.volume.toLocaleString()} TEU</Typography>
-                      <Typography sx={{ fontSize: 10, color: '#777' }}>{r.shipments} shipments</Typography>
-                    </Box>
-                  </Box>
-                  <LinearProgress
-                    variant="determinate"
-                    value={pct}
-                    sx={{ height: 6, borderRadius: 3, backgroundColor: `${r.color}15`, '& .MuiLinearProgress-bar': { backgroundColor: r.color, borderRadius: 3 } }}
-                  />
-                </Box>
-              );
-            })}
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={ROUTE_VOLUMES} layout="vertical" margin={{ top: 4, right: 12, bottom: 0, left: 80 }}>
+                <CartesianGrid stroke="rgba(212,175,55,0.06)" strokeDasharray="3 3" horizontal={false} />
+                <XAxis
+                  type="number"
+                  tick={{ fill: '#555', fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}K`}
+                />
+                <YAxis
+                  type="category"
+                  dataKey="route"
+                  tick={{ fill: '#555', fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
+                  width={80}
+                />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(212,175,55,0.15)', borderRadius: 8 }}
+                  labelStyle={{ color: '#D4AF37' }}
+                  itemStyle={{ color: '#b0b0b0' }}
+                  formatter={(value: number) => [`${value.toLocaleString()} TEU`, 'Volume']}
+                />
+                <Bar dataKey="volume" fill="#D4AF37" radius={[0, 4, 4, 0]} barSize={16} />
+              </BarChart>
+            </ResponsiveContainer>
           </Card>
         </Grid>
       </Grid>
