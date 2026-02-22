@@ -1,0 +1,114 @@
+import { create } from 'zustand';
+import type { User } from '../types';
+import { auth } from '../api/endpoints';
+
+// ─── Dev-mode mock users (when VITE_MOCK_AUTH=true) ─────────────────────────
+
+const DEV_USERS: Record<string, User> = {
+  'trader@nairobiexports.co.ke': {
+    id: 'u-trader', email: 'trader@nairobiexports.co.ke',
+    first_name: 'John', last_name: 'Kipchoge', role: 'trader',
+    organization_id: 'o-nex', organization_name: 'Nairobi Exports Ltd',
+    organization_type: 'trader', country_id: 'c-ken', country_name: 'Kenya',
+    country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
+    modules: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'insurance', 'cbdc'],
+  },
+  'admin@sta.africa': {
+    id: 'u-super', email: 'admin@sta.africa',
+    first_name: 'Platform', last_name: 'Admin', role: 'super_admin',
+    organization_id: null, organization_name: null,
+    organization_type: null, country_id: null, country_name: null,
+    country_code: null, country_flag_emoji: null, is_active: true,
+    modules: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'cbdc', 'admin'],
+  },
+  'govt@kra.go.ke': {
+    id: 'u-govt', email: 'govt@kra.go.ke',
+    first_name: 'Jane', last_name: 'Mwangi', role: 'govt_admin',
+    organization_id: 'o-kra', organization_name: 'Kenya Revenue Authority',
+    organization_type: 'government', country_id: 'c-ken', country_name: 'Kenya',
+    country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
+    modules: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'cbdc'],
+  },
+  'officer@kcb.co.ke': {
+    id: 'u-bank', email: 'officer@kcb.co.ke',
+    first_name: 'Sarah', last_name: 'Kamau', role: 'bank_officer',
+    organization_id: 'o-kcb', organization_name: 'KCB Bank',
+    organization_type: 'bank', country_id: 'c-ken', country_name: 'Kenya',
+    country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
+    modules: ['payments', 'ledger'],
+  },
+  'agent@apa.co.ke': {
+    id: 'u-insurance', email: 'agent@apa.co.ke',
+    first_name: 'Grace', last_name: 'Oduya', role: 'insurance_agent',
+    organization_id: 'o-apa', organization_name: 'APA Insurance',
+    organization_type: 'insurance', country_id: 'c-ken', country_name: 'Kenya',
+    country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
+    modules: ['insurance'],
+  },
+};
+
+const IS_MOCK = import.meta.env.VITE_MOCK_AUTH === 'true';
+
+// ─── Store ──────────────────────────────────────────────────────────────────────
+
+interface AuthState {
+  user: User | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  isAuthLoading: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
+  loadFromStorage: () => Promise<void>;
+}
+
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  token: localStorage.getItem('auth_token'),
+  isAuthenticated: !!localStorage.getItem('auth_token'),
+  isAuthLoading: !!localStorage.getItem('auth_token'),
+
+  login: async (email: string, password: string) => {
+    if (IS_MOCK) {
+      // Dev-mode: accept any password, look up mock user by email
+      const mockUser = DEV_USERS[email] || DEV_USERS['trader@nairobiexports.co.ke'];
+      const token = 'mock-dev-token';
+      localStorage.setItem('auth_token', token);
+      localStorage.setItem('mock_user_email', mockUser.email);
+      set({ token, isAuthenticated: true, isAuthLoading: false, user: mockUser });
+      return;
+    }
+    const response = await auth.login(email, password);
+    const token = response.access_token;
+    localStorage.setItem('auth_token', token);
+    set({ token, isAuthenticated: true, isAuthLoading: false, user: response.user });
+  },
+
+  logout: () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('mock_user_email');
+    set({ user: null, token: null, isAuthenticated: false, isAuthLoading: false });
+  },
+
+  loadFromStorage: async () => {
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      set({ user: null, token: null, isAuthenticated: false, isAuthLoading: false });
+      return;
+    }
+    if (IS_MOCK) {
+      // Dev-mode: restore the mock user that was logged in
+      const savedEmail = localStorage.getItem('mock_user_email') || 'trader@nairobiexports.co.ke';
+      const mockUser = DEV_USERS[savedEmail] || DEV_USERS['trader@nairobiexports.co.ke'];
+      set({ user: mockUser, token, isAuthenticated: true, isAuthLoading: false });
+      return;
+    }
+    set({ isAuthLoading: true });
+    try {
+      const user = await auth.getMe();
+      set({ user, token, isAuthenticated: true, isAuthLoading: false });
+    } catch {
+      localStorage.removeItem('auth_token');
+      set({ user: null, token: null, isAuthenticated: false, isAuthLoading: false });
+    }
+  },
+}));
