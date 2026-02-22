@@ -198,10 +198,10 @@ export default function RevenueAnalyticsPage() {
                     contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(212,175,55,0.15)', borderRadius: 8 }}
                     labelStyle={{ color: '#D4AF37' }}
                     itemStyle={{ color: '#b0b0b0' }}
-                    formatter={(value: number) => [`${value}B`, 'Revenue']}
+                    formatter={(value) => [`${value}B`, 'Revenue']}
                   />
                   <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                    {MONTHLY_TREND.map((entry, index) => (
+                    {MONTHLY_TREND.map((_entry, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={index === MONTHLY_TREND.length - 1 ? '#D4AF37' : 'rgba(212,175,55,0.25)'}

@@ -179,7 +179,7 @@ export default function SupplyChainDashboardPage() {
                   contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(212,175,55,0.15)', borderRadius: 8 }}
                   labelStyle={{ color: '#D4AF37' }}
                   itemStyle={{ color: '#b0b0b0' }}
-                  formatter={(value: number) => [`${value.toLocaleString()} TEU`, 'Volume']}
+                  formatter={(value) => [`${Number(value).toLocaleString()} TEU`, 'Volume']}
                 />
                 <Bar dataKey="volume" fill="#D4AF37" radius={[0, 4, 4, 0]} barSize={16} />
               </BarChart>

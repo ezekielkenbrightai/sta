@@ -218,4 +218,5 @@ All pages use mock data with realistic East African trade scenarios. No Placehol
 - i18n translations (minimal)
 - CBDC/blockchain integration (simulated with mock data)
 - Audit trail population
-- Recharts visualizations (chart placeholders exist, actual charts not yet added)
+- PDF/CSV export functionality (UI exists, not wired)
+- Landing page → app integration

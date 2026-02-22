@@ -222,7 +222,7 @@ export default function TradeFlowsPage() {
                     contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(212,175,55,0.15)', borderRadius: 8 }}
                     labelStyle={{ color: '#D4AF37' }}
                     itemStyle={{ color: '#b0b0b0' }}
-                    formatter={(value: number, name: string) => [`${value}%`, name]}
+                    formatter={(value, name) => [`${value}%`, name as string]}
                   />
                 </PieChart>
               </ResponsiveContainer>

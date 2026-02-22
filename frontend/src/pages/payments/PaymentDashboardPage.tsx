@@ -176,8 +176,8 @@ export default function PaymentDashboardPage() {
                   contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(212,175,55,0.15)', borderRadius: 8 }}
                   labelStyle={{ color: '#D4AF37' }}
                   itemStyle={{ color: '#b0b0b0' }}
-                  formatter={(value: number, name: string) =>
-                    name === 'amount' ? [formatCurrency(value), 'Volume'] : [value, 'Transactions']
+                  formatter={(value, name) =>
+                    name === 'amount' ? [formatCurrency(Number(value)), 'Volume'] : [value, 'Transactions']
                   }
                 />
                 <Bar yAxisId="amount" dataKey="amount" fill="#D4AF37" radius={[4, 4, 0, 0]} barSize={20} />
