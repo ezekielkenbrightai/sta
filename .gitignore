@@ -28,5 +28,9 @@ nul
 # Docker
 *.log
 
+# Railway
+.railway/
+railway-token.txt
+
 # Claude Code
 .claude/
