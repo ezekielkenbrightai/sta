@@ -72,7 +72,7 @@ const ORG_STATS: OrgStat[] = [
   { label: 'Total Users', value: '2,847', change: 14.3, color: '#8B5CF6', icon: <People sx={{ fontSize: 18 }} /> },
 ];
 
-const TYPE_CONFIG: Record<string, { color: string; icon: React.ReactNode; label: string }> = {
+const TYPE_CONFIG: Record<string, { color: string; icon: React.ReactElement; label: string }> = {
   trader: { color: '#D4AF37', icon: <LocalShipping sx={{ fontSize: 12 }} />, label: 'Trader' },
   bank: { color: '#3B82F6', icon: <AccountBalance sx={{ fontSize: 12 }} />, label: 'Bank' },
   insurance: { color: '#8B5CF6', icon: <HealthAndSafety sx={{ fontSize: 12 }} />, label: 'Insurance' },

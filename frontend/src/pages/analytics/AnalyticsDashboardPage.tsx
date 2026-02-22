@@ -9,7 +9,6 @@ import {
 } from '@mui/material';
 import {
   Dashboard,
-  TrendingUp,
   LocalShipping,
   AccountBalance,
   Public,

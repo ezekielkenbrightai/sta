@@ -4,7 +4,6 @@ import {
   Card,
   Chip,
   Grid,
-  LinearProgress,
   Typography,
 } from '@mui/material';
 import {
