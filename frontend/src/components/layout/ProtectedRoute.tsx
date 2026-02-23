@@ -26,6 +26,8 @@ function defaultLandingPage(role: string): string {
       return '/ledger/dashboard';
     case 'compliance_officer':
       return '/compliance/dashboard';
+    case 'ps_trade':
+      return '/executive/dashboard';
     default:
       return '/dashboard';
   }

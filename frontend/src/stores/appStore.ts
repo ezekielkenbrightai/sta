@@ -13,6 +13,7 @@ const PATH_TO_MODULE: Record<string, string> = {
   '/analytics': 'analytics',
   '/cbdc': 'cbdc',
   '/admin': 'admin',
+  '/executive': 'executive',
 };
 
 /** Detect module from a pathname. */

@@ -26,6 +26,7 @@ const DEMO_ACCOUNTS = [
   { email: 'agent@apa.co.ke', label: 'Insurance', color: '#EC4899' },
   { email: 'auditor@oag.go.ke', label: 'Auditor', color: '#EF4444' },
   { email: 'admin@sta.africa', label: 'Super Admin', color: '#D4AF37' },
+  { email: 'ps@trade.go.ke', label: 'PS Trade', color: '#FFD700' },
 ];
 
 export default function LoginPage() {

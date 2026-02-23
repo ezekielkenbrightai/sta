@@ -85,6 +85,14 @@ const DEV_USERS: Record<string, User> = {
     country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
     modules: ['compliance', 'trade'],
   },
+  'ps@trade.go.ke': {
+    id: 'u-ps-trade', email: 'ps@trade.go.ke',
+    first_name: 'PS', last_name: 'Trade', role: 'ps_trade',
+    organization_id: 'o-mot', organization_name: 'Ministry of Trade',
+    organization_type: 'government', country_id: 'c-ken', country_name: 'Kenya',
+    country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
+    modules: ['executive', 'trade', 'tax', 'payments', 'analytics', 'customs', 'supply_chain', 'compliance', 'cbdc'],
+  },
 };
 
 const IS_MOCK = import.meta.env.VITE_MOCK_AUTH === 'true';

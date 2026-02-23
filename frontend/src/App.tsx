@@ -105,6 +105,14 @@ const DataExportPage = lazy(() => import('./pages/analytics/DataExportPage'));
 const EconomicImpactPage = lazy(() => import('./pages/analytics/EconomicImpactPage'));
 const AfCFTAProgressPage = lazy(() => import('./pages/analytics/AfCFTAProgressPage'));
 
+// Executive pages (PS Trade)
+const ExecutiveDashboardPage = lazy(() => import('./pages/executive/ExecutiveDashboardPage'));
+const TradePerformancePage = lazy(() => import('./pages/executive/TradePerformancePage'));
+const PolicyTrackerPage = lazy(() => import('./pages/executive/PolicyTrackerPage'));
+const SectorAnalysisPage = lazy(() => import('./pages/executive/SectorAnalysisPage'));
+const ExecutiveBriefingsPage = lazy(() => import('./pages/executive/ExecutiveBriefingsPage'));
+const StrategicAlertsPage = lazy(() => import('./pages/executive/StrategicAlertsPage'));
+
 // Admin pages (Phase 9)
 const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'));
 const CountriesPage = lazy(() => import('./pages/admin/CountriesPage'));
@@ -169,6 +177,8 @@ const TAX_VIEW = ['super_admin', 'govt_admin', 'govt_analyst', 'trader', 'audito
 const ANALYTICS_VIEW = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor'];
 // Compliance: compliance officer + govt + auditor
 const COMPLIANCE = ['super_admin', 'compliance_officer', 'govt_admin', 'auditor'];
+// Executive: PS Trade + super_admin
+const PS_EXECUTIVE = ['super_admin', 'ps_trade'];
 
 // ─── App ────────────────────────────────────────────────────────────────────────
 
@@ -297,6 +307,14 @@ export default function App() {
                 <Route path="/cbdc/invoice-finance" element={<P><InvoiceFinancePage /></P>} />
                 <Route path="/cbdc/tokenization" element={<P><TokenizationPage /></P>} />
                 <Route path="/cbdc/p2p-lending" element={<P><P2PLendingPage /></P>} />
+
+                {/* ── Executive (PS Trade) ──────────────────────────── */}
+                <Route path="/executive/dashboard" element={<P roles={PS_EXECUTIVE}><ExecutiveDashboardPage /></P>} />
+                <Route path="/executive/trade-performance" element={<P roles={PS_EXECUTIVE}><TradePerformancePage /></P>} />
+                <Route path="/executive/policy-tracker" element={<P roles={PS_EXECUTIVE}><PolicyTrackerPage /></P>} />
+                <Route path="/executive/sector-analysis" element={<P roles={PS_EXECUTIVE}><SectorAnalysisPage /></P>} />
+                <Route path="/executive/briefings" element={<P roles={PS_EXECUTIVE}><ExecutiveBriefingsPage /></P>} />
+                <Route path="/executive/alerts" element={<P roles={PS_EXECUTIVE}><StrategicAlertsPage /></P>} />
 
                 {/* ── Admin ──────────────────────────────────────────── */}
                 <Route path="/admin/dashboard" element={<P roles={ADMIN}><AdminDashboardPage /></P>} />
