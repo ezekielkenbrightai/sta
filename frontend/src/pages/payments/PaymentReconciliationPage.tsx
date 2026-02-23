@@ -20,6 +20,9 @@ import {
   CheckCircle,
   Warning,
 } from '@mui/icons-material';
+import { useAuthStore } from '../../stores/authStore';
+
+const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor'];
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -59,11 +62,20 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function PaymentReconciliationPage() {
+  const user = useAuthStore((s) => s.user);
+  const isGovt = GOVT_ROLES.includes(user?.role || 'trader');
+  const traderOrg = user?.organization_name || 'Nairobi Exports Ltd';
+
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
+  const baseItems = useMemo(() => {
+    if (isGovt) return MOCK_ITEMS;
+    return MOCK_ITEMS.filter((r) => r.trader === traderOrg);
+  }, [isGovt, traderOrg]);
+
   const filtered = useMemo(() => {
-    return MOCK_ITEMS.filter((r) => {
+    return baseItems.filter((r) => {
       if (statusFilter !== 'all' && r.match_status !== statusFilter) return false;
       if (search) {
         const q = search.toLowerCase();
@@ -71,12 +83,12 @@ export default function PaymentReconciliationPage() {
       }
       return true;
     });
-  }, [search, statusFilter]);
+  }, [baseItems, search, statusFilter]);
 
-  const matchedCount = MOCK_ITEMS.filter((r) => r.match_status === 'matched').length;
-  const unmatchedCount = MOCK_ITEMS.filter((r) => r.match_status === 'unmatched' || r.match_status === 'pending').length;
-  const matchRate = ((matchedCount / MOCK_ITEMS.length) * 100).toFixed(0);
-  const totalDiff = MOCK_ITEMS.filter((r) => r.difference !== 0).reduce((s, r) => s + Math.abs(r.difference), 0);
+  const matchedCount = baseItems.filter((r) => r.match_status === 'matched').length;
+  const unmatchedCount = baseItems.filter((r) => r.match_status === 'unmatched' || r.match_status === 'pending').length;
+  const matchRate = baseItems.length > 0 ? ((matchedCount / baseItems.length) * 100).toFixed(0) : '0';
+  const totalDiff = baseItems.filter((r) => r.difference !== 0).reduce((s, r) => s + Math.abs(r.difference), 0);
 
   return (
     <Box>
@@ -84,10 +96,10 @@ export default function PaymentReconciliationPage() {
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
             <CompareArrows sx={{ color: '#D4AF37' }} />
-            <Typography variant="h4">Payment Reconciliation</Typography>
+            <Typography variant="h4">{isGovt ? 'Payment Reconciliation' : 'My Payment Reconciliation'}</Typography>
           </Box>
           <Typography sx={{ color: 'text.secondary' }}>
-            Match payments to tax assessments and resolve discrepancies.
+            {isGovt ? 'Match payments to tax assessments and resolve discrepancies.' : `Reconciliation status for ${traderOrg}.`}
           </Typography>
         </Box>
         <Button variant="contained" startIcon={<LinkIcon />}>
@@ -98,7 +110,7 @@ export default function PaymentReconciliationPage() {
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Total Items', value: MOCK_ITEMS.length.toString(), color: '#D4AF37' },
+          { label: 'Total Items', value: baseItems.length.toString(), color: '#D4AF37' },
           { label: 'Match Rate', value: `${matchRate}%`, color: '#22C55E' },
           { label: 'Unmatched', value: unmatchedCount.toString(), color: '#EF4444' },
           { label: 'Total Discrepancy', value: `KSh ${totalDiff.toLocaleString()}`, color: '#E6A817' },
@@ -189,7 +201,7 @@ export default function PaymentReconciliationPage() {
 
         <Box sx={{ px: 2.5, py: 2, borderTop: '1px solid rgba(212,175,55,0.1)' }}>
           <Typography sx={{ fontSize: 12, color: '#777' }}>
-            Showing {filtered.length} of {MOCK_ITEMS.length} reconciliation items
+            Showing {filtered.length} of {baseItems.length} reconciliation items
           </Typography>
         </Box>
       </Card>

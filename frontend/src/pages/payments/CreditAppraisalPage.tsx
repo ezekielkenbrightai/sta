@@ -16,6 +16,9 @@ import {
   TrendingUp,
   TrendingDown,
 } from '@mui/icons-material';
+import { useAuthStore } from '../../stores/authStore';
+
+const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor', 'bank_officer'];
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -80,11 +83,20 @@ function scoreColor(score: number): string {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function CreditAppraisalPage() {
+  const user = useAuthStore((s) => s.user);
+  const isBank = GOVT_ROLES.includes(user?.role || 'trader');
+  const traderOrg = user?.organization_name || 'Nairobi Exports Ltd';
+
   const [search, setSearch] = useState('');
   const [gradeFilter, setGradeFilter] = useState('all');
 
+  const baseProfiles = useMemo(() => {
+    if (isBank) return MOCK_PROFILES;
+    return MOCK_PROFILES.filter((p) => p.trader === traderOrg);
+  }, [isBank, traderOrg]);
+
   const filtered = useMemo(() => {
-    return MOCK_PROFILES.filter((p) => {
+    return baseProfiles.filter((p) => {
       if (gradeFilter !== 'all' && p.credit_grade !== gradeFilter) return false;
       if (search) {
         const q = search.toLowerCase();
@@ -92,30 +104,30 @@ export default function CreditAppraisalPage() {
       }
       return true;
     });
-  }, [search, gradeFilter]);
+  }, [baseProfiles, search, gradeFilter]);
 
-  const avgScore = Math.round(MOCK_PROFILES.reduce((s, p) => s + p.credit_score, 0) / MOCK_PROFILES.length);
-  const totalExposure = MOCK_PROFILES.reduce((s, p) => s + p.total_exposure, 0);
+  const avgScore = baseProfiles.length > 0 ? Math.round(baseProfiles.reduce((s, p) => s + p.credit_score, 0) / baseProfiles.length) : 0;
+  const totalExposure = baseProfiles.reduce((s, p) => s + p.total_exposure, 0);
 
   return (
     <Box>
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
           <CreditScore sx={{ color: '#D4AF37' }} />
-          <Typography variant="h4">Credit Appraisal</Typography>
+          <Typography variant="h4">{isBank ? 'Credit Appraisal' : 'My Credit Profile'}</Typography>
         </Box>
         <Typography sx={{ color: 'text.secondary' }}>
-          Centralized credit scoring and risk assessment for trade counterparties.
+          {isBank ? 'Centralized credit scoring and risk assessment for trade counterparties.' : `Credit profile for ${traderOrg}.`}
         </Typography>
       </Box>
 
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Traders Assessed', value: MOCK_PROFILES.length.toString(), color: '#D4AF37' },
+          { label: 'Traders Assessed', value: baseProfiles.length.toString(), color: '#D4AF37' },
           { label: 'Avg Credit Score', value: avgScore.toString(), color: scoreColor(avgScore) },
           { label: 'Total Exposure', value: formatAmount(totalExposure), color: '#3B82F6' },
-          { label: 'High Risk (B-)', value: MOCK_PROFILES.filter((p) => p.credit_score < 500).length.toString(), color: '#EF4444' },
+          { label: 'High Risk (B-)', value: baseProfiles.filter((p) => p.credit_score < 500).length.toString(), color: '#EF4444' },
         ].map((s) => (
           <Grid size={{ xs: 6, md: 3 }} key={s.label}>
             <Card sx={{ p: 2.5 }}>

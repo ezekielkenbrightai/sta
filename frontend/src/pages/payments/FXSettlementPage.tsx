@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   Box,
   Button,
@@ -16,6 +16,9 @@ import {
   CheckCircle,
   Schedule,
 } from '@mui/icons-material';
+import { useAuthStore } from '../../stores/authStore';
+
+const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor'];
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -61,19 +64,27 @@ const PRIORITY_CONFIG: Record<string, { label: string; color: string }> = {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function FXSettlementPage() {
+  const user = useAuthStore((s) => s.user);
+  const isGovt = GOVT_ROLES.includes(user?.role || 'trader');
+  const traderOrg = user?.organization_name || 'Nairobi Exports Ltd';
+
   const [statusFilter, setStatusFilter] = useState('all');
 
-  const filtered = SETTLEMENT_QUEUE.filter((s) => {
+  const baseQueue = useMemo(() => {
+    if (isGovt) return SETTLEMENT_QUEUE;
+    return SETTLEMENT_QUEUE.filter((s) => s.trader === traderOrg);
+  }, [isGovt, traderOrg]);
+
+  const filtered = baseQueue.filter((s) => {
     if (statusFilter !== 'all' && s.status !== statusFilter) return false;
     return true;
   });
 
-  const settledCount = SETTLEMENT_QUEUE.filter((s) => s.status === 'settled').length;
-  const avgTime = SETTLEMENT_QUEUE
-    .filter((s) => s.settlement_time)
-    .map((s) => parseFloat(s.settlement_time!))
-    .reduce((a, b, _, arr) => a + b / arr.length, 0)
-    .toFixed(1);
+  const settledCount = baseQueue.filter((s) => s.status === 'settled').length;
+  const withTime = baseQueue.filter((s) => s.settlement_time);
+  const avgTime = withTime.length > 0
+    ? (withTime.map((s) => parseFloat(s.settlement_time!)).reduce((a, b) => a + b, 0) / withTime.length).toFixed(1)
+    : '0';
 
   return (
     <Box>
@@ -81,10 +92,10 @@ export default function FXSettlementPage() {
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
             <SwapHoriz sx={{ color: '#D4AF37' }} />
-            <Typography variant="h4">FX Settlement</Typography>
+            <Typography variant="h4">{isGovt ? 'FX Settlement' : 'My FX Settlements'}</Typography>
           </Box>
           <Typography sx={{ color: 'text.secondary' }}>
-            Real-time cross-currency settlement via PAPSS — atomic settlement in under 3 seconds.
+            {isGovt ? 'Real-time cross-currency settlement via PAPSS — atomic settlement in under 3 seconds.' : `FX settlement history for ${traderOrg}.`}
           </Typography>
         </Box>
         <Button variant="contained" startIcon={<SwapHoriz />}>
@@ -95,10 +106,10 @@ export default function FXSettlementPage() {
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Total in Queue', value: SETTLEMENT_QUEUE.length.toString(), color: '#D4AF37' },
+          { label: 'Total in Queue', value: baseQueue.length.toString(), color: '#D4AF37' },
           { label: 'Settled Today', value: settledCount.toString(), color: '#22C55E' },
           { label: 'Avg Settlement Time', value: `${avgTime}s`, color: '#8B5CF6' },
-          { label: 'Failed', value: SETTLEMENT_QUEUE.filter((s) => s.status === 'failed').length.toString(), color: '#EF4444' },
+          { label: 'Failed', value: baseQueue.filter((s) => s.status === 'failed').length.toString(), color: '#EF4444' },
         ].map((s) => (
           <Grid size={{ xs: 6, md: 3 }} key={s.label}>
             <Card sx={{ p: 2.5 }}>

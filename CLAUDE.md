@@ -47,7 +47,8 @@ sta.com/
 │   │   ├── hooks/           # (empty)
 │   │   ├── utils/           # (empty)
 │   │   └── constants/       # (empty)
-│   ├── .env                 # VITE_API_URL, VITE_MOCK_AUTH
+│   ├── .env                 # VITE_API_URL, VITE_MOCK_AUTH (gitignored, local dev only)
+│   ├── .env.production      # VITE_API_URL, VITE_MOCK_AUTH (tracked in git, used by Railway)
 │   ├── package.json
 │   └── vite.config.ts
 ├── landing/                  # Static landing page
@@ -75,7 +76,7 @@ sta.com/
 - Zustand for client state (auth, app UI), React Query for server state (5min staleTime)
 - JWT auth with access tokens (60min expiry), stored in localStorage
 - Axios interceptors: auto-attach JWT, auto-logout on 401, retry 502/503/504
-- Mock auth mode: `VITE_MOCK_AUTH=true` with 5 predefined dev users
+- Mock auth mode: `VITE_MOCK_AUTH=true` with 9 predefined dev users (all roles)
 - MUI DataGrid for tabular data
 - Recharts for visualizations
 - i18next for en/sw/fr translations
@@ -91,9 +92,21 @@ sta.com/
 | logistics_officer | supply_chain |
 | customs_officer | trade, customs |
 | insurance_agent | insurance |
-| auditor | ledger, audit trail |
+| auditor | trade, tax, payments, ledger, supply_chain, customs, insurance, analytics |
 
-Role groups used in route guards: ADMIN, GOVT, BANK, TRADER_ROLES, CUSTOMS, LOGISTICS, INSURANCE, AUDITOR_ROLES
+Route guard role arrays (App.tsx):
+- `ADMIN` = super_admin, govt_admin
+- `SUPER` = super_admin
+- `TAX_VIEW` = super_admin, govt_admin, govt_analyst, trader, auditor
+- `ANALYTICS_VIEW` = super_admin, govt_admin, govt_analyst, auditor
+- `BANK` = super_admin, bank_officer
+- `TRADER_ROLES` = super_admin, trader, customs_officer, govt_admin
+- `CUSTOMS` = super_admin, customs_officer, govt_admin, auditor
+- `LOGISTICS` = super_admin, logistics_officer, trader
+- `INSURANCE` = super_admin, insurance_agent, trader
+- `AUDITOR_ROLES` = super_admin, auditor, govt_admin, govt_analyst
+
+**CRITICAL**: Route-level `roles` arrays MUST match `ROLE_MODULES` in layoutConstants.ts. If a role has module access in `ROLE_MODULES`, it MUST be included in the route's role array — otherwise the sidebar shows the module but the route redirects the user away.
 
 ## Backend Models (all use UUID PKs + datetime tracking)
 - **core.py**: Country, Organization, User, AuditLog
@@ -112,11 +125,24 @@ Role groups used in route guards: ADMIN, GOVT, BANK, TRADER_ROLES, CUSTOMS, LOGI
 - `GET /api/health` — Health check
 
 ## Test Users (password: `password123`)
+
+### Backend DB Users (seed.py)
 - admin@sta.africa (super_admin), govt@kra.go.ke (govt_admin)
 - analyst@kra.go.ke (govt_analyst), officer@kcb.co.ke (bank_officer)
 - trader@nairobiexports.co.ke (trader), ops@kenyalogistics.co.ke (logistics_officer)
 - officer@kpa.go.ke (customs_officer), agent@jubilee.co.ke (insurance_agent)
 - auditor@kra.go.ke (auditor)
+
+### Frontend Mock Users (authStore.ts DEV_USERS — used when VITE_MOCK_AUTH=true)
+- trader@nairobiexports.co.ke (trader, John Kipchoge, Nairobi Exports Ltd)
+- admin@sta.africa (super_admin, Platform Admin)
+- govt@kra.go.ke (govt_admin, Jane Mwangi, Kenya Revenue Authority)
+- officer@kcb.co.ke (bank_officer, Sarah Kamau, KCB Bank)
+- agent@apa.co.ke (insurance_agent, Grace Oduya, APA Insurance)
+- analyst@kra.go.ke (govt_analyst, David Ochieng, Kenya Revenue Authority)
+- customs@kpa.go.ke (customs_officer, Peter Njoroge, Kenya Ports Authority)
+- logistics@bollore.co.ke (logistics_officer, Amina Hassan, Bolloré Logistics Kenya)
+- auditor@oag.go.ke (auditor, Michael Wekesa, Office of the Auditor General)
 
 ## Commands
 - Frontend dev: `cd frontend && npm run dev` (port 5173)
@@ -190,6 +216,11 @@ Role groups used in route guards: ADMIN, GOVT, BANK, TRADER_ROLES, CUSTOMS, LOGI
 8. **Never commit Railway tokens**: Railway auth tokens are stored in `~/.railway/config.json`. The `.gitignore` includes `.railway/` and `railway-token.txt`. Never set `RAILWAY_TOKEN` in committed files.
 9. **Frontend builds use `tsc -b` (strict)**: Vite's `npm run build` runs `tsc -b && vite build`. The `-b` flag uses project references mode which is stricter than `tsc --noEmit`. Always run `npm run build` locally before pushing to catch type errors that `tsc --noEmit` misses.
 10. **Frontend FrontEnd service uses `npx serve`**: Railway auto-detects the Vite build and runs `npx serve dist` on port 8080. The custom domain is `tradeafricanow.com`.
+11. **`tsc -b` errors on unused variables (TS6133)**: If you add a new role array but stop using an old one, `tsc -b` will fail with "declared but its value is never read." Always remove unused consts.
+12. **Recharts `Formatter` type**: Never add explicit type annotations to Recharts formatter callbacks. Use `formatter={(value) => ...}` NOT `formatter={(value: number) => ...}`. Recharts types include `undefined` in the union and TypeScript inference handles it.
+13. **`.env.production` must be tracked in git**: `.env` is gitignored (local dev), but `.env.production` must be committed so Railway has `VITE_MOCK_AUTH=true` at build time. Added `!frontend/.env.production` exception in `.gitignore`.
+14. **localStorage "undefined" string bug**: `localStorage.setItem('key', undefined)` stores the literal string `"undefined"`, which `!!` evaluates as truthy. The `getValidToken()` function in authStore guards against this.
+15. **Null-safe property access on user/module**: Always add fallback defaults when calling `.replace()` on values that could be null — e.g., `(selectedModule || 'trade').replace(...)` and `(user.role || 'trader').replace(...)`.
 
 ## Frontend Pages (77 total across 12 modules)
 | Module | Pages | Directory |
@@ -212,11 +243,36 @@ All pages use mock data with realistic East African trade scenarios. No Placehol
 ## Current Gaps (areas needing implementation)
 - Most API endpoints (trade, tax, payments, ledger, supply_chain, customs, insurance)
 - Alembic migrations (currently using `create_all`)
-- Tests (both frontend and backend)
+- Tests (both frontend and backend — zero tests exist)
 - Real dashboard data (currently mock/hardcoded on each page)
 - Search/filter/pagination on list pages (UI exists, not wired to backend)
-- i18n translations (minimal)
+- i18n translations (minimal — i18next setup exists for en/sw/fr)
 - CBDC/blockchain integration (simulated with mock data)
 - Audit trail population
 - PDF/CSV export functionality (UI exists, not wired)
 - Landing page → app integration
+- Real-time features (WebSocket notifications, live shipment tracking)
+
+## Key Code Structure Notes
+
+### Auth Flow (authStore.ts)
+- `getValidToken()` guards against `"undefined"` / `"null"` string tokens in localStorage
+- Mock mode: `DEV_USERS[email]` lookup, fallback to trader; stores `mock_user_email` for session restore
+- Real mode: POST `/auth/login` → `access_token` + `user` response
+- `loadFromStorage()` called on app mount → restores user from token
+
+### Module System (appStore.ts + layoutConstants.ts)
+- `ROLE_MODULES` defines which modules each role can access (source of truth)
+- `MODULE_NAV` defines sidebar nav items per module (with per-item role filters)
+- `DEFAULT_MODULE` maps each role to its landing module
+- `moduleFromPath()` extracts module ID from URL path (special case: `/dashboard` → `trade`)
+- `ModuleSelector` dropdown in TopNavBar lets users switch modules
+
+### Route Protection (App.tsx + ProtectedRoute.tsx)
+- `P` component wraps `ProtectedRoute` with `Suspense` fallback
+- `ProtectedRoute` checks: isAuthLoading → spinner, !isAuthenticated → /login, role mismatch → defaultLandingPage(role)
+- `defaultLandingPage(role)` maps each role to its home route (e.g., trader → /dashboard, bank_officer → /payments/dashboard)
+
+### Login Page (LoginPage.tsx)
+- Demo account chips (visible when `VITE_MOCK_AUTH=true`) — click to auto-fill email + password
+- `initForRole(role)` on login sets the correct default module for the user's role

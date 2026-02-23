@@ -18,6 +18,9 @@ import {
   Search as SearchIcon,
   Visibility as ViewIcon,
 } from '@mui/icons-material';
+import { useAuthStore } from '../../stores/authStore';
+
+const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor', 'bank_officer'];
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -72,11 +75,20 @@ function formatAmount(value: number): string {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function TradeFinancePage() {
+  const user = useAuthStore((s) => s.user);
+  const isBank = GOVT_ROLES.includes(user?.role || 'trader');
+  const traderOrg = user?.organization_name || 'Nairobi Exports Ltd';
+
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
 
+  const baseFacilities = useMemo(() => {
+    if (isBank) return MOCK_FACILITIES;
+    return MOCK_FACILITIES.filter((f) => f.trader === traderOrg);
+  }, [isBank, traderOrg]);
+
   const filtered = useMemo(() => {
-    return MOCK_FACILITIES.filter((f) => {
+    return baseFacilities.filter((f) => {
       if (typeFilter !== 'all' && f.type !== typeFilter) return false;
       if (search) {
         const q = search.toLowerCase();
@@ -84,9 +96,9 @@ export default function TradeFinancePage() {
       }
       return true;
     });
-  }, [search, typeFilter]);
+  }, [baseFacilities, search, typeFilter]);
 
-  const totalExposure = MOCK_FACILITIES.filter((f) => f.status === 'active' || f.status === 'disbursed').reduce((s, f) => s + f.amount, 0);
+  const totalExposure = baseFacilities.filter((f) => f.status === 'active' || f.status === 'disbursed').reduce((s, f) => s + f.amount, 0);
 
   return (
     <Box>
@@ -94,10 +106,10 @@ export default function TradeFinancePage() {
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
             <RequestQuote sx={{ color: '#D4AF37' }} />
-            <Typography variant="h4">Trade Finance</Typography>
+            <Typography variant="h4">{isBank ? 'Trade Finance' : 'My Trade Finance'}</Typography>
           </Box>
           <Typography sx={{ color: 'text.secondary' }}>
-            Manage letters of credit, trade loans, guarantees, and other trade finance instruments.
+            {isBank ? 'Manage letters of credit, trade loans, guarantees, and other trade finance instruments.' : `Trade finance facilities for ${traderOrg}.`}
           </Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />}>
@@ -108,10 +120,10 @@ export default function TradeFinancePage() {
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Total Facilities', value: MOCK_FACILITIES.length.toString(), color: '#D4AF37' },
+          { label: 'Total Facilities', value: baseFacilities.length.toString(), color: '#D4AF37' },
           { label: 'Active Exposure', value: formatAmount(totalExposure), color: '#3B82F6' },
-          { label: 'Pending Approval', value: MOCK_FACILITIES.filter((f) => f.status === 'pending_approval' || f.status === 'approved').length.toString(), color: '#E6A817' },
-          { label: 'Avg Interest Rate', value: `${(MOCK_FACILITIES.filter((f) => f.interest_rate > 0).reduce((s, f) => s + f.interest_rate, 0) / MOCK_FACILITIES.filter((f) => f.interest_rate > 0).length).toFixed(1)}%`, color: '#22C55E' },
+          { label: 'Pending Approval', value: baseFacilities.filter((f) => f.status === 'pending_approval' || f.status === 'approved').length.toString(), color: '#E6A817' },
+          { label: 'Avg Interest Rate', value: `${(baseFacilities.filter((f) => f.interest_rate > 0).reduce((s, f) => s + f.interest_rate, 0) / (baseFacilities.filter((f) => f.interest_rate > 0).length || 1)).toFixed(1)}%`, color: '#22C55E' },
         ].map((s) => (
           <Grid size={{ xs: 6, md: 3 }} key={s.label}>
             <Card sx={{ p: 2.5 }}>
@@ -199,7 +211,7 @@ export default function TradeFinancePage() {
 
         <Box sx={{ px: 2.5, py: 2, borderTop: '1px solid rgba(212,175,55,0.1)' }}>
           <Typography sx={{ fontSize: 12, color: '#777' }}>
-            Showing {filtered.length} of {MOCK_FACILITIES.length} facilities
+            Showing {filtered.length} of {baseFacilities.length} facilities
           </Typography>
         </Box>
       </Card>

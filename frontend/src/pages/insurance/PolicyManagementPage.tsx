@@ -15,6 +15,9 @@ import {
   Search as SearchIcon,
   Add as AddIcon,
 } from '@mui/icons-material';
+import { useAuthStore } from '../../stores/authStore';
+
+const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor', 'insurance_agent'];
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -72,12 +75,21 @@ function formatUSD(v: number): string {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function PolicyManagementPage() {
+  const user = useAuthStore((s) => s.user);
+  const isInsurer = GOVT_ROLES.includes(user?.role || 'trader');
+  const traderOrg = user?.organization_name || 'Nairobi Exports Ltd';
+
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
 
+  const basePolicies = useMemo(() => {
+    if (isInsurer) return MOCK_POLICIES;
+    return MOCK_POLICIES.filter((p) => p.trader === traderOrg);
+  }, [isInsurer, traderOrg]);
+
   const filtered = useMemo(() => {
-    return MOCK_POLICIES.filter((p) => {
+    return basePolicies.filter((p) => {
       if (typeFilter !== 'all' && p.type !== typeFilter) return false;
       if (statusFilter !== 'all' && p.status !== statusFilter) return false;
       if (search) {
@@ -86,10 +98,10 @@ export default function PolicyManagementPage() {
       }
       return true;
     });
-  }, [search, typeFilter, statusFilter]);
+  }, [basePolicies, search, typeFilter, statusFilter]);
 
-  const activeCount = MOCK_POLICIES.filter((p) => ['active', 'claim_active'].includes(p.status)).length;
-  const totalCoverage = MOCK_POLICIES.filter((p) => ['active', 'claim_active'].includes(p.status)).reduce((s, p) => s + p.coverage_usd, 0);
+  const activeCount = basePolicies.filter((p) => ['active', 'claim_active'].includes(p.status)).length;
+  const totalCoverage = basePolicies.filter((p) => ['active', 'claim_active'].includes(p.status)).reduce((s, p) => s + p.coverage_usd, 0);
 
   return (
     <Box>
@@ -97,10 +109,10 @@ export default function PolicyManagementPage() {
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
             <Policy sx={{ color: '#D4AF37' }} />
-            <Typography variant="h4">Policy Management</Typography>
+            <Typography variant="h4">{isInsurer ? 'Policy Management' : 'My Insurance Policies'}</Typography>
           </Box>
           <Typography sx={{ color: 'text.secondary' }}>
-            Manage trade insurance policies — marine cargo, transit, warehouse, credit, and political risk.
+            {isInsurer ? 'Manage trade insurance policies — marine cargo, transit, warehouse, credit, and political risk.' : `Insurance policies for ${traderOrg}.`}
           </Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />}>
@@ -111,10 +123,10 @@ export default function PolicyManagementPage() {
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Total Policies', value: MOCK_POLICIES.length.toString(), color: '#D4AF37' },
+          { label: 'Total Policies', value: basePolicies.length.toString(), color: '#D4AF37' },
           { label: 'Active', value: activeCount.toString(), color: '#22C55E' },
           { label: 'Total Coverage', value: formatUSD(totalCoverage), color: '#3B82F6' },
-          { label: 'Pending Approval', value: MOCK_POLICIES.filter((p) => p.status === 'pending').length.toString(), color: '#E6A817' },
+          { label: 'Pending Approval', value: basePolicies.filter((p) => p.status === 'pending').length.toString(), color: '#E6A817' },
         ].map((s) => (
           <Grid size={{ xs: 6, md: 3 }} key={s.label}>
             <Card sx={{ p: 2.5 }}>
@@ -206,7 +218,7 @@ export default function PolicyManagementPage() {
 
       <Box sx={{ mt: 2 }}>
         <Typography sx={{ fontSize: 12, color: '#777' }}>
-          Showing {filtered.length} of {MOCK_POLICIES.length} policies
+          Showing {filtered.length} of {basePolicies.length} policies
         </Typography>
       </Box>
     </Box>

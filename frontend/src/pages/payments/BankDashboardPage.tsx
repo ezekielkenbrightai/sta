@@ -13,6 +13,9 @@ import {
   RequestQuote,
   Security,
 } from '@mui/icons-material';
+import { useAuthStore } from '../../stores/authStore';
+
+const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor', 'bank_officer'];
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -74,15 +77,21 @@ function formatAmount(value: number): string {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function BankDashboardPage() {
+  const user = useAuthStore((s) => s.user);
+  const isBank = GOVT_ROLES.includes(user?.role || 'trader');
+  const traderOrg = user?.organization_name || 'Nairobi Exports Ltd';
+
+  const baseFacilities = isBank ? ACTIVE_FACILITIES : ACTIVE_FACILITIES.filter((f) => f.trader === traderOrg);
+
   return (
     <Box>
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
           <AccountBalance sx={{ color: '#D4AF37' }} />
-          <Typography variant="h4">Bank Dashboard</Typography>
+          <Typography variant="h4">{isBank ? 'Bank Dashboard' : 'My Trade Finance'}</Typography>
         </Box>
         <Typography sx={{ color: 'text.secondary' }}>
-          Trade finance portfolio overview and facility management.
+          {isBank ? 'Trade finance portfolio overview and facility management.' : `Trade finance facilities for ${traderOrg}.`}
         </Typography>
       </Box>
 
@@ -128,7 +137,7 @@ export default function BankDashboardPage() {
                 <Typography key={h} sx={{ fontSize: 11, fontWeight: 600, color: '#777', textTransform: 'uppercase' }}>{h}</Typography>
               ))}
             </Box>
-            {ACTIVE_FACILITIES.map((f, i) => {
+            {baseFacilities.map((f, i) => {
               const utilPct = (f.utilized / f.amount * 100);
               const risk = RISK_CONFIG[f.risk_grade];
               const sts = STATUS_CONFIG[f.status];
@@ -140,7 +149,7 @@ export default function BankDashboardPage() {
                     gridTemplateColumns: '1fr 130px 100px 100px 1fr 50px 90px 90px',
                     gap: 1, px: 2.5, py: 1.75,
                     alignItems: 'center',
-                    borderBottom: i < ACTIVE_FACILITIES.length - 1 ? '1px solid rgba(212,175,55,0.05)' : 'none',
+                    borderBottom: i < baseFacilities.length - 1 ? '1px solid rgba(212,175,55,0.05)' : 'none',
                     '&:hover': { backgroundColor: 'rgba(212,175,55,0.03)' },
                     cursor: 'pointer',
                   }}
@@ -180,9 +189,9 @@ export default function BankDashboardPage() {
           <Card sx={{ p: 2.5 }}>
             <Typography sx={{ fontSize: 14, fontWeight: 600, color: '#f0f0f0', mb: 2 }}>Risk Grade Distribution</Typography>
             {(['A', 'B', 'C', 'D'] as const).map((grade) => {
-              const count = ACTIVE_FACILITIES.filter((f) => f.risk_grade === grade).length;
-              const pct = (count / ACTIVE_FACILITIES.length * 100).toFixed(0);
-              const exposure = ACTIVE_FACILITIES.filter((f) => f.risk_grade === grade).reduce((s, f) => s + f.utilized, 0);
+              const count = baseFacilities.filter((f) => f.risk_grade === grade).length;
+              const pct = (count / baseFacilities.length * 100).toFixed(0);
+              const exposure = baseFacilities.filter((f) => f.risk_grade === grade).reduce((s, f) => s + f.utilized, 0);
               const cfg = RISK_CONFIG[grade];
               return (
                 <Box key={grade} sx={{ mb: 2 }}>
@@ -208,11 +217,11 @@ export default function BankDashboardPage() {
         <Grid size={{ xs: 12, md: 6 }}>
           <Card sx={{ p: 2.5 }}>
             <Typography sx={{ fontSize: 14, fontWeight: 600, color: '#f0f0f0', mb: 2 }}>Facility Type Breakdown</Typography>
-            {Array.from(new Set(ACTIVE_FACILITIES.map((f) => f.facility_type))).map((type) => {
-              const facilities = ACTIVE_FACILITIES.filter((f) => f.facility_type === type);
+            {Array.from(new Set(baseFacilities.map((f) => f.facility_type))).map((type) => {
+              const facilities = baseFacilities.filter((f) => f.facility_type === type);
               const total = facilities.reduce((s, f) => s + f.amount, 0);
               const colors = ['#D4AF37', '#3B82F6', '#22C55E', '#E6A817', '#8B5CF6'];
-              const idx = Array.from(new Set(ACTIVE_FACILITIES.map((f) => f.facility_type))).indexOf(type);
+              const idx = Array.from(new Set(baseFacilities.map((f) => f.facility_type))).indexOf(type);
               const color = colors[idx % colors.length];
               return (
                 <Box key={type} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 1.25, borderBottom: '1px solid rgba(212,175,55,0.05)' }}>

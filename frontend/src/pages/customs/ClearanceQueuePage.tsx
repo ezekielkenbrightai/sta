@@ -18,6 +18,9 @@ import {
   Warning,
   Visibility,
 } from '@mui/icons-material';
+import { useAuthStore } from '../../stores/authStore';
+
+const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor', 'customs_officer'];
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -85,12 +88,21 @@ function formatValue(v: number): string {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function ClearanceQueuePage() {
+  const user = useAuthStore((s) => s.user);
+  const isCustoms = GOVT_ROLES.includes(user?.role || 'trader');
+  const traderOrg = user?.organization_name || 'Nairobi Exports Ltd';
+
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [riskFilter, setRiskFilter] = useState('all');
 
+  const baseQueue = useMemo(() => {
+    if (isCustoms) return MOCK_QUEUE;
+    return MOCK_QUEUE.filter((c) => c.trader === traderOrg);
+  }, [isCustoms, traderOrg]);
+
   const filtered = useMemo(() => {
-    return MOCK_QUEUE.filter((c) => {
+    return baseQueue.filter((c) => {
       if (statusFilter !== 'all' && c.status !== statusFilter) return false;
       if (riskFilter !== 'all' && c.risk_level !== riskFilter) return false;
       if (search) {
@@ -99,30 +111,30 @@ export default function ClearanceQueuePage() {
       }
       return true;
     });
-  }, [search, statusFilter, riskFilter]);
+  }, [baseQueue, search, statusFilter, riskFilter]);
 
-  const pendingCount = MOCK_QUEUE.filter((c) => !['cleared', 'rejected'].includes(c.status)).length;
-  const clearedToday = MOCK_QUEUE.filter((c) => c.status === 'cleared' && c.submitted_at.startsWith('2026-02-22')).length;
+  const pendingCount = baseQueue.filter((c) => !['cleared', 'rejected'].includes(c.status)).length;
+  const clearedToday = baseQueue.filter((c) => c.status === 'cleared' && c.submitted_at.startsWith('2026-02-22')).length;
 
   return (
     <Box>
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
           <Assignment sx={{ color: '#D4AF37' }} />
-          <Typography variant="h4">Clearance Queue</Typography>
+          <Typography variant="h4">{isCustoms ? 'Clearance Queue' : 'My Customs Clearances'}</Typography>
         </Box>
         <Typography sx={{ color: 'text.secondary' }}>
-          Customs declarations awaiting processing, inspection, and clearance.
+          {isCustoms ? 'Customs declarations awaiting processing, inspection, and clearance.' : `Customs clearance status for ${traderOrg}.`}
         </Typography>
       </Box>
 
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Total Declarations', value: MOCK_QUEUE.length.toString(), color: '#D4AF37', icon: <Assignment sx={{ fontSize: 18, color: '#D4AF37' }} /> },
+          { label: 'Total Declarations', value: baseQueue.length.toString(), color: '#D4AF37', icon: <Assignment sx={{ fontSize: 18, color: '#D4AF37' }} /> },
           { label: 'Pending Clearance', value: pendingCount.toString(), color: '#E6A817', icon: <Schedule sx={{ fontSize: 18, color: '#E6A817' }} /> },
           { label: 'Cleared Today', value: clearedToday.toString(), color: '#22C55E', icon: <CheckCircle sx={{ fontSize: 18, color: '#22C55E' }} /> },
-          { label: 'Flagged / Held', value: MOCK_QUEUE.filter((c) => c.risk_level === 'red').length.toString(), color: '#EF4444', icon: <Warning sx={{ fontSize: 18, color: '#EF4444' }} /> },
+          { label: 'Flagged / Held', value: baseQueue.filter((c) => c.risk_level === 'red').length.toString(), color: '#EF4444', icon: <Warning sx={{ fontSize: 18, color: '#EF4444' }} /> },
         ].map((s) => (
           <Grid size={{ xs: 6, md: 3 }} key={s.label}>
             <Card sx={{ p: 2.5 }}>
@@ -226,7 +238,7 @@ export default function ClearanceQueuePage() {
 
       <Box sx={{ mt: 2 }}>
         <Typography sx={{ fontSize: 12, color: '#777' }}>
-          Showing {filtered.length} of {MOCK_QUEUE.length} declarations
+          Showing {filtered.length} of {baseQueue.length} declarations
         </Typography>
       </Box>
     </Box>

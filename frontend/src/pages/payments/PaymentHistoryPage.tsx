@@ -16,6 +16,9 @@ import {
   Search as SearchIcon,
   FileDownload,
 } from '@mui/icons-material';
+import { useAuthStore } from '../../stores/authStore';
+
+const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor'];
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -63,12 +66,21 @@ const METHOD_LABELS: Record<string, { label: string; color: string }> = {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function PaymentHistoryPage() {
+  const user = useAuthStore((s) => s.user);
+  const isGovt = GOVT_ROLES.includes(user?.role || 'trader');
+  const traderOrg = user?.organization_name || 'Nairobi Exports Ltd';
+
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [methodFilter, setMethodFilter] = useState('all');
 
+  const basePayments = useMemo(() => {
+    if (isGovt) return MOCK_PAYMENTS;
+    return MOCK_PAYMENTS.filter((p) => p.trader === traderOrg);
+  }, [isGovt, traderOrg]);
+
   const filtered = useMemo(() => {
-    return MOCK_PAYMENTS.filter((p) => {
+    return basePayments.filter((p) => {
       if (statusFilter !== 'all' && p.status !== statusFilter) return false;
       if (methodFilter !== 'all' && p.method !== methodFilter) return false;
       if (search) {
@@ -77,9 +89,9 @@ export default function PaymentHistoryPage() {
       }
       return true;
     });
-  }, [search, statusFilter, methodFilter]);
+  }, [basePayments, search, statusFilter, methodFilter]);
 
-  const totalCompleted = MOCK_PAYMENTS.filter((p) => p.status === 'completed').reduce((s, p) => s + p.amount, 0);
+  const totalCompleted = basePayments.filter((p) => p.status === 'completed').reduce((s, p) => s + p.amount, 0);
 
   return (
     <Box>
@@ -87,10 +99,10 @@ export default function PaymentHistoryPage() {
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
             <History sx={{ color: '#D4AF37' }} />
-            <Typography variant="h4">Payment History</Typography>
+            <Typography variant="h4">{isGovt ? 'Payment History' : 'My Payment History'}</Typography>
           </Box>
           <Typography sx={{ color: 'text.secondary' }}>
-            Complete transaction history with receipts and audit trail.
+            {isGovt ? 'Complete transaction history with receipts and audit trail.' : `Payment history for ${traderOrg}.`}
           </Typography>
         </Box>
       </Box>
@@ -98,10 +110,10 @@ export default function PaymentHistoryPage() {
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Total Transactions', value: MOCK_PAYMENTS.length.toString(), color: '#D4AF37' },
+          { label: 'Total Transactions', value: basePayments.length.toString(), color: '#D4AF37' },
           { label: 'Completed Value', value: `KSh ${(totalCompleted / 1000).toFixed(0)}K`, color: '#22C55E' },
-          { label: 'Failed', value: MOCK_PAYMENTS.filter((p) => p.status === 'failed').length.toString(), color: '#EF4444' },
-          { label: 'Refunded', value: MOCK_PAYMENTS.filter((p) => p.status === 'refunded').length.toString(), color: '#8B5CF6' },
+          { label: 'Failed', value: basePayments.filter((p) => p.status === 'failed').length.toString(), color: '#EF4444' },
+          { label: 'Refunded', value: basePayments.filter((p) => p.status === 'refunded').length.toString(), color: '#8B5CF6' },
         ].map((s) => (
           <Grid size={{ xs: 6, md: 3 }} key={s.label}>
             <Card sx={{ p: 2.5 }}>
@@ -187,7 +199,7 @@ export default function PaymentHistoryPage() {
 
         <Box sx={{ px: 2.5, py: 2, borderTop: '1px solid rgba(212,175,55,0.1)' }}>
           <Typography sx={{ fontSize: 12, color: '#777' }}>
-            Showing {filtered.length} of {MOCK_PAYMENTS.length} transactions
+            Showing {filtered.length} of {basePayments.length} transactions
           </Typography>
         </Box>
       </Card>
