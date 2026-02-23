@@ -19,7 +19,7 @@ const DEV_USERS: Record<string, User> = {
     organization_id: null, organization_name: null,
     organization_type: null, country_id: null, country_name: null,
     country_code: null, country_flag_emoji: null, is_active: true,
-    modules: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'cbdc', 'admin'],
+    modules: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'cbdc', 'admin', 'compliance'],
   },
   'govt@kra.go.ke': {
     id: 'u-govt', email: 'govt@kra.go.ke',
@@ -27,7 +27,7 @@ const DEV_USERS: Record<string, User> = {
     organization_id: 'o-kra', organization_name: 'Kenya Revenue Authority',
     organization_type: 'government', country_id: 'c-ken', country_name: 'Kenya',
     country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
-    modules: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'cbdc'],
+    modules: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'cbdc', 'compliance'],
   },
   'officer@kcb.co.ke': {
     id: 'u-bank', email: 'officer@kcb.co.ke',
@@ -75,7 +75,15 @@ const DEV_USERS: Record<string, User> = {
     organization_id: 'o-oag', organization_name: 'Office of the Auditor General',
     organization_type: 'government', country_id: 'c-ken', country_name: 'Kenya',
     country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
-    modules: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics'],
+    modules: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'compliance'],
+  },
+  'compliance@frc.go.ke': {
+    id: 'u-compliance', email: 'compliance@frc.go.ke',
+    first_name: 'Wanjiku', last_name: 'Karanja', role: 'compliance_officer',
+    organization_id: 'o-frc', organization_name: 'Financial Reporting Centre',
+    organization_type: 'government', country_id: 'c-ken', country_name: 'Kenya',
+    country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
+    modules: ['compliance', 'trade'],
   },
 };
 

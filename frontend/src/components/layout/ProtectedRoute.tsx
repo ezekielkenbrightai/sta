@@ -24,6 +24,8 @@ function defaultLandingPage(role: string): string {
       return '/insurance/dashboard';
     case 'auditor':
       return '/ledger/dashboard';
+    case 'compliance_officer':
+      return '/compliance/dashboard';
     default:
       return '/dashboard';
   }

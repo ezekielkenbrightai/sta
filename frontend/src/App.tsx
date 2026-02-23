@@ -74,6 +74,15 @@ const ClaimsPage = lazy(() => import('./pages/insurance/ClaimsPage'));
 const RiskScoringPage = lazy(() => import('./pages/insurance/RiskScoringPage'));
 const PremiumCalculatorPage = lazy(() => import('./pages/insurance/PremiumCalculatorPage'));
 
+// Compliance pages (Phase 10)
+const ComplianceDashboardPage = lazy(() => import('./pages/compliance/ComplianceDashboardPage'));
+const EntityScreeningPage = lazy(() => import('./pages/compliance/EntityScreeningPage'));
+const CompanyDueDiligencePage = lazy(() => import('./pages/compliance/CompanyDueDiligencePage'));
+const RiskRankingPage = lazy(() => import('./pages/compliance/RiskRankingPage'));
+const WatchlistMonitorPage = lazy(() => import('./pages/compliance/WatchlistMonitorPage'));
+const DirectorScreeningPage = lazy(() => import('./pages/compliance/DirectorScreeningPage'));
+const ComplianceReportsPage = lazy(() => import('./pages/compliance/ComplianceReportsPage'));
+
 // Profile page
 const ProfilePage = lazy(() => import('./pages/profile/ProfilePage'));
 
@@ -158,6 +167,8 @@ const AUDITOR_ROLES = ['super_admin', 'auditor', 'govt_admin', 'govt_analyst'];
 const TAX_VIEW = ['super_admin', 'govt_admin', 'govt_analyst', 'trader', 'auditor'];
 // Analytics: govt + auditor (read-only access per ROLE_MODULES)
 const ANALYTICS_VIEW = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor'];
+// Compliance: compliance officer + govt + auditor
+const COMPLIANCE = ['super_admin', 'compliance_officer', 'govt_admin', 'auditor'];
 
 // ─── App ────────────────────────────────────────────────────────────────────────
 
@@ -269,6 +280,16 @@ export default function App() {
                 <Route path="/analytics/export" element={<P roles={ANALYTICS_VIEW}><DataExportPage /></P>} />
                 <Route path="/analytics/economic-impact" element={<P roles={ANALYTICS_VIEW}><EconomicImpactPage /></P>} />
                 <Route path="/analytics/afcfta-progress" element={<P roles={ANALYTICS_VIEW}><AfCFTAProgressPage /></P>} />
+
+                {/* ── Compliance & KYC ──────────────────────────────── */}
+                <Route path="/compliance/dashboard" element={<P roles={COMPLIANCE}><ComplianceDashboardPage /></P>} />
+                <Route path="/compliance/screening" element={<P roles={COMPLIANCE}><EntityScreeningPage /></P>} />
+                <Route path="/compliance/due-diligence" element={<P roles={COMPLIANCE}><CompanyDueDiligencePage /></P>} />
+                <Route path="/compliance/due-diligence/:id" element={<P roles={COMPLIANCE}><CompanyDueDiligencePage /></P>} />
+                <Route path="/compliance/risk-ranking" element={<P roles={COMPLIANCE}><RiskRankingPage /></P>} />
+                <Route path="/compliance/watchlist" element={<P roles={COMPLIANCE}><WatchlistMonitorPage /></P>} />
+                <Route path="/compliance/directors" element={<P roles={COMPLIANCE}><DirectorScreeningPage /></P>} />
+                <Route path="/compliance/reports" element={<P roles={COMPLIANCE}><ComplianceReportsPage /></P>} />
 
                 {/* ── CBDC & Future Finance ──────────────────────────── */}
                 <Route path="/cbdc/dashboard" element={<P><CBDCDashboardPage /></P>} />

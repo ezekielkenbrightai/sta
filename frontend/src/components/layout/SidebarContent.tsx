@@ -75,6 +75,10 @@ import {
   Receipt,
   Token,
   Handshake,
+  ManageSearch,
+  GppBad,
+  FactCheck,
+  Verified,
 } from '@mui/icons-material';
 import { useAuthStore } from '../../stores/authStore';
 import { useAppStore } from '../../stores/appStore';
@@ -97,6 +101,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
   TrendingUp, MultipleStop, Gavel, PersonSearch, Assessment, Schedule,
   FileDownload, ShowChart, Flag, Business, Group, Speed, ToggleOn,
   Extension, WorkHistory, Discount, Receipt, Token, Handshake,
+  ManageSearch, GppBad, FactCheck, Verified,
 };
 
 interface SidebarContentProps {

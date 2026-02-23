@@ -98,6 +98,12 @@ export const MODULES: ModuleDef[] = [
     defaultRoute: '/cbdc/dashboard',
   },
   {
+    id: 'compliance',
+    label: 'Compliance & KYC',
+    description: 'AML/KYC Background Checks & Due Diligence',
+    defaultRoute: '/compliance/dashboard',
+  },
+  {
     id: 'admin',
     label: 'Administration',
     description: 'Platform Administration',
@@ -359,6 +365,38 @@ export const MODULE_NAV: Record<string, NavSection[]> = {
       ],
     },
   ],
+  compliance: [
+    {
+      label: 'Compliance Overview',
+      items: [
+        { to: '/compliance/dashboard', label: 'Dashboard', icon: 'Dashboard' },
+      ],
+    },
+    {
+      label: 'Screening',
+      collapsible: true,
+      items: [
+        { to: '/compliance/screening', label: 'Entity Screening', icon: 'ManageSearch' },
+        { to: '/compliance/directors', label: 'Director Screening', icon: 'PersonSearch' },
+        { to: '/compliance/watchlist', label: 'Watchlist Monitor', icon: 'GppBad' },
+      ],
+    },
+    {
+      label: 'Risk & Diligence',
+      collapsible: true,
+      items: [
+        { to: '/compliance/risk-ranking', label: 'Risk Ranking', icon: 'FactCheck' },
+        { to: '/compliance/due-diligence', label: 'Due Diligence', icon: 'Verified' },
+      ],
+    },
+    {
+      label: 'Reporting',
+      collapsible: true,
+      items: [
+        { to: '/compliance/reports', label: 'Compliance Reports', icon: 'Assessment' },
+      ],
+    },
+  ],
   admin: [
     {
       label: 'Admin Overview',
@@ -399,17 +437,19 @@ export const DEFAULT_MODULE: Record<string, string> = {
   customs_officer: 'customs',
   insurance_agent: 'insurance',
   auditor: 'ledger',
+  compliance_officer: 'compliance',
 };
 
 /** Which modules each role can access */
 export const ROLE_MODULES: Record<string, string[]> = {
-  super_admin: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'cbdc', 'admin'],
-  govt_admin: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'cbdc'],
+  super_admin: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'cbdc', 'admin', 'compliance'],
+  govt_admin: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'cbdc', 'compliance'],
   govt_analyst: ['trade', 'tax', 'analytics'],
   bank_officer: ['payments', 'ledger'],
   trader: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'insurance', 'cbdc'],
   logistics_officer: ['supply_chain'],
   customs_officer: ['trade', 'customs'],
   insurance_agent: ['insurance'],
-  auditor: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics'],
+  auditor: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'compliance'],
+  compliance_officer: ['compliance', 'trade'],
 };
