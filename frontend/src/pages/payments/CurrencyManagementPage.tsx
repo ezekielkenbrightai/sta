@@ -34,24 +34,24 @@ interface Currency {
   exchange_rate_to_usd: number;
   last_updated: string;
   papss_enabled: boolean;
-  cbdc_ready: boolean;
+  stablecoins_ready: boolean;
 }
 
 const MOCK_CURRENCIES: Currency[] = [
-  { id: 'cur-001', code: 'KES', name: 'Kenyan Shilling', symbol: 'KSh', country: 'Kenya', is_african: true, is_active: true, decimal_places: 2, exchange_rate_to_usd: 0.00775, last_updated: '2026-02-22', papss_enabled: true, cbdc_ready: true },
-  { id: 'cur-002', code: 'NGN', name: 'Nigerian Naira', symbol: '₦', country: 'Nigeria', is_african: true, is_active: true, decimal_places: 2, exchange_rate_to_usd: 0.000627, last_updated: '2026-02-22', papss_enabled: true, cbdc_ready: true },
-  { id: 'cur-003', code: 'ZAR', name: 'South African Rand', symbol: 'R', country: 'South Africa', is_african: true, is_active: true, decimal_places: 2, exchange_rate_to_usd: 0.0541, last_updated: '2026-02-22', papss_enabled: true, cbdc_ready: false },
-  { id: 'cur-004', code: 'EGP', name: 'Egyptian Pound', symbol: 'E£', country: 'Egypt', is_african: true, is_active: true, decimal_places: 2, exchange_rate_to_usd: 0.0203, last_updated: '2026-02-22', papss_enabled: true, cbdc_ready: false },
-  { id: 'cur-005', code: 'GHS', name: 'Ghanaian Cedi', symbol: 'GH₵', country: 'Ghana', is_african: true, is_active: true, decimal_places: 2, exchange_rate_to_usd: 0.0787, last_updated: '2026-02-22', papss_enabled: true, cbdc_ready: true },
-  { id: 'cur-006', code: 'TZS', name: 'Tanzanian Shilling', symbol: 'TSh', country: 'Tanzania', is_african: true, is_active: true, decimal_places: 2, exchange_rate_to_usd: 0.000390, last_updated: '2026-02-22', papss_enabled: true, cbdc_ready: false },
-  { id: 'cur-007', code: 'UGX', name: 'Ugandan Shilling', symbol: 'USh', country: 'Uganda', is_african: true, is_active: true, decimal_places: 0, exchange_rate_to_usd: 0.000268, last_updated: '2026-02-22', papss_enabled: true, cbdc_ready: false },
-  { id: 'cur-008', code: 'RWF', name: 'Rwandan Franc', symbol: 'FRw', country: 'Rwanda', is_african: true, is_active: true, decimal_places: 0, exchange_rate_to_usd: 0.000742, last_updated: '2026-02-22', papss_enabled: true, cbdc_ready: false },
-  { id: 'cur-009', code: 'ETB', name: 'Ethiopian Birr', symbol: 'Br', country: 'Ethiopia', is_african: true, is_active: true, decimal_places: 2, exchange_rate_to_usd: 0.00868, last_updated: '2026-02-22', papss_enabled: true, cbdc_ready: false },
-  { id: 'cur-010', code: 'XOF', name: 'West African CFA Franc', symbol: 'CFA', country: 'WAEMU', is_african: true, is_active: true, decimal_places: 0, exchange_rate_to_usd: 0.00166, last_updated: '2026-02-22', papss_enabled: true, cbdc_ready: true },
-  { id: 'cur-011', code: 'XAF', name: 'Central African CFA Franc', symbol: 'FCFA', country: 'CEMAC', is_african: true, is_active: true, decimal_places: 0, exchange_rate_to_usd: 0.00166, last_updated: '2026-02-22', papss_enabled: false, cbdc_ready: false },
-  { id: 'cur-012', code: 'USD', name: 'US Dollar', symbol: '$', country: 'United States', is_african: false, is_active: true, decimal_places: 2, exchange_rate_to_usd: 1.0, last_updated: '2026-02-22', papss_enabled: false, cbdc_ready: false },
-  { id: 'cur-013', code: 'EUR', name: 'Euro', symbol: '€', country: 'Eurozone', is_african: false, is_active: true, decimal_places: 2, exchange_rate_to_usd: 1.088, last_updated: '2026-02-22', papss_enabled: false, cbdc_ready: false },
-  { id: 'cur-014', code: 'MAD', name: 'Moroccan Dirham', symbol: 'MAD', country: 'Morocco', is_african: true, is_active: false, decimal_places: 2, exchange_rate_to_usd: 0.0989, last_updated: '2026-01-15', papss_enabled: false, cbdc_ready: false },
+  { id: 'cur-001', code: 'KES', name: 'Kenyan Shilling', symbol: 'KSh', country: 'Kenya', is_african: true, is_active: true, decimal_places: 2, exchange_rate_to_usd: 0.00775, last_updated: '2026-02-22', papss_enabled: true, stablecoins_ready: true },
+  { id: 'cur-002', code: 'NGN', name: 'Nigerian Naira', symbol: '₦', country: 'Nigeria', is_african: true, is_active: true, decimal_places: 2, exchange_rate_to_usd: 0.000627, last_updated: '2026-02-22', papss_enabled: true, stablecoins_ready: true },
+  { id: 'cur-003', code: 'ZAR', name: 'South African Rand', symbol: 'R', country: 'South Africa', is_african: true, is_active: true, decimal_places: 2, exchange_rate_to_usd: 0.0541, last_updated: '2026-02-22', papss_enabled: true, stablecoins_ready: false },
+  { id: 'cur-004', code: 'EGP', name: 'Egyptian Pound', symbol: 'E£', country: 'Egypt', is_african: true, is_active: true, decimal_places: 2, exchange_rate_to_usd: 0.0203, last_updated: '2026-02-22', papss_enabled: true, stablecoins_ready: false },
+  { id: 'cur-005', code: 'GHS', name: 'Ghanaian Cedi', symbol: 'GH₵', country: 'Ghana', is_african: true, is_active: true, decimal_places: 2, exchange_rate_to_usd: 0.0787, last_updated: '2026-02-22', papss_enabled: true, stablecoins_ready: true },
+  { id: 'cur-006', code: 'TZS', name: 'Tanzanian Shilling', symbol: 'TSh', country: 'Tanzania', is_african: true, is_active: true, decimal_places: 2, exchange_rate_to_usd: 0.000390, last_updated: '2026-02-22', papss_enabled: true, stablecoins_ready: false },
+  { id: 'cur-007', code: 'UGX', name: 'Ugandan Shilling', symbol: 'USh', country: 'Uganda', is_african: true, is_active: true, decimal_places: 0, exchange_rate_to_usd: 0.000268, last_updated: '2026-02-22', papss_enabled: true, stablecoins_ready: false },
+  { id: 'cur-008', code: 'RWF', name: 'Rwandan Franc', symbol: 'FRw', country: 'Rwanda', is_african: true, is_active: true, decimal_places: 0, exchange_rate_to_usd: 0.000742, last_updated: '2026-02-22', papss_enabled: true, stablecoins_ready: false },
+  { id: 'cur-009', code: 'ETB', name: 'Ethiopian Birr', symbol: 'Br', country: 'Ethiopia', is_african: true, is_active: true, decimal_places: 2, exchange_rate_to_usd: 0.00868, last_updated: '2026-02-22', papss_enabled: true, stablecoins_ready: false },
+  { id: 'cur-010', code: 'XOF', name: 'West African CFA Franc', symbol: 'CFA', country: 'WAEMU', is_african: true, is_active: true, decimal_places: 0, exchange_rate_to_usd: 0.00166, last_updated: '2026-02-22', papss_enabled: true, stablecoins_ready: true },
+  { id: 'cur-011', code: 'XAF', name: 'Central African CFA Franc', symbol: 'FCFA', country: 'CEMAC', is_african: true, is_active: true, decimal_places: 0, exchange_rate_to_usd: 0.00166, last_updated: '2026-02-22', papss_enabled: false, stablecoins_ready: false },
+  { id: 'cur-012', code: 'USD', name: 'US Dollar', symbol: '$', country: 'United States', is_african: false, is_active: true, decimal_places: 2, exchange_rate_to_usd: 1.0, last_updated: '2026-02-22', papss_enabled: false, stablecoins_ready: false },
+  { id: 'cur-013', code: 'EUR', name: 'Euro', symbol: '€', country: 'Eurozone', is_african: false, is_active: true, decimal_places: 2, exchange_rate_to_usd: 1.088, last_updated: '2026-02-22', papss_enabled: false, stablecoins_ready: false },
+  { id: 'cur-014', code: 'MAD', name: 'Moroccan Dirham', symbol: 'MAD', country: 'Morocco', is_african: true, is_active: false, decimal_places: 2, exchange_rate_to_usd: 0.0989, last_updated: '2026-01-15', papss_enabled: false, stablecoins_ready: false },
 ];
 
 // ─── Page ────────────────────────────────────────────────────────────────────
@@ -71,7 +71,7 @@ export default function CurrencyManagementPage() {
 
   const africanCount = MOCK_CURRENCIES.filter((c) => c.is_african).length;
   const papssCount = MOCK_CURRENCIES.filter((c) => c.papss_enabled).length;
-  const cbdcCount = MOCK_CURRENCIES.filter((c) => c.cbdc_ready).length;
+  const stablecoinsCount = MOCK_CURRENCIES.filter((c) => c.stablecoins_ready).length;
 
   return (
     <Box>
@@ -82,7 +82,7 @@ export default function CurrencyManagementPage() {
             <Typography variant="h4">Currency Management</Typography>
           </Box>
           <Typography sx={{ color: 'text.secondary' }}>
-            Manage supported currencies, PAPSS integration, and CBDC readiness.
+            Manage supported currencies, PAPSS integration, and Stable Coins readiness.
           </Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />}>
@@ -96,7 +96,7 @@ export default function CurrencyManagementPage() {
           { label: 'Total Currencies', value: MOCK_CURRENCIES.length.toString(), color: '#D4AF37' },
           { label: 'African Currencies', value: africanCount.toString(), color: '#22C55E' },
           { label: 'PAPSS Enabled', value: papssCount.toString(), color: '#3B82F6' },
-          { label: 'CBDC Ready', value: cbdcCount.toString(), color: '#8B5CF6' },
+          { label: 'Stable Coins Ready', value: stablecoinsCount.toString(), color: '#8B5CF6' },
         ].map((s) => (
           <Grid size={{ xs: 6, md: 3 }} key={s.label}>
             <Card sx={{ p: 2.5 }}>
@@ -128,7 +128,7 @@ export default function CurrencyManagementPage() {
             backgroundColor: 'rgba(212,175,55,0.03)',
           }}
         >
-          {['Code', 'Symbol', 'Currency', 'Country', 'USD Rate', 'Status', 'PAPSS', 'CBDC', ''].map((h) => (
+          {['Code', 'Symbol', 'Currency', 'Country', 'USD Rate', 'Status', 'PAPSS', 'Stable Coins', ''].map((h) => (
             <Typography key={h} sx={{ fontSize: 11, fontWeight: 600, color: '#777', textTransform: 'uppercase' }}>{h}</Typography>
           ))}
         </Box>
@@ -167,7 +167,7 @@ export default function CurrencyManagementPage() {
             ) : (
               <Cancel sx={{ fontSize: 16, color: '#333' }} />
             )}
-            {c.cbdc_ready ? (
+            {c.stablecoins_ready ? (
               <Chip label="Ready" size="small" sx={{ fontSize: 9, height: 18, backgroundColor: 'rgba(139,92,246,0.1)', color: '#8B5CF6' }} />
             ) : (
               <Typography sx={{ fontSize: 10, color: '#333' }}>—</Typography>

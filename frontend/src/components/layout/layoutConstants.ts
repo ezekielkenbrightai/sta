@@ -92,10 +92,10 @@ export const MODULES: ModuleDef[] = [
     defaultRoute: '/analytics/dashboard',
   },
   {
-    id: 'cbdc',
-    label: 'CBDC & Finance',
+    id: 'stablecoins',
+    label: 'Stable Coins & Finance',
     description: 'Digital Currency & Trade Finance',
-    defaultRoute: '/cbdc/dashboard',
+    defaultRoute: '/stablecoins/dashboard',
   },
   {
     id: 'compliance',
@@ -359,21 +359,21 @@ export const MODULE_NAV: Record<string, NavSection[]> = {
       ],
     },
   ],
-  cbdc: [
+  stablecoins: [
     {
-      label: 'CBDC Overview',
+      label: 'Stable Coins Overview',
       items: [
-        { to: '/cbdc/dashboard', label: 'CBDC Dashboard', icon: 'Dashboard' },
+        { to: '/stablecoins/dashboard', label: 'Stable Coins Dashboard', icon: 'Dashboard' },
       ],
     },
     {
       label: 'Digital Finance',
       collapsible: true,
       items: [
-        { to: '/cbdc/discounting', label: 'Dynamic Discounting', icon: 'Discount' },
-        { to: '/cbdc/invoice-finance', label: 'Invoice Financing', icon: 'Receipt' },
-        { to: '/cbdc/tokenization', label: 'Tokenization', icon: 'Token' },
-        { to: '/cbdc/p2p-lending', label: 'P2P Lending', icon: 'Handshake' },
+        { to: '/stablecoins/discounting', label: 'Dynamic Discounting', icon: 'Discount' },
+        { to: '/stablecoins/invoice-finance', label: 'Invoice Financing', icon: 'Receipt' },
+        { to: '/stablecoins/tokenization', label: 'Tokenization', icon: 'Token' },
+        { to: '/stablecoins/p2p-lending', label: 'P2P Lending', icon: 'Handshake' },
       ],
     },
   ],
@@ -515,16 +515,16 @@ export const DEFAULT_MODULE: Record<string, string> = {
 
 /** Which modules each role can access */
 export const ROLE_MODULES: Record<string, string[]> = {
-  super_admin: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'cbdc', 'afcfta', 'admin', 'compliance'],
-  govt_admin: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'cbdc', 'afcfta', 'compliance'],
+  super_admin: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'stablecoins', 'afcfta', 'admin', 'compliance'],
+  govt_admin: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'stablecoins', 'afcfta', 'compliance'],
   govt_analyst: ['trade', 'tax', 'analytics'],
   bank_officer: ['payments', 'ledger'],
-  trader: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'insurance', 'cbdc'],
+  trader: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'insurance', 'stablecoins'],
   logistics_officer: ['supply_chain'],
   customs_officer: ['trade', 'customs'],
   insurance_agent: ['insurance'],
   auditor: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'compliance'],
   compliance_officer: ['compliance', 'trade'],
   afcfta_admin: ['trade', 'tax', 'analytics', 'customs', 'afcfta'],
-  ps_trade: ['executive', 'trade', 'tax', 'payments', 'analytics', 'customs', 'supply_chain', 'compliance', 'cbdc'],
+  ps_trade: ['executive', 'trade', 'tax', 'payments', 'analytics', 'customs', 'supply_chain', 'compliance', 'stablecoins'],
 };

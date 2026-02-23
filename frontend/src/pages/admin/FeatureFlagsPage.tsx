@@ -40,7 +40,7 @@ interface FeatureFlag {
 
 const FEATURE_FLAGS: FeatureFlag[] = [
   {
-    id: 'ff1', name: 'cbdc_payments_enabled', description: 'Enable CBDC payment processing and digital currency settlement',
+    id: 'ff1', name: 'stablecoins_payments_enabled', description: 'Enable Stable Coins payment processing and digital currency settlement',
     enabled: false, environments: { dev: true, staging: true, prod: false }, rolloutPercentage: 0,
     lastChanged: '2026-02-18', changedBy: 'admin@sta.africa', category: 'experimental',
   },

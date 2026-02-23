@@ -70,7 +70,7 @@ const KPIS: AdminKPI[] = [
 const RECENT_ACTIONS: AdminAction[] = [
   { id: 'a1', action: 'User suspended', actor: 'admin@sta.africa', target: 'john.doe@company.ke', timestamp: '3m ago', severity: 'warning' },
   { id: 'a2', action: 'Organization approved', actor: 'admin@sta.africa', target: 'Mombasa Exports Ltd', timestamp: '18m ago', severity: 'info' },
-  { id: 'a3', action: 'Feature flag toggled', actor: 'admin@sta.africa', target: 'cbdc_payments_enabled', timestamp: '42m ago', severity: 'info' },
+  { id: 'a3', action: 'Feature flag toggled', actor: 'admin@sta.africa', target: 'stablecoins_payments_enabled', timestamp: '42m ago', severity: 'info' },
   { id: 'a4', action: 'Country added', actor: 'admin@sta.africa', target: 'South Sudan', timestamp: '1h ago', severity: 'info' },
   { id: 'a5', action: 'API key revoked', actor: 'admin@sta.africa', target: 'KRA Integration Key', timestamp: '2h ago', severity: 'critical' },
   { id: 'a6', action: 'User role changed', actor: 'govt@kra.go.ke', target: 'analyst@kra.go.ke (govt_analyst -> govt_admin)', timestamp: '3h ago', severity: 'warning' },

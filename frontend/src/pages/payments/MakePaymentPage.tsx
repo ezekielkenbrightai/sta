@@ -41,7 +41,7 @@ const PAYMENT_METHODS = [
   { value: 'bank_transfer', label: 'Bank Transfer (RTGS/EFT)', description: '1-2 business days' },
   { value: 'mobile_money', label: 'Mobile Money (M-Pesa)', description: 'Instant settlement' },
   { value: 'card', label: 'Visa / Mastercard', description: 'Instant processing' },
-  { value: 'cbdc', label: 'CBDC (Digital KES)', description: 'Instant atomic settlement' },
+  { value: 'stablecoins', label: 'Stable Coins (Digital KES)', description: 'Instant atomic settlement' },
 ];
 
 const STEPS = ['Select Assessment', 'Payment Details', 'Confirm & Pay'];
@@ -177,11 +177,11 @@ export default function MakePaymentPage() {
                   </Grid>
                 </Box>
               )}
-              {paymentMethod === 'cbdc' && (
+              {paymentMethod === 'stablecoins' && (
                 <Box sx={{ p: 2, borderRadius: 1, backgroundColor: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)' }}>
-                  <Typography sx={{ fontSize: 13, color: '#8B5CF6', fontWeight: 600, mb: 0.5 }}>CBDC Payment</Typography>
+                  <Typography sx={{ fontSize: 13, color: '#8B5CF6', fontWeight: 600, mb: 0.5 }}>Stable Coins Payment</Typography>
                   <Typography sx={{ fontSize: 12, color: '#b0b0b0' }}>
-                    Payment will be settled atomically via the Central Bank Digital Currency network.
+                    Payment will be settled atomically via the Stable Coins network.
                     Funds will be deducted from your Digital KES wallet instantly.
                   </Typography>
                 </Box>

@@ -11,7 +11,7 @@ const PATH_TO_MODULE: Record<string, string> = {
   '/customs': 'customs',
   '/insurance': 'insurance',
   '/analytics': 'analytics',
-  '/cbdc': 'cbdc',
+  '/stablecoins': 'stablecoins',
   '/afcfta': 'afcfta',
   '/admin': 'admin',
   '/executive': 'executive',

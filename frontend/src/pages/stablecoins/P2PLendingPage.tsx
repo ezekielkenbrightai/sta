@@ -128,7 +128,7 @@ export default function P2PLendingPage() {
           <Typography variant="h4">Peer-to-Peer Lending</Typography>
         </Box>
         <Typography sx={{ color: 'text.secondary' }}>
-          Decentralized lending marketplace connecting African SME borrowers with institutional and retail lenders via CBDC settlement.
+          Decentralized lending marketplace connecting African SME borrowers with institutional and retail lenders via Stable Coins settlement.
         </Typography>
       </Box>
 

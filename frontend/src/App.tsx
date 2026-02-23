@@ -88,12 +88,12 @@ const TradeDocumentReviewPage = lazy(() => import('./pages/compliance/TradeDocum
 // Profile page
 const ProfilePage = lazy(() => import('./pages/profile/ProfilePage'));
 
-// CBDC & Future Finance pages (Phase 9)
-const CBDCDashboardPage = lazy(() => import('./pages/cbdc/CBDCDashboardPage'));
-const DiscountingPage = lazy(() => import('./pages/cbdc/DiscountingPage'));
-const InvoiceFinancePage = lazy(() => import('./pages/cbdc/InvoiceFinancePage'));
-const TokenizationPage = lazy(() => import('./pages/cbdc/TokenizationPage'));
-const P2PLendingPage = lazy(() => import('./pages/cbdc/P2PLendingPage'));
+// Stable Coins & Future Finance pages (Phase 9)
+const StableCoinsDashboardPage = lazy(() => import('./pages/stablecoins/StableCoinsDashboardPage'));
+const DiscountingPage = lazy(() => import('./pages/stablecoins/DiscountingPage'));
+const InvoiceFinancePage = lazy(() => import('./pages/stablecoins/InvoiceFinancePage'));
+const TokenizationPage = lazy(() => import('./pages/stablecoins/TokenizationPage'));
+const P2PLendingPage = lazy(() => import('./pages/stablecoins/P2PLendingPage'));
 
 // AfCFTA Monitor pages
 const AfCFTADashboardPage = lazy(() => import('./pages/afcfta/AfCFTADashboardPage'));
@@ -317,12 +317,12 @@ export default function App() {
                 <Route path="/compliance/trade-review" element={<P roles={COMPLIANCE}><TradeDocumentReviewPage /></P>} />
                 <Route path="/compliance/reports" element={<P roles={COMPLIANCE}><ComplianceReportsPage /></P>} />
 
-                {/* ── CBDC & Future Finance ──────────────────────────── */}
-                <Route path="/cbdc/dashboard" element={<P><CBDCDashboardPage /></P>} />
-                <Route path="/cbdc/discounting" element={<P><DiscountingPage /></P>} />
-                <Route path="/cbdc/invoice-finance" element={<P><InvoiceFinancePage /></P>} />
-                <Route path="/cbdc/tokenization" element={<P><TokenizationPage /></P>} />
-                <Route path="/cbdc/p2p-lending" element={<P><P2PLendingPage /></P>} />
+                {/* ── Stable Coins & Future Finance ────────────────── */}
+                <Route path="/stablecoins/dashboard" element={<P><StableCoinsDashboardPage /></P>} />
+                <Route path="/stablecoins/discounting" element={<P><DiscountingPage /></P>} />
+                <Route path="/stablecoins/invoice-finance" element={<P><InvoiceFinancePage /></P>} />
+                <Route path="/stablecoins/tokenization" element={<P><TokenizationPage /></P>} />
+                <Route path="/stablecoins/p2p-lending" element={<P><P2PLendingPage /></P>} />
 
                 {/* ── AfCFTA Monitor ────────────────────────────────── */}
                 <Route path="/afcfta/dashboard" element={<P roles={AFCFTA}><AfCFTADashboardPage /></P>} />

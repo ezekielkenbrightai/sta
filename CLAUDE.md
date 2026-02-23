@@ -1,7 +1,7 @@
 # Smart Trade Africa (STA) — Project Conventions
 
 ## Overview
-STA is a digital trade platform for Africa. It integrates tax collection, payment processing, automated ledgers, cross-FX settlement, blockchain security, supply chain tracking, and CBDC-ready trade finance.
+STA is a digital trade platform for Africa. It integrates tax collection, payment processing, automated ledgers, cross-FX settlement, blockchain security, supply chain tracking, and Stable Coins-ready trade finance.
 
 ## Tech Stack
 - **Frontend**: React 19.2 + TypeScript 5.9 + Vite 7 + MUI 7 + Zustand 5 + React Query 5 + Recharts 3 + React Router 7
@@ -91,17 +91,17 @@ sta.com/
 | Role | Modules |
 |------|---------|
 | super_admin | All modules |
-| govt_admin | trade, tax, payments, ledger, supply_chain, customs, insurance, analytics, cbdc, afcfta, compliance |
+| govt_admin | trade, tax, payments, ledger, supply_chain, customs, insurance, analytics, stablecoins, afcfta, compliance |
 | govt_analyst | trade, tax, analytics |
 | bank_officer | payments, ledger |
-| trader | trade, tax, payments, ledger, supply_chain, insurance, cbdc |
+| trader | trade, tax, payments, ledger, supply_chain, insurance, stablecoins |
 | logistics_officer | supply_chain |
 | customs_officer | trade, customs |
 | insurance_agent | insurance |
 | auditor | trade, tax, payments, ledger, supply_chain, customs, insurance, analytics, compliance |
 | compliance_officer | compliance, trade |
 | afcfta_admin | trade, tax, analytics, customs, afcfta |
-| ps_trade | executive, trade, tax, payments, analytics, customs, supply_chain, compliance, cbdc |
+| ps_trade | executive, trade, tax, payments, analytics, customs, supply_chain, compliance, stablecoins |
 
 Route guard role arrays (App.tsx):
 - `ADMIN` = super_admin, govt_admin
@@ -260,7 +260,7 @@ Route guard role arrays (App.tsx):
 | Customs & Port Management | 4 | `pages/customs/` |
 | Insurance | 5 | `pages/insurance/` |
 | Analytics & Government | 10 | `pages/analytics/` |
-| CBDC & Future Finance | 5 | `pages/cbdc/` |
+| Stable Coins & Future Finance | 5 | `pages/stablecoins/` |
 | Compliance & KYC | 8 | `pages/compliance/` |
 | AfCFTA Hub | 8 | `pages/afcfta/` |
 | Executive (PS Trade) | 6 | `pages/executive/` |
@@ -284,7 +284,7 @@ All pages use mock data with realistic African trade scenarios (Africa-to-Africa
 - Real dashboard data (currently mock/hardcoded on each page)
 - Search/filter/pagination on list pages (UI exists, not wired to backend)
 - i18n translations (minimal — i18next setup exists for en/sw/fr)
-- CBDC/blockchain integration (simulated with mock data)
+- Stable Coins/blockchain integration (simulated with mock data)
 - Audit trail population
 - PDF/CSV export functionality (UI exists, not wired)
 - Landing page → app integration

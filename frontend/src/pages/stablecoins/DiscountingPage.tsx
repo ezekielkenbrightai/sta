@@ -38,7 +38,7 @@ interface InvoiceQueueItem {
 
 interface RateComparison {
   term: string;
-  cbdcRate: number;
+  stableCoinsRate: number;
   traditionalRate: number;
   saving: number;
 }
@@ -72,11 +72,11 @@ const INVOICE_QUEUE: InvoiceQueueItem[] = [
 ];
 
 const RATE_COMPARISONS: RateComparison[] = [
-  { term: '30 days', cbdcRate: 4.2, traditionalRate: 8.5, saving: 4.3 },
-  { term: '60 days', cbdcRate: 5.8, traditionalRate: 11.2, saving: 5.4 },
-  { term: '90 days', cbdcRate: 6.5, traditionalRate: 13.8, saving: 7.3 },
-  { term: '120 days', cbdcRate: 7.4, traditionalRate: 15.5, saving: 8.1 },
-  { term: '180 days', cbdcRate: 8.9, traditionalRate: 18.0, saving: 9.1 },
+  { term: '30 days', stableCoinsRate: 4.2, traditionalRate: 8.5, saving: 4.3 },
+  { term: '60 days', stableCoinsRate: 5.8, traditionalRate: 11.2, saving: 5.4 },
+  { term: '90 days', stableCoinsRate: 6.5, traditionalRate: 13.8, saving: 7.3 },
+  { term: '120 days', stableCoinsRate: 7.4, traditionalRate: 15.5, saving: 8.1 },
+  { term: '180 days', stableCoinsRate: 8.9, traditionalRate: 18.0, saving: 9.1 },
 ];
 
 const TOP_COUNTERPARTIES: Counterparty[] = [
@@ -113,7 +113,7 @@ export default function DiscountingPage() {
           <Typography variant="h4">Invoice Discounting</Typography>
         </Box>
         <Typography sx={{ color: 'text.secondary' }}>
-          CBDC-powered invoice discounting with instant settlement and lower rates across East African trade corridors.
+          Stable Coins-powered invoice discounting with instant settlement and lower rates across East African trade corridors.
         </Typography>
       </Box>
 
@@ -184,20 +184,20 @@ export default function DiscountingPage() {
             <Card sx={{ p: 2.5 }}>
               <Typography sx={{ fontSize: 14, fontWeight: 600, color: '#f0f0f0', mb: 2 }}>
                 <CompareArrows sx={{ fontSize: 16, verticalAlign: 'middle', mr: 0.5, color: '#D4AF37' }} />
-                CBDC vs Traditional Factoring Rates
+                Stable Coins vs Traditional Factoring Rates
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                 {/* Header */}
                 <Box sx={{ display: 'flex', alignItems: 'center', pb: 1, borderBottom: '1px solid rgba(212,175,55,0.08)' }}>
                   <Typography sx={{ fontSize: 10, color: '#555', width: 60, textTransform: 'uppercase' }}>Term</Typography>
-                  <Typography sx={{ fontSize: 10, color: '#555', flex: 1, textAlign: 'center', textTransform: 'uppercase' }}>CBDC Rate</Typography>
+                  <Typography sx={{ fontSize: 10, color: '#555', flex: 1, textAlign: 'center', textTransform: 'uppercase' }}>Stable Coins Rate</Typography>
                   <Typography sx={{ fontSize: 10, color: '#555', flex: 1, textAlign: 'center', textTransform: 'uppercase' }}>Traditional</Typography>
                   <Typography sx={{ fontSize: 10, color: '#555', width: 60, textAlign: 'right', textTransform: 'uppercase' }}>Saving</Typography>
                 </Box>
                 {RATE_COMPARISONS.map((r) => (
                   <Box key={r.term} sx={{ display: 'flex', alignItems: 'center', py: 0.75 }}>
                     <Typography sx={{ fontSize: 12, color: '#b0b0b0', width: 60 }}>{r.term}</Typography>
-                    <Typography sx={{ fontSize: 12, color: '#22C55E', flex: 1, textAlign: 'center', fontWeight: 600, fontFamily: 'monospace' }}>{r.cbdcRate}%</Typography>
+                    <Typography sx={{ fontSize: 12, color: '#22C55E', flex: 1, textAlign: 'center', fontWeight: 600, fontFamily: 'monospace' }}>{r.stableCoinsRate}%</Typography>
                     <Typography sx={{ fontSize: 12, color: '#EF4444', flex: 1, textAlign: 'center', fontFamily: 'monospace' }}>{r.traditionalRate}%</Typography>
                     <Typography sx={{ fontSize: 12, color: '#D4AF37', width: 60, textAlign: 'right', fontWeight: 600, fontFamily: 'monospace' }}>-{r.saving}%</Typography>
                   </Box>
