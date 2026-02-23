@@ -39,20 +39,23 @@ sta.com/
 │   │   ├── main.tsx         # React 19 entry point
 │   │   ├── api/             # client.ts (Axios), endpoints.ts
 │   │   ├── components/layout/ # AppLayout, ProtectedRoute, Sidebar, TopNav
-│   │   ├── pages/           # 92 pages across 14 modules
+│   │   ├── pages/           # 99 pages across 16 modules
 │   │   ├── stores/          # authStore.ts, appStore.ts (Zustand)
 │   │   ├── theme/           # theme.ts (MUI black/gold)
 │   │   ├── types/           # index.ts (all TypeScript interfaces)
 │   │   ├── i18n/            # i18next setup (en/sw/fr)
 │   │   ├── hooks/           # (empty)
 │   │   ├── utils/           # (empty)
-│   │   └── constants/       # (empty)
+│   │   ├── constants/       # africaMapPaths.ts (SVG country paths)
+│   │   └── pages/explore/   # Intra-African Trade Explorer (public, no auth)
 │   ├── .env                 # VITE_API_URL, VITE_MOCK_AUTH (gitignored, local dev only)
 │   ├── .env.production      # VITE_API_URL, VITE_MOCK_AUTH (tracked in git, used by Railway)
 │   ├── package.json
 │   └── vite.config.ts
 ├── landing/                  # Static landing page
 │   └── index.html           # Black/gold hero page
+├── docs/                     # Research & documentation
+│   └── intra-african-trade-data.md  # Trade data sources, bilateral flows, RECs
 ├── docker-compose.yml        # PostgreSQL 16, Redis 7, backend, frontend
 └── CLAUDE.md
 ```
@@ -72,6 +75,7 @@ sta.com/
 ## Architecture Patterns
 - Lazy-loaded routes with `React.lazy()` + `Suspense` (code splitting)
 - `ProtectedRoute` wrapper with role-based guards
+- Public routes (no auth): `/login`, `/explore` — rendered outside `AppLayout`
 - Schema-per-tenant PostgreSQL isolation (planned)
 - Zustand for client state (auth, app UI), React Query for server state (5min staleTime)
 - JWT auth with access tokens (60min expiry), stored in localStorage
@@ -79,6 +83,8 @@ sta.com/
 - Mock auth mode: `VITE_MOCK_AUTH=true` with 12 predefined dev users (all roles)
 - MUI DataGrid for tabular data
 - Recharts for visualizations
+- Inline SVG maps with no external dependencies (see `/explore` page)
+- IntersectionObserver-based scroll-reveal animations
 - i18next for en/sw/fr translations
 
 ## User Roles & Access
@@ -233,14 +239,19 @@ Route guard role arrays (App.tsx):
 16. **Worktree merge conflicts**: When developing on a worktree branch and merging to main, parallel commits on main (e.g., from another worktree) cause conflicts. Always `git pull origin main --no-edit` before pushing main, and resolve conflicts by keeping both sides (ours + theirs) since they're usually additive features.
 17. **Executive module palette convention**: The `pages/executive/` module uses a distinct deep-navy palette (`#0B1426` / `#0F1D35`) instead of the standard `#0a0a0a` / `#111111` black theme. This is intentional to create visual authority for government executive users. Future authority-level modules can follow this pattern with their own distinct palettes.
 18. **Adding a new role checklist**: When adding a new user role, update ALL of these in order: (1) `DEV_USERS` in authStore.ts, (2) `ROLE_MODULES` in layoutConstants.ts, (3) `DEFAULT_MODULE` in layoutConstants.ts, (4) `MODULE_NAV` for the new module, (5) `defaultLandingPage()` in ProtectedRoute.tsx, (6) route role array const in App.tsx, (7) `<Route>` definitions in App.tsx, (8) `PATH_TO_MODULE` in appStore.ts if new path prefix, (9) `DEMO_ACCOUNTS` in LoginPage.tsx, (10) `MODULES` array in layoutConstants.ts if new module.
+19. **Recharts Tooltip dark theme visibility**: When using Recharts on a dark background, the default Tooltip text is black and invisible. Always add `itemStyle={{ color: '#f0f0f0' }}` and `labelStyle={{ color: '#D4AF37', fontWeight: 600 }}` alongside `contentStyle` for dark-themed charts.
+20. **Inline SVG maps over mapping libraries**: For clickable country maps, use inline SVG `<path>` elements instead of Leaflet/Mapbox/D3. This avoids heavy dependencies, works with React state natively, and keeps the bundle small (~17 kB gzipped for 54 African countries). Source: flekschas/simple-world-map (MIT License) for Natural Earth 110m simplified paths.
+21. **SVG animated arcs for trade flows**: Use SVG quadratic bezier curves (`Q` path command) with `stroke-dasharray` + `<animate attributeName="stroke-dashoffset">` for flowing trade arc animations. No JS animation libraries needed — pure SVG + CSS.
 
 ## Research Documents
 - **PS Trade mandate & global benchmarks**: [`docs/ps-trade-research.md`](docs/ps-trade-research.md) — Comprehensive research on PS Trade responsibilities, KPIs, global trade ministry digital systems (Singapore TradeNet, UK DBT, US Commerce, EU DG Trade), African regional context, and authority-level dashboard features.
+- **Intra-African trade data & sources**: [`docs/intra-african-trade-data.md`](docs/intra-african-trade-data.md) — UN COMTRADE, Afreximbank, Trade Map (ITC), WITS data: bilateral flows (65+ country pairs), annual trends, top exporters, RECs, product categories, corridors.
 
-## Frontend Pages (98 total across 15 modules)
+## Frontend Pages (100 total across 16 modules)
 | Module | Pages | Directory |
 |--------|-------|-----------|
 | Core (Dashboard, Login, Landing) | 3 | `pages/` |
+| **Explore (Intra-African Trade Map)** | **1** | **`pages/explore/`** |
 | Trade Documents & Registry | 9 | `pages/trade/` |
 | Tax Engine & Administration | 7 | `pages/tax/` |
 | Payments & Settlement + Bank | 11 | `pages/payments/` |
@@ -303,6 +314,21 @@ All pages use mock data with realistic African trade scenarios (Africa-to-Africa
 - Demo account chips (visible when `VITE_MOCK_AUTH=true`) — click to auto-fill email + password
 - `initForRole(role)` on login sets the correct default module for the user's role
 
+### Explore Page — Intra-African Trade Map (`/explore`)
+- **Public route** (no auth, no AppLayout) — lazy-loaded via `React.lazy()`
+- **Data sources**: UN COMTRADE, Afreximbank, Trade Map (ITC), WITS — see [`docs/intra-african-trade-data.md`](docs/intra-african-trade-data.md)
+- **Components** (`pages/explore/components/`):
+  - `AfricaMap.tsx` — Inline SVG with 54 clickable country `<path>` elements; paths in `constants/africaMapPaths.ts`
+  - `TradeFlowArcs.tsx` — Animated SVG bezier arcs from selected country to trading partners
+  - `CountryDetailPanel.tsx` — Flag, REC chips, exports/imports, top 5 partners, trade balance, products
+  - `TradeGrowthChart.tsx` — Recharts AreaChart: 2016-2024 intra-African trade trend ($130B → $220B)
+  - `TopExportersChart.tsx` — Recharts horizontal BarChart: top 10 intra-African exporters
+  - `StatCard.tsx` — Reusable glassmorphic KPI card
+- **Data layer** (`pages/explore/data/`):
+  - `tradeData.ts` — 65+ bilateral flows, annual trends, top exporters, 7 RECs, product categories, corridors
+  - `countryMetadata.ts` — 54 countries with ISO codes, flag emojis, SVG centroids, REC memberships
+- **Key patterns**: IntersectionObserver scroll-reveal (`useReveal` hook), clickable trade corridors auto-select origin country, map responsive resize
+
 ### Executive Module (pages/executive/)
 - Uses a distinct deep-navy color palette (`EX` object) — NOT the standard MUI theme colors
 - Each page overrides layout padding with `mx: -3, mt: -3, mb: -3` to fill the full viewport
@@ -311,3 +337,7 @@ All pages use mock data with realistic African trade scenarios (Africa-to-Africa
 - "Classified — For Official Use Only" footer on every page
 - All Recharts tooltips use consistent navy/gold styling
 - `LIVE` indicator with CSS pulse animation
+
+## Related Documents
+- [`MEMORY.md`](MEMORY.md) — Session learnings, technical decisions, patterns, and bugs found
+- [`docs/intra-african-trade-data.md`](docs/intra-african-trade-data.md) — Intra-African trade research data, sources, and URLs
