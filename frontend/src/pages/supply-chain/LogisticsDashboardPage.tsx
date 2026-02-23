@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   Box,
   Card,
@@ -12,12 +13,14 @@ import {
   Speed,
   Timer,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
 interface FleetVehicle {
   id: string;
   plate: string;
+  operator: string;
   type: 'truck' | 'van' | 'container';
   driver: string;
   route: string;
@@ -26,12 +29,12 @@ interface FleetVehicle {
 }
 
 const FLEET: FleetVehicle[] = [
-  { id: 'v-001', plate: 'KBZ 421M', type: 'truck', driver: 'James Otieno', route: 'Mombasa → Nairobi', status: 'en_route', load_pct: 92 },
-  { id: 'v-002', plate: 'KCA 183L', type: 'container', driver: 'Peter Kamau', route: 'Nairobi → Namanga', status: 'en_route', load_pct: 100 },
-  { id: 'v-003', plate: 'KBR 770P', type: 'van', driver: 'Mary Wanjiku', route: 'Nairobi Local', status: 'loading', load_pct: 45 },
-  { id: 'v-004', plate: 'KDH 552S', type: 'truck', driver: 'David Maina', route: 'Mombasa → Naivasha', status: 'en_route', load_pct: 78 },
-  { id: 'v-005', plate: 'KAZ 901K', type: 'truck', driver: 'Grace Njeri', route: 'ICD Embakasi', status: 'idle', load_pct: 0 },
-  { id: 'v-006', plate: 'KBC 342N', type: 'container', driver: '—', route: '—', status: 'maintenance', load_pct: 0 },
+  { id: 'v-001', plate: 'KBZ 421M', operator: 'Bolloré Logistics Kenya', type: 'truck', driver: 'James Otieno', route: 'Mombasa → Nairobi', status: 'en_route', load_pct: 92 },
+  { id: 'v-002', plate: 'KCA 183L', operator: 'Bolloré Logistics Kenya', type: 'container', driver: 'Peter Kamau', route: 'Nairobi → Namanga', status: 'en_route', load_pct: 100 },
+  { id: 'v-003', plate: 'KBR 770P', operator: 'Bolloré Logistics Kenya', type: 'van', driver: 'Mary Wanjiku', route: 'Nairobi Local', status: 'loading', load_pct: 45 },
+  { id: 'v-004', plate: 'KDH 552S', operator: 'SDV Transami', type: 'truck', driver: 'David Maina', route: 'Mombasa → Naivasha', status: 'en_route', load_pct: 78 },
+  { id: 'v-005', plate: 'KAZ 901K', operator: 'SDV Transami', type: 'truck', driver: 'Grace Njeri', route: 'ICD Embakasi', status: 'idle', load_pct: 0 },
+  { id: 'v-006', plate: 'KBC 342N', operator: 'Bolloré Logistics Kenya', type: 'container', driver: '—', route: '—', status: 'maintenance', load_pct: 0 },
 ];
 
 interface KPI {
@@ -59,7 +62,14 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function LogisticsDashboardPage() {
-  const enRoute = FLEET.filter((v) => v.status === 'en_route').length;
+  const { filterByOrgName } = useDataIsolation();
+
+  const fleet = useMemo(
+    () => filterByOrgName(FLEET, 'operator'),
+    [filterByOrgName],
+  );
+
+  const enRoute = fleet.filter((v) => v.status === 'en_route').length;
 
   return (
     <Box>
@@ -76,7 +86,7 @@ export default function LogisticsDashboardPage() {
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Fleet Size', value: FLEET.length.toString(), color: '#D4AF37', icon: <LocalShipping sx={{ fontSize: 18, color: '#D4AF37' }} /> },
+          { label: 'Fleet Size', value: fleet.length.toString(), color: '#D4AF37', icon: <LocalShipping sx={{ fontSize: 18, color: '#D4AF37' }} /> },
           { label: 'En Route', value: enRoute.toString(), color: '#3B82F6', icon: <Speed sx={{ fontSize: 18, color: '#3B82F6' }} /> },
           { label: 'Avg Delivery Time', value: '8.2h', color: '#22C55E', icon: <Timer sx={{ fontSize: 18, color: '#22C55E' }} /> },
           { label: 'Today Deliveries', value: '14', color: '#8B5CF6' },
@@ -121,7 +131,7 @@ export default function LogisticsDashboardPage() {
         <Grid size={{ xs: 12, md: 7 }}>
           <Card sx={{ p: 2.5, height: '100%' }}>
             <Typography sx={{ fontSize: 14, fontWeight: 600, color: '#f0f0f0', mb: 2 }}>Fleet Status</Typography>
-            {FLEET.map((v) => {
+            {fleet.map((v) => {
               const sts = STATUS_CONFIG[v.status];
               return (
                 <Box key={v.id} sx={{ mb: 2, pb: 1.5, borderBottom: '1px solid rgba(212,175,55,0.05)' }}>

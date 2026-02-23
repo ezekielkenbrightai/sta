@@ -17,6 +17,7 @@ import {
   ExpandMore,
   ExpandLess,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -32,6 +33,7 @@ interface JournalEntry {
   reference: string;
   date: string;
   description: string;
+  org_name: string;
   source_type: 'trade_document' | 'tax_assessment' | 'payment' | 'fx_settlement' | 'manual';
   source_ref: string;
   lines: JournalLine[];
@@ -43,7 +45,7 @@ interface JournalEntry {
 const MOCK_JOURNALS: JournalEntry[] = [
   {
     id: 'jnl-001', reference: 'JNL-2026-04821', date: '2026-02-22', description: 'Import duty assessment — KE-2026-0042',
-    source_type: 'tax_assessment', source_ref: 'ASM-2026-0415', status: 'posted', created_by: 'System', approved_by: 'Jane Mwangi',
+    org_name: 'Nairobi Exports Ltd', source_type: 'tax_assessment', source_ref: 'ASM-2026-0415', status: 'posted', created_by: 'System', approved_by: 'Jane Mwangi',
     lines: [
       { account_code: '1100', account_name: 'Trade Receivables', debit: 485000, credit: 0 },
       { account_code: '4100', account_name: 'Customs Duty Revenue', debit: 0, credit: 350000 },
@@ -52,7 +54,7 @@ const MOCK_JOURNALS: JournalEntry[] = [
   },
   {
     id: 'jnl-002', reference: 'JNL-2026-04820', date: '2026-02-22', description: 'Payment received — Nairobi Exports Ltd',
-    source_type: 'payment', source_ref: 'PAY-2026-0188', status: 'posted', created_by: 'System', approved_by: null,
+    org_name: 'Nairobi Exports Ltd', source_type: 'payment', source_ref: 'PAY-2026-0188', status: 'posted', created_by: 'System', approved_by: null,
     lines: [
       { account_code: '1200', account_name: 'Cash & Bank', debit: 48500, credit: 0 },
       { account_code: '1100', account_name: 'Trade Receivables', debit: 0, credit: 48500 },
@@ -60,7 +62,7 @@ const MOCK_JOURNALS: JournalEntry[] = [
   },
   {
     id: 'jnl-003', reference: 'JNL-2026-04819', date: '2026-02-22', description: 'FX settlement KES to NGN via PAPSS',
-    source_type: 'fx_settlement', source_ref: 'FX-2026-0892', status: 'posted', created_by: 'System', approved_by: 'David Otieno',
+    org_name: 'KCB Bank', source_type: 'fx_settlement', source_ref: 'FX-2026-0892', status: 'posted', created_by: 'System', approved_by: 'David Otieno',
     lines: [
       { account_code: '1210', account_name: 'Bank — NGN Nostro', debit: 1250000, credit: 0 },
       { account_code: '1200', account_name: 'Cash & Bank (KES)', debit: 0, credit: 1247500 },
@@ -70,7 +72,7 @@ const MOCK_JOURNALS: JournalEntry[] = [
   },
   {
     id: 'jnl-004', reference: 'JNL-2026-04818', date: '2026-02-22', description: 'Export declaration — Tanzania bound cargo',
-    source_type: 'trade_document', source_ref: 'TZ-2026-0018', status: 'pending', created_by: 'System', approved_by: null,
+    org_name: 'Nairobi Exports Ltd', source_type: 'trade_document', source_ref: 'TZ-2026-0018', status: 'pending', created_by: 'System', approved_by: null,
     lines: [
       { account_code: '1300', account_name: 'Export Receivables', debit: 320000, credit: 0 },
       { account_code: '4400', account_name: 'Export Processing Revenue', debit: 0, credit: 320000 },
@@ -78,7 +80,7 @@ const MOCK_JOURNALS: JournalEntry[] = [
   },
   {
     id: 'jnl-005', reference: 'JNL-2026-04817', date: '2026-02-21', description: 'Manual reclassification — Account 4200 correction',
-    source_type: 'manual', source_ref: 'ADJ-2026-0041', status: 'posted', created_by: 'Jane Mwangi', approved_by: 'David Otieno',
+    org_name: 'KCB Bank', source_type: 'manual', source_ref: 'ADJ-2026-0041', status: 'posted', created_by: 'Jane Mwangi', approved_by: 'David Otieno',
     lines: [
       { account_code: '4200', account_name: 'VAT Revenue', debit: 150000, credit: 0 },
       { account_code: '4210', account_name: 'VAT Revenue — Corrected', debit: 0, credit: 150000 },
@@ -86,7 +88,7 @@ const MOCK_JOURNALS: JournalEntry[] = [
   },
   {
     id: 'jnl-006', reference: 'JNL-2026-04816', date: '2026-02-21', description: 'VAT reversal — Assessment ASM-2026-0412',
-    source_type: 'tax_assessment', source_ref: 'ASM-2026-0412', status: 'reversed', created_by: 'System', approved_by: 'Jane Mwangi',
+    org_name: 'Lagos Trading Co', source_type: 'tax_assessment', source_ref: 'ASM-2026-0412', status: 'reversed', created_by: 'System', approved_by: 'Jane Mwangi',
     lines: [
       { account_code: '4200', account_name: 'VAT Revenue', debit: 92000, credit: 0 },
       { account_code: '1100', account_name: 'Trade Receivables', debit: 0, credit: 92000 },
@@ -94,7 +96,7 @@ const MOCK_JOURNALS: JournalEntry[] = [
   },
   {
     id: 'jnl-007', reference: 'JNL-2026-04815', date: '2026-02-21', description: 'Excise duty — Fuel import consignment',
-    source_type: 'tax_assessment', source_ref: 'ASM-2026-0410', status: 'posted', created_by: 'System', approved_by: null,
+    org_name: 'KCB Bank', source_type: 'tax_assessment', source_ref: 'ASM-2026-0410', status: 'posted', created_by: 'System', approved_by: null,
     lines: [
       { account_code: '1100', account_name: 'Trade Receivables', debit: 875000, credit: 0 },
       { account_code: '4100', account_name: 'Customs Duty Revenue', debit: 0, credit: 500000 },
@@ -121,13 +123,20 @@ const SOURCE_CONFIG: Record<string, { label: string; color: string }> = {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function JournalEntriesPage() {
+  const { filterByOrgName } = useDataIsolation();
+
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [sourceFilter, setSourceFilter] = useState('all');
   const [expanded, setExpanded] = useState<string | null>(null);
 
+  const baseJournals = useMemo(
+    () => filterByOrgName(MOCK_JOURNALS, 'org_name'),
+    [filterByOrgName],
+  );
+
   const filtered = useMemo(() => {
-    return MOCK_JOURNALS.filter((j) => {
+    return baseJournals.filter((j) => {
       if (statusFilter !== 'all' && j.status !== statusFilter) return false;
       if (sourceFilter !== 'all' && j.source_type !== sourceFilter) return false;
       if (search) {
@@ -136,10 +145,10 @@ export default function JournalEntriesPage() {
       }
       return true;
     });
-  }, [search, statusFilter, sourceFilter]);
+  }, [baseJournals, search, statusFilter, sourceFilter]);
 
-  const totalDebits = useMemo(() => MOCK_JOURNALS.reduce((s, j) => s + j.lines.reduce((a, l) => a + l.debit, 0), 0), []);
-  const postedCount = MOCK_JOURNALS.filter((j) => j.status === 'posted').length;
+  const totalDebits = useMemo(() => baseJournals.reduce((s, j) => s + j.lines.reduce((a, l) => a + l.debit, 0), 0), [baseJournals]);
+  const postedCount = baseJournals.filter((j) => j.status === 'posted').length;
 
   return (
     <Box>
@@ -161,9 +170,9 @@ export default function JournalEntriesPage() {
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Total Journals', value: MOCK_JOURNALS.length.toString(), color: '#D4AF37' },
+          { label: 'Total Journals', value: baseJournals.length.toString(), color: '#D4AF37' },
           { label: 'Posted', value: postedCount.toString(), color: '#22C55E' },
-          { label: 'Pending Review', value: MOCK_JOURNALS.filter((j) => j.status === 'pending').length.toString(), color: '#E6A817' },
+          { label: 'Pending Review', value: baseJournals.filter((j) => j.status === 'pending').length.toString(), color: '#E6A817' },
           { label: 'Total Debits', value: totalDebits >= 1_000_000 ? `KSh ${(totalDebits / 1_000_000).toFixed(1)}M` : `KSh ${(totalDebits / 1000).toFixed(0)}K`, color: '#3B82F6' },
         ].map((s) => (
           <Grid size={{ xs: 6, md: 3 }} key={s.label}>
@@ -280,7 +289,7 @@ export default function JournalEntriesPage() {
 
       <Box sx={{ mt: 2 }}>
         <Typography sx={{ fontSize: 12, color: '#777' }}>
-          Showing {filtered.length} of {MOCK_JOURNALS.length} journal entries
+          Showing {filtered.length} of {baseJournals.length} journal entries
         </Typography>
       </Box>
     </Box>

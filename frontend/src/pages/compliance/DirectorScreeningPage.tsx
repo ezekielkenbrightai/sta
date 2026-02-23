@@ -18,6 +18,7 @@ import {
 } from '@mui/icons-material';
 import { DIRECTORS } from './CompanyDueDiligencePage';
 import { SCREENED_ENTITIES } from './ComplianceDashboardPage';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Page ────────────────────────────────────────────────────────────────────
 
@@ -35,24 +36,40 @@ const SANCTION_CONFIG: Record<string, { label: string; color: string; bg: string
 };
 
 export default function DirectorScreeningPage() {
+  const { filterByOrgName, filterCustom } = useDataIsolation();
   const [search, setSearch] = useState('');
   const [pepFilter, setPepFilter] = useState('all');
   const [sanctionFilter, setSanctionFilter] = useState('all');
   const [countryFilter, setCountryFilter] = useState('all');
 
+  const orgEntities = useMemo(
+    () => filterByOrgName(SCREENED_ENTITIES, 'name'),
+    [filterByOrgName],
+  );
+
+  const orgEntityIds = useMemo(
+    () => new Set(orgEntities.map((e) => e.id)),
+    [orgEntities],
+  );
+
+  const orgDirectors = useMemo(
+    () => filterCustom(DIRECTORS, (d) => orgEntityIds.has(d.entityId)),
+    [filterCustom, orgEntityIds],
+  );
+
   const countries = useMemo(() => {
-    return Array.from(new Set(DIRECTORS.map((d) => d.nationality))).sort();
-  }, []);
+    return Array.from(new Set(orgDirectors.map((d) => d.nationality))).sort();
+  }, [orgDirectors]);
 
   const enrichedDirectors = useMemo(() => {
-    return DIRECTORS.map((d) => {
+    return orgDirectors.map((d) => {
       const entity = SCREENED_ENTITIES.find((e) => e.id === d.entityId);
       return { ...d, entityName: entity?.name || 'Unknown', entityCountry: entity?.country || '' };
     });
-  }, []);
+  }, [orgDirectors]);
 
   // Cross-entity connections
-  const directorNames = DIRECTORS.map((d) => d.name);
+  const directorNames = orgDirectors.map((d) => d.name);
   const duplicateNames = directorNames.filter((name, idx) => directorNames.indexOf(name) !== idx);
 
   const filtered = useMemo(() => {
@@ -68,10 +85,10 @@ export default function DirectorScreeningPage() {
     });
   }, [enrichedDirectors, search, pepFilter, sanctionFilter, countryFilter]);
 
-  const totalDirectors = DIRECTORS.length;
-  const pepCount = DIRECTORS.filter((d) => d.pepStatus !== 'none').length;
-  const sanctionCount = DIRECTORS.filter((d) => d.sanctionMatch !== 'none').length;
-  const mediaCount = DIRECTORS.filter((d) => d.adverseMediaHits > 0).length;
+  const totalDirectors = orgDirectors.length;
+  const pepCount = orgDirectors.filter((d) => d.pepStatus !== 'none').length;
+  const sanctionCount = orgDirectors.filter((d) => d.sanctionMatch !== 'none').length;
+  const mediaCount = orgDirectors.filter((d) => d.adverseMediaHits > 0).length;
 
   return (
     <Box>
@@ -222,7 +239,7 @@ export default function DirectorScreeningPage() {
 
       <Box sx={{ mt: 2 }}>
         <Typography sx={{ fontSize: 12, color: '#777' }}>
-          Showing {filtered.length} of {DIRECTORS.length} directors across {SCREENED_ENTITIES.length} entities
+          Showing {filtered.length} of {orgDirectors.length} directors across {orgEntities.length} entities
         </Typography>
       </Box>
     </Box>

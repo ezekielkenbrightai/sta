@@ -16,6 +16,7 @@ import {
   DirectionsBoat,
   FlightTakeoff,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -23,6 +24,7 @@ interface Shipment {
   id: string;
   reference: string;
   trade_doc_ref: string;
+  shipper: string;
   origin: string;
   destination: string;
   carrier: string;
@@ -38,14 +40,14 @@ interface Shipment {
 }
 
 const MOCK_SHIPMENTS: Shipment[] = [
-  { id: 'sh-001', reference: 'SH-2026-9847', trade_doc_ref: 'KE-2026-0042', origin: 'Nairobi, KE', destination: 'Lagos, NG', carrier: 'Maersk Line', mode: 'sea', status: 'in_transit', progress: 65, departure: 'Feb 15', eta: 'Feb 28', weight_kg: 24500, containers: 2, last_location: 'Gulf of Aden', last_update: '2026-02-22 08:00' },
-  { id: 'sh-002', reference: 'SH-2026-9846', trade_doc_ref: 'KE-2026-0041', origin: 'Mombasa, KE', destination: 'Dar es Salaam, TZ', carrier: 'MSC', mode: 'sea', status: 'at_port', progress: 90, departure: 'Feb 18', eta: 'Feb 23', weight_kg: 18200, containers: 1, last_location: 'Port of Dar es Salaam', last_update: '2026-02-22 14:15' },
-  { id: 'sh-003', reference: 'SH-2026-9845', trade_doc_ref: 'TZ-2026-0018', origin: 'Nairobi, KE', destination: 'Addis Ababa, ET', carrier: 'Kenya Airways Cargo', mode: 'air', status: 'in_transit', progress: 40, departure: 'Feb 22', eta: 'Feb 23', weight_kg: 850, containers: 0, last_location: 'JKIA — Departed', last_update: '2026-02-22 11:00' },
-  { id: 'sh-004', reference: 'SH-2026-9844', trade_doc_ref: 'ZA-2026-0105', origin: 'Johannesburg, ZA', destination: 'Nairobi, KE', carrier: 'Bollore Logistics', mode: 'road', status: 'customs_hold', progress: 85, departure: 'Feb 12', eta: 'Feb 24', weight_kg: 32000, containers: 3, last_location: 'Namanga Border', last_update: '2026-02-22 09:30' },
-  { id: 'sh-005', reference: 'SH-2026-9843', trade_doc_ref: 'EG-2026-0078', origin: 'Cairo, EG', destination: 'Mombasa, KE', carrier: 'CMA CGM', mode: 'sea', status: 'loading', progress: 15, departure: 'Feb 23', eta: 'Mar 05', weight_kg: 45000, containers: 4, last_location: 'Port Said', last_update: '2026-02-22 06:00' },
-  { id: 'sh-006', reference: 'SH-2026-9842', trade_doc_ref: 'GH-2026-0034', origin: 'Accra, GH', destination: 'Nairobi, KE', carrier: 'Ethiopian Airlines Cargo', mode: 'air', status: 'delivered', progress: 100, departure: 'Feb 20', eta: 'Feb 22', weight_kg: 420, containers: 0, last_location: 'JKIA — Received', last_update: '2026-02-22 13:45' },
-  { id: 'sh-007', reference: 'SH-2026-9841', trade_doc_ref: 'KE-2026-0039', origin: 'Mombasa, KE', destination: 'Kigali, RW', carrier: 'SDV Transami', mode: 'road', status: 'cleared', progress: 95, departure: 'Feb 16', eta: 'Feb 23', weight_kg: 15000, containers: 1, last_location: 'Gatuna Border — Cleared', last_update: '2026-02-22 10:15' },
-  { id: 'sh-008', reference: 'SH-2026-9840', trade_doc_ref: 'NG-2026-0092', origin: 'Lagos, NG', destination: 'Mombasa, KE', carrier: 'PIL', mode: 'sea', status: 'in_transit', progress: 50, departure: 'Feb 10', eta: 'Mar 01', weight_kg: 56000, containers: 5, last_location: 'Indian Ocean', last_update: '2026-02-22 07:00' },
+  { id: 'sh-001', reference: 'SH-2026-9847', trade_doc_ref: 'KE-2026-0042', shipper: 'Nairobi Exports Ltd', origin: 'Nairobi, KE', destination: 'Lagos, NG', carrier: 'Maersk Line', mode: 'sea', status: 'in_transit', progress: 65, departure: 'Feb 15', eta: 'Feb 28', weight_kg: 24500, containers: 2, last_location: 'Gulf of Aden', last_update: '2026-02-22 08:00' },
+  { id: 'sh-002', reference: 'SH-2026-9846', trade_doc_ref: 'KE-2026-0041', shipper: 'Nairobi Exports Ltd', origin: 'Mombasa, KE', destination: 'Dar es Salaam, TZ', carrier: 'Bolloré Logistics Kenya', mode: 'sea', status: 'at_port', progress: 90, departure: 'Feb 18', eta: 'Feb 23', weight_kg: 18200, containers: 1, last_location: 'Port of Dar es Salaam', last_update: '2026-02-22 14:15' },
+  { id: 'sh-003', reference: 'SH-2026-9845', trade_doc_ref: 'TZ-2026-0018', shipper: 'Addis Pharmaceutical', origin: 'Nairobi, KE', destination: 'Addis Ababa, ET', carrier: 'Kenya Airways Cargo', mode: 'air', status: 'in_transit', progress: 40, departure: 'Feb 22', eta: 'Feb 23', weight_kg: 850, containers: 0, last_location: 'JKIA — Departed', last_update: '2026-02-22 11:00' },
+  { id: 'sh-004', reference: 'SH-2026-9844', trade_doc_ref: 'ZA-2026-0105', shipper: 'Auto Kenya Ltd', origin: 'Johannesburg, ZA', destination: 'Nairobi, KE', carrier: 'Bolloré Logistics Kenya', mode: 'road', status: 'customs_hold', progress: 85, departure: 'Feb 12', eta: 'Feb 24', weight_kg: 32000, containers: 3, last_location: 'Namanga Border', last_update: '2026-02-22 09:30' },
+  { id: 'sh-005', reference: 'SH-2026-9843', trade_doc_ref: 'EG-2026-0078', shipper: 'Cairo Trade House', origin: 'Cairo, EG', destination: 'Mombasa, KE', carrier: 'CMA CGM', mode: 'sea', status: 'loading', progress: 15, departure: 'Feb 23', eta: 'Mar 05', weight_kg: 45000, containers: 4, last_location: 'Port Said', last_update: '2026-02-22 06:00' },
+  { id: 'sh-006', reference: 'SH-2026-9842', trade_doc_ref: 'GH-2026-0034', shipper: 'Kenya Pharma Distributors', origin: 'Accra, GH', destination: 'Nairobi, KE', carrier: 'Ethiopian Airlines Cargo', mode: 'air', status: 'delivered', progress: 100, departure: 'Feb 20', eta: 'Feb 22', weight_kg: 420, containers: 0, last_location: 'JKIA — Received', last_update: '2026-02-22 13:45' },
+  { id: 'sh-007', reference: 'SH-2026-9841', trade_doc_ref: 'KE-2026-0039', shipper: 'Nairobi Exports Ltd', origin: 'Mombasa, KE', destination: 'Kigali, RW', carrier: 'Bolloré Logistics Kenya', mode: 'road', status: 'cleared', progress: 95, departure: 'Feb 16', eta: 'Feb 23', weight_kg: 15000, containers: 1, last_location: 'Gatuna Border — Cleared', last_update: '2026-02-22 10:15' },
+  { id: 'sh-008', reference: 'SH-2026-9840', trade_doc_ref: 'NG-2026-0092', shipper: 'Lagos Electronics Ltd', origin: 'Lagos, NG', destination: 'Mombasa, KE', carrier: 'PIL', mode: 'sea', status: 'in_transit', progress: 50, departure: 'Feb 10', eta: 'Mar 01', weight_kg: 56000, containers: 5, last_location: 'Indian Ocean', last_update: '2026-02-22 07:00' },
 ];
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
@@ -67,11 +69,20 @@ const MODE_ICONS: Record<string, typeof DirectionsBoat> = {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function ShipmentTrackingPage() {
+  const { filterCustom, orgName, orgType } = useDataIsolation();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
+  const orgFiltered = useMemo(
+    () => filterCustom(MOCK_SHIPMENTS, (s) => {
+      if (orgType === 'logistics') return s.carrier === orgName;
+      return s.shipper === orgName;
+    }),
+    [filterCustom, orgName, orgType],
+  );
+
   const filtered = useMemo(() => {
-    return MOCK_SHIPMENTS.filter((s) => {
+    return orgFiltered.filter((s) => {
       if (statusFilter !== 'all' && s.status !== statusFilter) return false;
       if (search) {
         const q = search.toLowerCase();
@@ -79,7 +90,7 @@ export default function ShipmentTrackingPage() {
       }
       return true;
     });
-  }, [search, statusFilter]);
+  }, [orgFiltered, search, statusFilter]);
 
   return (
     <Box>
@@ -96,10 +107,10 @@ export default function ShipmentTrackingPage() {
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Total Shipments', value: MOCK_SHIPMENTS.length.toString(), color: '#D4AF37' },
-          { label: 'In Transit', value: MOCK_SHIPMENTS.filter((s) => s.status === 'in_transit').length.toString(), color: '#3B82F6' },
-          { label: 'At Port', value: MOCK_SHIPMENTS.filter((s) => ['at_port', 'customs_hold'].includes(s.status)).length.toString(), color: '#E6A817' },
-          { label: 'Delivered', value: MOCK_SHIPMENTS.filter((s) => s.status === 'delivered').length.toString(), color: '#22C55E' },
+          { label: 'Total Shipments', value: orgFiltered.length.toString(), color: '#D4AF37' },
+          { label: 'In Transit', value: orgFiltered.filter((s) => s.status === 'in_transit').length.toString(), color: '#3B82F6' },
+          { label: 'At Port', value: orgFiltered.filter((s) => ['at_port', 'customs_hold'].includes(s.status)).length.toString(), color: '#E6A817' },
+          { label: 'Delivered', value: orgFiltered.filter((s) => s.status === 'delivered').length.toString(), color: '#22C55E' },
         ].map((s) => (
           <Grid size={{ xs: 6, md: 3 }} key={s.label}>
             <Card sx={{ p: 2.5 }}>
@@ -196,7 +207,7 @@ export default function ShipmentTrackingPage() {
 
       <Box sx={{ mt: 2 }}>
         <Typography sx={{ fontSize: 12, color: '#777' }}>
-          Showing {filtered.length} of {MOCK_SHIPMENTS.length} shipments
+          Showing {filtered.length} of {orgFiltered.length} shipments
         </Typography>
       </Box>
     </Box>

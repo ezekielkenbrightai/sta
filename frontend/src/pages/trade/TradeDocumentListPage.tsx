@@ -18,7 +18,7 @@ import {
   OpenInNew as OpenIcon,
   Search as SearchIcon,
 } from '@mui/icons-material';
-import { useAuthStore } from '../../stores/authStore';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 import type { TradeDocument, TradeDocumentStatus, TradeDocumentType } from '../../types';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
@@ -138,13 +138,15 @@ function formatDate(dateStr: string): string {
 
 export default function TradeDocumentListPage() {
   const navigate = useNavigate();
-  const user = useAuthStore((s) => s.user);
+  const { filterByOrgName, user } = useDataIsolation();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
 
+  const baseDocs = useMemo(() => filterByOrgName(MOCK_DOCUMENTS, 'trader_name'), [filterByOrgName]);
+
   const filteredDocs = useMemo(() => {
-    return MOCK_DOCUMENTS.filter((doc) => {
+    return baseDocs.filter((doc) => {
       if (statusFilter !== 'all' && doc.status !== statusFilter) return false;
       if (typeFilter !== 'all' && doc.type !== typeFilter) return false;
       if (searchQuery) {
@@ -158,16 +160,15 @@ export default function TradeDocumentListPage() {
       }
       return true;
     });
-  }, [searchQuery, statusFilter, typeFilter]);
+  }, [baseDocs, searchQuery, statusFilter, typeFilter]);
 
-  // Summary stats
   const stats = useMemo(() => {
-    const total = MOCK_DOCUMENTS.length;
-    const active = MOCK_DOCUMENTS.filter((d) => !['completed', 'rejected', 'draft'].includes(d.status)).length;
-    const totalValue = MOCK_DOCUMENTS.reduce((sum, d) => sum + d.total_value, 0);
-    const imports = MOCK_DOCUMENTS.filter((d) => d.type === 'import').length;
+    const total = baseDocs.length;
+    const active = baseDocs.filter((d) => !['completed', 'rejected', 'draft'].includes(d.status)).length;
+    const totalValue = baseDocs.reduce((sum, d) => sum + d.total_value, 0);
+    const imports = baseDocs.filter((d) => d.type === 'import').length;
     return { total, active, totalValue, imports };
-  }, []);
+  }, [baseDocs]);
 
   const canCreate = user?.role === 'trader' || user?.role === 'customs_officer' || user?.role === 'super_admin';
 
@@ -386,7 +387,7 @@ export default function TradeDocumentListPage() {
         {/* Footer */}
         <Box sx={{ px: 2.5, py: 2, borderTop: '1px solid rgba(212,175,55,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography sx={{ fontSize: 12, color: '#777' }}>
-            Showing {filteredDocs.length} of {MOCK_DOCUMENTS.length} documents
+            Showing {filteredDocs.length} of {baseDocs.length} documents
           </Typography>
         </Box>
       </Card>

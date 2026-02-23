@@ -20,6 +20,7 @@ import {
   CheckCircle,
   Error as ErrorIcon,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Types & Mock data ───────────────────────────────────────────────────────
 
@@ -27,6 +28,7 @@ interface TradeDocReview {
   id: string;
   ref: string;
   trader: string;
+  org_name: string;
   doc_type: string;
   origin: string;
   destination: string;
@@ -39,15 +41,15 @@ interface TradeDocReview {
 }
 
 const MOCK_DOCS: TradeDocReview[] = [
-  { id: 'td-001', ref: 'TD-2025-001234', trader: 'Nairobi Exports Ltd', doc_type: 'Commercial Invoice', origin: '🇰🇪 Kenya', destination: '🇹🇿 Tanzania', value_usd: 48500, risk_score: 22, aml_flag: 'clear', sanctions_check: 'passed', kyc_status: 'verified', compliance_notes: 'Regular exporter with clean history. Trade route well established. No anomalies detected in pricing or volume patterns.' },
-  { id: 'td-002', ref: 'TD-2025-001235', trader: 'Lagos Atlantic Trading', doc_type: 'Bill of Lading', origin: '🇳🇬 Nigeria', destination: '🇬🇭 Ghana', value_usd: 127000, risk_score: 78, aml_flag: 'flagged', sanctions_check: 'passed', kyc_status: 'verified', compliance_notes: 'Unusual value spike — 3x typical transaction size. Flagged for enhanced due diligence. Trader has been active for 2 years but volume patterns changed significantly in Q4.' },
-  { id: 'td-003', ref: 'TD-2025-001236', trader: 'Addis Commodities PLC', doc_type: 'Certificate of Origin', origin: '🇪🇹 Ethiopia', destination: '🇩🇯 Djibouti', value_usd: 35200, risk_score: 15, aml_flag: 'clear', sanctions_check: 'passed', kyc_status: 'verified', compliance_notes: 'Coffee export along established corridor. All documentation consistent. Certificate of Origin verified against AfCFTA requirements.' },
-  { id: 'td-004', ref: 'TD-2025-001237', trader: 'Cape Mining Solutions', doc_type: 'Commercial Invoice', origin: '🇿🇦 South Africa', destination: '🇲🇿 Mozambique', value_usd: 289000, risk_score: 45, aml_flag: 'under_review', sanctions_check: 'pending', kyc_status: 'verified', compliance_notes: 'Mining equipment export. Value within expected range but destination company is newly registered (< 6 months). Enhanced screening requested for beneficial ownership verification.' },
-  { id: 'td-005', ref: 'TD-2025-001238', trader: 'Dar es Salaam Textiles', doc_type: 'Packing List', origin: '🇹🇿 Tanzania', destination: '🇷🇼 Rwanda', value_usd: 18900, risk_score: 12, aml_flag: 'clear', sanctions_check: 'passed', kyc_status: 'verified', compliance_notes: 'Low-value textile shipment. Standard EAC trade route. No concerns identified.' },
-  { id: 'td-006', ref: 'TD-2025-001239', trader: 'Cairo Pharma International', doc_type: 'Commercial Invoice', origin: '🇪🇬 Egypt', destination: '🇰🇪 Kenya', value_usd: 156000, risk_score: 82, aml_flag: 'flagged', sanctions_check: 'failed', kyc_status: 'expired', compliance_notes: 'CRITICAL: Sanctions screening flagged a partial match on restricted entities list. KYC documentation expired 45 days ago. Trade halted pending full review. Escalated to senior compliance officer.' },
-  { id: 'td-007', ref: 'TD-2025-001240', trader: 'Accra Gold Exports', doc_type: 'Certificate of Origin', origin: '🇬🇭 Ghana', destination: '🇿🇦 South Africa', value_usd: 412000, risk_score: 65, aml_flag: 'under_review', sanctions_check: 'passed', kyc_status: 'verified', compliance_notes: 'Precious metals shipment — automatically flagged for enhanced monitoring per policy. Value within expected range for gold exports. Source mine documentation verified.' },
-  { id: 'td-008', ref: 'TD-2025-001241', trader: 'Mombasa Freight Co', doc_type: 'Bill of Lading', origin: '🇰🇪 Kenya', destination: '🇺🇬 Uganda', value_usd: 72500, risk_score: 28, aml_flag: 'clear', sanctions_check: 'passed', kyc_status: 'verified', compliance_notes: 'Regular freight forwarder with 5+ year history. Petroleum product shipment via Northern Corridor. All documentation in order.' },
-  { id: 'td-009', ref: 'TD-2025-001242', trader: 'Abidjan Cocoa Corp', doc_type: 'Commercial Invoice', origin: '🇨🇮 Côte d\'Ivoire', destination: '🇳🇬 Nigeria', value_usd: 93000, risk_score: 38, aml_flag: 'clear', sanctions_check: 'passed', kyc_status: 'pending', compliance_notes: 'Cocoa beans export. KYC renewal submitted, pending verification (expected within 5 business days). Trade approved conditionally.' },
+  { id: 'td-001', ref: 'TD-2025-001234', trader: 'Nairobi Exports Ltd', org_name: 'Nairobi Exports Ltd', doc_type: 'Commercial Invoice', origin: '🇰🇪 Kenya', destination: '🇹🇿 Tanzania', value_usd: 48500, risk_score: 22, aml_flag: 'clear', sanctions_check: 'passed', kyc_status: 'verified', compliance_notes: 'Regular exporter with clean history. Trade route well established. No anomalies detected in pricing or volume patterns.' },
+  { id: 'td-002', ref: 'TD-2025-001235', trader: 'Lagos Atlantic Trading', org_name: 'Lagos Atlantic Trading', doc_type: 'Bill of Lading', origin: '🇳🇬 Nigeria', destination: '🇬🇭 Ghana', value_usd: 127000, risk_score: 78, aml_flag: 'flagged', sanctions_check: 'passed', kyc_status: 'verified', compliance_notes: 'Unusual value spike — 3x typical transaction size. Flagged for enhanced due diligence. Trader has been active for 2 years but volume patterns changed significantly in Q4.' },
+  { id: 'td-003', ref: 'TD-2025-001236', trader: 'Addis Commodities PLC', org_name: 'Addis Commodities PLC', doc_type: 'Certificate of Origin', origin: '🇪🇹 Ethiopia', destination: '🇩🇯 Djibouti', value_usd: 35200, risk_score: 15, aml_flag: 'clear', sanctions_check: 'passed', kyc_status: 'verified', compliance_notes: 'Coffee export along established corridor. All documentation consistent. Certificate of Origin verified against AfCFTA requirements.' },
+  { id: 'td-004', ref: 'TD-2025-001237', trader: 'Cape Mining Solutions', org_name: 'Cape Mining Solutions', doc_type: 'Commercial Invoice', origin: '🇿🇦 South Africa', destination: '🇲🇿 Mozambique', value_usd: 289000, risk_score: 45, aml_flag: 'under_review', sanctions_check: 'pending', kyc_status: 'verified', compliance_notes: 'Mining equipment export. Value within expected range but destination company is newly registered (< 6 months). Enhanced screening requested for beneficial ownership verification.' },
+  { id: 'td-005', ref: 'TD-2025-001238', trader: 'Nairobi Exports Ltd', org_name: 'Nairobi Exports Ltd', doc_type: 'Packing List', origin: '🇰🇪 Kenya', destination: '🇷🇼 Rwanda', value_usd: 18900, risk_score: 12, aml_flag: 'clear', sanctions_check: 'passed', kyc_status: 'verified', compliance_notes: 'Low-value textile shipment. Standard EAC trade route. No concerns identified.' },
+  { id: 'td-006', ref: 'TD-2025-001239', trader: 'Cairo Pharma International', org_name: 'Cairo Pharma International', doc_type: 'Commercial Invoice', origin: '🇪🇬 Egypt', destination: '🇰🇪 Kenya', value_usd: 156000, risk_score: 82, aml_flag: 'flagged', sanctions_check: 'failed', kyc_status: 'expired', compliance_notes: 'CRITICAL: Sanctions screening flagged a partial match on restricted entities list. KYC documentation expired 45 days ago. Trade halted pending full review. Escalated to senior compliance officer.' },
+  { id: 'td-007', ref: 'TD-2025-001240', trader: 'Accra Gold Exports', org_name: 'Accra Gold Exports', doc_type: 'Certificate of Origin', origin: '🇬🇭 Ghana', destination: '🇿🇦 South Africa', value_usd: 412000, risk_score: 65, aml_flag: 'under_review', sanctions_check: 'passed', kyc_status: 'verified', compliance_notes: 'Precious metals shipment — automatically flagged for enhanced monitoring per policy. Value within expected range for gold exports. Source mine documentation verified.' },
+  { id: 'td-008', ref: 'TD-2025-001241', trader: 'Nairobi Exports Ltd', org_name: 'Nairobi Exports Ltd', doc_type: 'Bill of Lading', origin: '🇰🇪 Kenya', destination: '🇺🇬 Uganda', value_usd: 72500, risk_score: 28, aml_flag: 'clear', sanctions_check: 'passed', kyc_status: 'verified', compliance_notes: 'Regular exporter with 5+ year history. Agricultural product shipment via Northern Corridor. All documentation in order.' },
+  { id: 'td-009', ref: 'TD-2025-001242', trader: 'Abidjan Cocoa Corp', org_name: 'Abidjan Cocoa Corp', doc_type: 'Commercial Invoice', origin: '🇨🇮 Côte d\'Ivoire', destination: '🇳🇬 Nigeria', value_usd: 93000, risk_score: 38, aml_flag: 'clear', sanctions_check: 'passed', kyc_status: 'pending', compliance_notes: 'Cocoa beans export. KYC renewal submitted, pending verification (expected within 5 business days). Trade approved conditionally.' },
 ];
 
 const RISK_COLOR = (score: number) => score > 70 ? '#EF4444' : score > 40 ? '#E6A817' : '#22C55E';
@@ -74,12 +76,18 @@ const KYC_CONFIG: Record<string, { label: string; color: string }> = {
 // ─── Component ──────────────────────────────────────────────────────────────────
 
 export default function TradeDocumentReviewPage() {
+  const { filterByOrgName } = useDataIsolation();
   const [search, setSearch] = useState('');
   const [riskFilter, setRiskFilter] = useState('all');
   const [expanded, setExpanded] = useState<string | null>(null);
 
+  const orgDocs = useMemo(
+    () => filterByOrgName(MOCK_DOCS, 'org_name'),
+    [filterByOrgName],
+  );
+
   const filtered = useMemo(() => {
-    return MOCK_DOCS.filter((d) => {
+    return orgDocs.filter((d) => {
       if (riskFilter !== 'all') {
         const lvl = RISK_LABEL(d.risk_score).toLowerCase();
         if (lvl !== riskFilter) return false;
@@ -90,14 +98,14 @@ export default function TradeDocumentReviewPage() {
       }
       return true;
     });
-  }, [search, riskFilter]);
+  }, [orgDocs, search, riskFilter]);
 
   const stats = useMemo(() => {
-    const high = MOCK_DOCS.filter((d) => d.risk_score > 70).length;
-    const flagged = MOCK_DOCS.filter((d) => d.aml_flag === 'flagged' || d.aml_flag === 'under_review').length;
-    const cleared = MOCK_DOCS.filter((d) => d.aml_flag === 'clear' && d.sanctions_check === 'passed').length;
-    return { total: MOCK_DOCS.length, high, flagged, cleared };
-  }, []);
+    const high = orgDocs.filter((d) => d.risk_score > 70).length;
+    const flagged = orgDocs.filter((d) => d.aml_flag === 'flagged' || d.aml_flag === 'under_review').length;
+    const cleared = orgDocs.filter((d) => d.aml_flag === 'clear' && d.sanctions_check === 'passed').length;
+    return { total: orgDocs.length, high, flagged, cleared };
+  }, [orgDocs]);
 
   const fmtUSD = (v: number) => `$${v.toLocaleString()}`;
 
@@ -232,7 +240,7 @@ export default function TradeDocumentReviewPage() {
 
         <Box sx={{ px: 2.5, py: 2, borderTop: '1px solid rgba(212,175,55,0.1)' }}>
           <Typography sx={{ fontSize: 12, color: '#777' }}>
-            Showing {filtered.length} of {MOCK_DOCS.length} documents
+            Showing {filtered.length} of {orgDocs.length} documents
           </Typography>
         </Box>
       </Card>

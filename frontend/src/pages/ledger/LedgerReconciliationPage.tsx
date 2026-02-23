@@ -18,6 +18,7 @@ import {
   Error as ErrorIcon,
   Warning,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -25,6 +26,7 @@ interface ReconciliationItem {
   id: string;
   account_code: string;
   account_name: string;
+  org_name: string;
   ledger_balance: number;
   external_balance: number;
   difference: number;
@@ -36,14 +38,14 @@ interface ReconciliationItem {
 }
 
 const MOCK_RECON: ReconciliationItem[] = [
-  { id: 'rec-001', account_code: '1200', account_name: 'Cash & Bank (KES)', ledger_balance: 890000000, external_balance: 890000000, difference: 0, status: 'matched', external_source: 'KCB Bank Statement', last_reconciled: '2026-02-22', items_checked: 2156, items_unmatched: 0 },
-  { id: 'rec-002', account_code: '1210', account_name: 'Bank — NGN Nostro', ledger_balance: 42000000, external_balance: 42150000, difference: 150000, status: 'difference', external_source: 'PAPSS Settlement Report', last_reconciled: '2026-02-22', items_checked: 341, items_unmatched: 2 },
-  { id: 'rec-003', account_code: '1220', account_name: 'Bank — ZAR Nostro', ledger_balance: 28000000, external_balance: 28000000, difference: 0, status: 'matched', external_source: 'ABSA Bank Statement', last_reconciled: '2026-02-21', items_checked: 189, items_unmatched: 0 },
-  { id: 'rec-004', account_code: '1100', account_name: 'Trade Receivables', ledger_balance: 245000000, external_balance: 244850000, difference: 150000, status: 'adjusted', external_source: 'Tax Assessment Register', last_reconciled: '2026-02-22', items_checked: 1842, items_unmatched: 1 },
-  { id: 'rec-005', account_code: '2200', account_name: 'Tax Liabilities', ledger_balance: 342000000, external_balance: 342000000, difference: 0, status: 'matched', external_source: 'KRA iTax System', last_reconciled: '2026-02-22', items_checked: 1523, items_unmatched: 0 },
-  { id: 'rec-006', account_code: '2100', account_name: 'Trade Payables', ledger_balance: 178000000, external_balance: 178500000, difference: 500000, status: 'difference', external_source: 'Supplier Statements', last_reconciled: '2026-02-20', items_checked: 987, items_unmatched: 3 },
-  { id: 'rec-007', account_code: '4100', account_name: 'Customs Duty Revenue', ledger_balance: 1240000000, external_balance: 0, difference: 0, status: 'pending', external_source: 'Customs Declaration System', last_reconciled: '2026-02-15', items_checked: 0, items_unmatched: 0 },
-  { id: 'rec-008', account_code: '5100', account_name: 'FX Settlement Costs', ledger_balance: 45000000, external_balance: 44800000, difference: 200000, status: 'difference', external_source: 'PAPSS Fee Report', last_reconciled: '2026-02-22', items_checked: 892, items_unmatched: 4 },
+  { id: 'rec-001', account_code: '1200', account_name: 'Cash & Bank (KES)', org_name: 'KCB Bank', ledger_balance: 890000000, external_balance: 890000000, difference: 0, status: 'matched', external_source: 'KCB Bank Statement', last_reconciled: '2026-02-22', items_checked: 2156, items_unmatched: 0 },
+  { id: 'rec-002', account_code: '1210', account_name: 'Bank — NGN Nostro', org_name: 'KCB Bank', ledger_balance: 42000000, external_balance: 42150000, difference: 150000, status: 'difference', external_source: 'PAPSS Settlement Report', last_reconciled: '2026-02-22', items_checked: 341, items_unmatched: 2 },
+  { id: 'rec-003', account_code: '1220', account_name: 'Bank — ZAR Nostro', org_name: 'KCB Bank', ledger_balance: 28000000, external_balance: 28000000, difference: 0, status: 'matched', external_source: 'ABSA Bank Statement', last_reconciled: '2026-02-21', items_checked: 189, items_unmatched: 0 },
+  { id: 'rec-004', account_code: '1100', account_name: 'Trade Receivables', org_name: 'Nairobi Exports Ltd', ledger_balance: 245000000, external_balance: 244850000, difference: 150000, status: 'adjusted', external_source: 'Tax Assessment Register', last_reconciled: '2026-02-22', items_checked: 1842, items_unmatched: 1 },
+  { id: 'rec-005', account_code: '2200', account_name: 'Tax Liabilities', org_name: 'Nairobi Exports Ltd', ledger_balance: 342000000, external_balance: 342000000, difference: 0, status: 'matched', external_source: 'KRA iTax System', last_reconciled: '2026-02-22', items_checked: 1523, items_unmatched: 0 },
+  { id: 'rec-006', account_code: '2100', account_name: 'Trade Payables', org_name: 'Nairobi Exports Ltd', ledger_balance: 178000000, external_balance: 178500000, difference: 500000, status: 'difference', external_source: 'Supplier Statements', last_reconciled: '2026-02-20', items_checked: 987, items_unmatched: 3 },
+  { id: 'rec-007', account_code: '4100', account_name: 'Customs Duty Revenue', org_name: 'KCB Bank', ledger_balance: 1240000000, external_balance: 0, difference: 0, status: 'pending', external_source: 'Customs Declaration System', last_reconciled: '2026-02-15', items_checked: 0, items_unmatched: 0 },
+  { id: 'rec-008', account_code: '5100', account_name: 'FX Settlement Costs', org_name: 'KCB Bank', ledger_balance: 45000000, external_balance: 44800000, difference: 200000, status: 'difference', external_source: 'PAPSS Fee Report', last_reconciled: '2026-02-22', items_checked: 892, items_unmatched: 4 },
 ];
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: typeof CheckCircle }> = {
@@ -64,11 +66,18 @@ function formatAmount(v: number): string {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function LedgerReconciliationPage() {
+  const { filterByOrgName } = useDataIsolation();
+
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
+  const baseRecon = useMemo(
+    () => filterByOrgName(MOCK_RECON, 'org_name'),
+    [filterByOrgName],
+  );
+
   const filtered = useMemo(() => {
-    return MOCK_RECON.filter((r) => {
+    return baseRecon.filter((r) => {
       if (statusFilter !== 'all' && r.status !== statusFilter) return false;
       if (search) {
         const q = search.toLowerCase();
@@ -76,12 +85,12 @@ export default function LedgerReconciliationPage() {
       }
       return true;
     });
-  }, [search, statusFilter]);
+  }, [baseRecon, search, statusFilter]);
 
-  const matchedCount = MOCK_RECON.filter((r) => r.status === 'matched').length;
-  const matchRate = ((matchedCount / MOCK_RECON.length) * 100).toFixed(0);
-  const totalDifference = MOCK_RECON.reduce((s, r) => s + Math.abs(r.difference), 0);
-  const totalUnmatched = MOCK_RECON.reduce((s, r) => s + r.items_unmatched, 0);
+  const matchedCount = baseRecon.filter((r) => r.status === 'matched').length;
+  const matchRate = baseRecon.length > 0 ? ((matchedCount / baseRecon.length) * 100).toFixed(0) : '0';
+  const totalDifference = baseRecon.reduce((s, r) => s + Math.abs(r.difference), 0);
+  const totalUnmatched = baseRecon.reduce((s, r) => s + r.items_unmatched, 0);
 
   return (
     <Box>
@@ -103,7 +112,7 @@ export default function LedgerReconciliationPage() {
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Accounts Tracked', value: MOCK_RECON.length.toString(), color: '#D4AF37' },
+          { label: 'Accounts Tracked', value: baseRecon.length.toString(), color: '#D4AF37' },
           { label: 'Match Rate', value: `${matchRate}%`, color: '#22C55E' },
           { label: 'Total Difference', value: totalDifference > 0 ? `KSh ${formatAmount(totalDifference)}` : 'KSh 0', color: totalDifference > 0 ? '#EF4444' : '#22C55E' },
           { label: 'Unmatched Items', value: totalUnmatched.toString(), color: totalUnmatched > 0 ? '#E6A817' : '#22C55E' },
@@ -194,7 +203,7 @@ export default function LedgerReconciliationPage() {
 
       <Box sx={{ mt: 2 }}>
         <Typography sx={{ fontSize: 12, color: '#777' }}>
-          Showing {filtered.length} of {MOCK_RECON.length} reconciliation records
+          Showing {filtered.length} of {baseRecon.length} reconciliation records
         </Typography>
       </Box>
     </Box>

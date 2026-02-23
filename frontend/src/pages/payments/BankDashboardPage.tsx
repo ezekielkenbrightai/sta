@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   Box,
   Card,
@@ -13,9 +14,7 @@ import {
   RequestQuote,
   Security,
 } from '@mui/icons-material';
-import { useAuthStore } from '../../stores/authStore';
-
-const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor', 'bank_officer'];
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -77,21 +76,22 @@ function formatAmount(value: number): string {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function BankDashboardPage() {
-  const user = useAuthStore((s) => s.user);
-  const isBank = GOVT_ROLES.includes(user?.role || 'trader');
-  const traderOrg = user?.organization_name || 'Nairobi Exports Ltd';
+  const { isOversight, filterByOrgName, orgName } = useDataIsolation();
 
-  const baseFacilities = isBank ? ACTIVE_FACILITIES : ACTIVE_FACILITIES.filter((f) => f.trader === traderOrg);
+  const baseFacilities = useMemo(
+    () => filterByOrgName(ACTIVE_FACILITIES, 'trader'),
+    [filterByOrgName],
+  );
 
   return (
     <Box>
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
           <AccountBalance sx={{ color: '#D4AF37' }} />
-          <Typography variant="h4">{isBank ? 'Bank Dashboard' : 'My Trade Finance'}</Typography>
+          <Typography variant="h4">{isOversight ? 'Bank Dashboard' : 'My Trade Finance'}</Typography>
         </Box>
         <Typography sx={{ color: 'text.secondary' }}>
-          {isBank ? 'Trade finance portfolio overview and facility management.' : `Trade finance facilities for ${traderOrg}.`}
+          {isOversight ? 'Trade finance portfolio overview and facility management.' : `Trade finance facilities for ${orgName}.`}
         </Typography>
       </Box>
 

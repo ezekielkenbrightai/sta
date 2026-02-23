@@ -20,9 +20,7 @@ import {
   Warning,
   Download,
 } from '@mui/icons-material';
-import { useAuthStore } from '../../stores/authStore';
-
-const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor'];
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Types & Mock data ───────────────────────────────────────────────────────
 
@@ -104,18 +102,12 @@ function formatDate(dateStr: string | null): string {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function TaxPaymentPage() {
-  const user = useAuthStore((s) => s.user);
-  const isGovt = GOVT_ROLES.includes(user?.role || 'trader');
-  const traderOrg = user?.organization_name || 'Nairobi Exports Ltd';
+  const { isOversight, orgName, filterByOrgName } = useDataIsolation();
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  // Traders only see their own payments; govt sees all
-  const basePayments = useMemo(() => {
-    if (isGovt) return MOCK_PAYMENTS;
-    return MOCK_PAYMENTS.filter((p) => p.trader_name === traderOrg);
-  }, [isGovt, traderOrg]);
+  const basePayments = useMemo(() => filterByOrgName(MOCK_PAYMENTS, 'trader_name'), [filterByOrgName]);
 
   const filtered = useMemo(() => {
     return basePayments.filter((p) => {
@@ -143,11 +135,11 @@ export default function TaxPaymentPage() {
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3, flexWrap: 'wrap', gap: 1 }}>
         <Box>
-          <Typography variant="h4" sx={{ mb: 0.5 }}>{isGovt ? 'Tax Payments' : 'My Tax Payments'}</Typography>
+          <Typography variant="h4" sx={{ mb: 0.5 }}>{isOversight ? 'Tax Payments' : 'My Tax Payments'}</Typography>
           <Typography sx={{ color: 'text.secondary' }}>
-            {isGovt
+            {isOversight
               ? 'Track and manage tax payment transactions.'
-              : `Payment history for ${traderOrg}.`}
+              : `Payment history for ${orgName}.`}
           </Typography>
         </Box>
         <Button variant="contained" startIcon={<Payment />}>

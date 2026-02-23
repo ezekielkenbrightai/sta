@@ -16,6 +16,7 @@ import {
   Schedule,
   Warning,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -23,6 +24,8 @@ interface Delivery {
   id: string;
   reference: string;
   shipment_ref: string;
+  shipper: string;
+  carrier: string;
   consignee: string;
   delivery_address: string;
   city: string;
@@ -38,12 +41,12 @@ interface Delivery {
 }
 
 const MOCK_DELIVERIES: Delivery[] = [
-  { id: 'del-001', reference: 'DEL-2026-3421', shipment_ref: 'SH-2026-9842', consignee: 'Kenya Pharma Distributors', delivery_address: 'Industrial Area, Lunga Lunga Rd', city: 'Nairobi', driver: 'James Otieno', vehicle: 'KBZ 421M', status: 'delivered', scheduled_date: '2026-02-22', scheduled_time: '10:00', actual_time: '09:45', items: 50, weight_kg: 420, signature_required: true },
-  { id: 'del-002', reference: 'DEL-2026-3420', shipment_ref: 'SH-2026-9841', consignee: 'East Africa Cement Ltd', delivery_address: 'Athi River, Namanga Rd', city: 'Machakos', driver: 'Peter Kamau', vehicle: 'KCA 183L', status: 'en_route', scheduled_date: '2026-02-22', scheduled_time: '14:00', actual_time: null, items: 120, weight_kg: 3600, signature_required: true },
-  { id: 'del-003', reference: 'DEL-2026-3419', shipment_ref: 'SH-2026-9840', consignee: 'Nairobi Fashion House', delivery_address: 'Westlands, Waiyaki Way', city: 'Nairobi', driver: 'Mary Wanjiku', vehicle: 'KBR 770P', status: 'at_destination', scheduled_date: '2026-02-22', scheduled_time: '15:00', actual_time: null, items: 200, weight_kg: 500, signature_required: false },
-  { id: 'del-004', reference: 'DEL-2026-3418', shipment_ref: 'SH-2026-9846', consignee: 'Mombasa Port Authority', delivery_address: 'Kilindini Harbour', city: 'Mombasa', driver: 'David Maina', vehicle: 'KDH 552S', status: 'dispatched', scheduled_date: '2026-02-23', scheduled_time: '08:00', actual_time: null, items: 80, weight_kg: 12000, signature_required: true },
-  { id: 'del-005', reference: 'DEL-2026-3417', shipment_ref: 'SH-2026-9845', consignee: 'Addis Pharmaceutical', delivery_address: 'Bole Sub-City', city: 'Addis Ababa', driver: '—', vehicle: '—', status: 'rescheduled', scheduled_date: '2026-02-23', scheduled_time: '11:00', actual_time: null, items: 25, weight_kg: 180, signature_required: true },
-  { id: 'del-006', reference: 'DEL-2026-3416', shipment_ref: 'SH-2026-9844', consignee: 'Auto Kenya Ltd', delivery_address: 'Mombasa Road, Next to SGR', city: 'Nairobi', driver: 'Grace Njeri', vehicle: 'KAZ 901K', status: 'failed', scheduled_date: '2026-02-21', scheduled_time: '14:00', actual_time: null, items: 8, weight_kg: 12000, signature_required: true },
+  { id: 'del-001', reference: 'DEL-2026-3421', shipment_ref: 'SH-2026-9842', shipper: 'Kenya Pharma Distributors', carrier: 'Bolloré Logistics Kenya', consignee: 'Kenya Pharma Distributors', delivery_address: 'Industrial Area, Lunga Lunga Rd', city: 'Nairobi', driver: 'James Otieno', vehicle: 'KBZ 421M', status: 'delivered', scheduled_date: '2026-02-22', scheduled_time: '10:00', actual_time: '09:45', items: 50, weight_kg: 420, signature_required: true },
+  { id: 'del-002', reference: 'DEL-2026-3420', shipment_ref: 'SH-2026-9841', shipper: 'Nairobi Exports Ltd', carrier: 'Bolloré Logistics Kenya', consignee: 'East Africa Cement Ltd', delivery_address: 'Athi River, Namanga Rd', city: 'Machakos', driver: 'Peter Kamau', vehicle: 'KCA 183L', status: 'en_route', scheduled_date: '2026-02-22', scheduled_time: '14:00', actual_time: null, items: 120, weight_kg: 3600, signature_required: true },
+  { id: 'del-003', reference: 'DEL-2026-3419', shipment_ref: 'SH-2026-9840', shipper: 'Lagos Electronics Ltd', carrier: 'SDV Transami', consignee: 'Nairobi Fashion House', delivery_address: 'Westlands, Waiyaki Way', city: 'Nairobi', driver: 'Mary Wanjiku', vehicle: 'KBR 770P', status: 'at_destination', scheduled_date: '2026-02-22', scheduled_time: '15:00', actual_time: null, items: 200, weight_kg: 500, signature_required: false },
+  { id: 'del-004', reference: 'DEL-2026-3418', shipment_ref: 'SH-2026-9846', shipper: 'Nairobi Exports Ltd', carrier: 'Bolloré Logistics Kenya', consignee: 'Mombasa Port Authority', delivery_address: 'Kilindini Harbour', city: 'Mombasa', driver: 'David Maina', vehicle: 'KDH 552S', status: 'dispatched', scheduled_date: '2026-02-23', scheduled_time: '08:00', actual_time: null, items: 80, weight_kg: 12000, signature_required: true },
+  { id: 'del-005', reference: 'DEL-2026-3417', shipment_ref: 'SH-2026-9845', shipper: 'Addis Pharmaceutical', carrier: 'Kenya Airways Cargo', consignee: 'Addis Pharmaceutical', delivery_address: 'Bole Sub-City', city: 'Addis Ababa', driver: '—', vehicle: '—', status: 'rescheduled', scheduled_date: '2026-02-23', scheduled_time: '11:00', actual_time: null, items: 25, weight_kg: 180, signature_required: true },
+  { id: 'del-006', reference: 'DEL-2026-3416', shipment_ref: 'SH-2026-9844', shipper: 'Auto Kenya Ltd', carrier: 'SDV Transami', consignee: 'Auto Kenya Ltd', delivery_address: 'Mombasa Road, Next to SGR', city: 'Nairobi', driver: 'Grace Njeri', vehicle: 'KAZ 901K', status: 'failed', scheduled_date: '2026-02-21', scheduled_time: '14:00', actual_time: null, items: 8, weight_kg: 12000, signature_required: true },
 ];
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: typeof CheckCircle }> = {
@@ -58,11 +61,20 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function DeliveryTrackingPage() {
+  const { filterCustom, orgName, orgType } = useDataIsolation();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
+  const orgFiltered = useMemo(
+    () => filterCustom(MOCK_DELIVERIES, (d) => {
+      if (orgType === 'logistics') return d.carrier === orgName;
+      return d.shipper === orgName;
+    }),
+    [filterCustom, orgName, orgType],
+  );
+
   const filtered = useMemo(() => {
-    return MOCK_DELIVERIES.filter((d) => {
+    return orgFiltered.filter((d) => {
       if (statusFilter !== 'all' && d.status !== statusFilter) return false;
       if (search) {
         const q = search.toLowerCase();
@@ -70,10 +82,10 @@ export default function DeliveryTrackingPage() {
       }
       return true;
     });
-  }, [search, statusFilter]);
+  }, [orgFiltered, search, statusFilter]);
 
-  const deliveredToday = MOCK_DELIVERIES.filter((d) => d.status === 'delivered').length;
-  const pendingToday = MOCK_DELIVERIES.filter((d) => ['dispatched', 'en_route', 'at_destination'].includes(d.status)).length;
+  const deliveredToday = orgFiltered.filter((d) => d.status === 'delivered').length;
+  const pendingToday = orgFiltered.filter((d) => ['dispatched', 'en_route', 'at_destination'].includes(d.status)).length;
 
   return (
     <Box>
@@ -90,10 +102,10 @@ export default function DeliveryTrackingPage() {
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Total Deliveries', value: MOCK_DELIVERIES.length.toString(), color: '#D4AF37' },
+          { label: 'Total Deliveries', value: orgFiltered.length.toString(), color: '#D4AF37' },
           { label: 'Delivered', value: deliveredToday.toString(), color: '#22C55E' },
           { label: 'Pending', value: pendingToday.toString(), color: '#3B82F6' },
-          { label: 'Failed', value: MOCK_DELIVERIES.filter((d) => d.status === 'failed').length.toString(), color: '#EF4444' },
+          { label: 'Failed', value: orgFiltered.filter((d) => d.status === 'failed').length.toString(), color: '#EF4444' },
         ].map((s) => (
           <Grid size={{ xs: 6, md: 3 }} key={s.label}>
             <Card sx={{ p: 2.5 }}>
@@ -181,7 +193,7 @@ export default function DeliveryTrackingPage() {
 
       <Box sx={{ mt: 2 }}>
         <Typography sx={{ fontSize: 12, color: '#777' }}>
-          Showing {filtered.length} of {MOCK_DELIVERIES.length} deliveries
+          Showing {filtered.length} of {orgFiltered.length} deliveries
         </Typography>
       </Box>
     </Box>

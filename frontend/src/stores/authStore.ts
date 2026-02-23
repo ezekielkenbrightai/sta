@@ -99,7 +99,7 @@ const DEV_USERS: Record<string, User> = {
     organization_id: 'o-mot', organization_name: 'Ministry of Trade',
     organization_type: 'government', country_id: 'c-ken', country_name: 'Kenya',
     country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
-    modules: ['executive', 'trade', 'tax', 'payments', 'analytics', 'customs', 'supply_chain', 'compliance', 'stablecoins'],
+    modules: ['executive'],
   },
 };
 

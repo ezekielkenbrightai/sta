@@ -19,9 +19,7 @@ import {
   HourglassEmpty,
   Warning,
 } from '@mui/icons-material';
-import { useAuthStore } from '../../stores/authStore';
-
-const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor'];
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Types & Mock data ───────────────────────────────────────────────────────
 
@@ -111,18 +109,12 @@ function formatCurrency(value: number): string {
 
 export default function TaxAssessmentPage() {
   const navigate = useNavigate();
-  const user = useAuthStore((s) => s.user);
-  const isGovt = GOVT_ROLES.includes(user?.role || 'trader');
-  const traderOrg = user?.organization_name || 'Nairobi Exports Ltd';
+  const { isOversight, orgName, filterByOrgName } = useDataIsolation();
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  // Traders only see their own assessments; govt sees all
-  const baseAssessments = useMemo(() => {
-    if (isGovt) return MOCK_ASSESSMENTS;
-    return MOCK_ASSESSMENTS.filter((a) => a.trader_name === traderOrg);
-  }, [isGovt, traderOrg]);
+  const baseAssessments = useMemo(() => filterByOrgName(MOCK_ASSESSMENTS, 'trader_name'), [filterByOrgName]);
 
   const filtered = useMemo(() => {
     return baseAssessments.filter((a) => {
@@ -146,11 +138,11 @@ export default function TaxAssessmentPage() {
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3, flexWrap: 'wrap', gap: 1 }}>
         <Box>
-          <Typography variant="h4" sx={{ mb: 0.5 }}>{isGovt ? 'Tax Assessments' : 'My Tax Assessments'}</Typography>
+          <Typography variant="h4" sx={{ mb: 0.5 }}>{isOversight ? 'Tax Assessments' : 'My Tax Assessments'}</Typography>
           <Typography sx={{ color: 'text.secondary' }}>
-            {isGovt
+            {isOversight
               ? 'Review and manage tax assessments for trade documents.'
-              : `Tax assessments for ${traderOrg}.`}
+              : `Tax assessments for ${orgName}.`}
           </Typography>
         </Box>
       </Box>

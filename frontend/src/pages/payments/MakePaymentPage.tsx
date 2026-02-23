@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   Box,
   Button,
@@ -18,6 +18,7 @@ import {
   Receipt,
   CheckCircle,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -25,16 +26,17 @@ interface OutstandingAssessment {
   id: string;
   reference: string;
   document_type: string;
+  org_name: string;
   total_tax: number;
   due_date: string;
   status: 'pending' | 'overdue';
 }
 
 const OUTSTANDING: OutstandingAssessment[] = [
-  { id: 'ta-002', reference: 'KE-2026-0041', document_type: 'Import Declaration', total_tax: 12750, due_date: '2026-03-01', status: 'pending' },
-  { id: 'ta-003', reference: 'KE-2026-0040', document_type: 'Import Declaration', total_tax: 156000, due_date: '2026-02-15', status: 'overdue' },
-  { id: 'ta-006', reference: 'KE-2026-0033', document_type: 'Export Certificate', total_tax: 31200, due_date: '2026-03-05', status: 'pending' },
-  { id: 'ta-007', reference: 'KE-2026-0029', document_type: 'Import Declaration', total_tax: 8450, due_date: '2026-03-10', status: 'pending' },
+  { id: 'ta-002', reference: 'KE-2026-0041', document_type: 'Import Declaration', org_name: 'Nairobi Exports Ltd', total_tax: 12750, due_date: '2026-03-01', status: 'pending' },
+  { id: 'ta-003', reference: 'KE-2026-0040', document_type: 'Import Declaration', org_name: 'Lagos Trading Co', total_tax: 156000, due_date: '2026-02-15', status: 'overdue' },
+  { id: 'ta-006', reference: 'KE-2026-0033', document_type: 'Export Certificate', org_name: 'Nairobi Exports Ltd', total_tax: 31200, due_date: '2026-03-05', status: 'pending' },
+  { id: 'ta-007', reference: 'KE-2026-0029', document_type: 'Import Declaration', org_name: 'Kampala Imports Inc', total_tax: 8450, due_date: '2026-03-10', status: 'pending' },
 ];
 
 const PAYMENT_METHODS = [
@@ -54,11 +56,18 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function MakePaymentPage() {
+  const { filterByOrgName } = useDataIsolation();
+
   const [activeStep, setActiveStep] = useState(0);
   const [selectedAssessment, setSelectedAssessment] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState('bank_transfer');
 
-  const selected = OUTSTANDING.find((a) => a.id === selectedAssessment);
+  const assessments = useMemo(
+    () => filterByOrgName(OUTSTANDING, 'org_name'),
+    [filterByOrgName],
+  );
+
+  const selected = assessments.find((a) => a.id === selectedAssessment);
 
   return (
     <Box>
@@ -100,7 +109,7 @@ export default function MakePaymentPage() {
                 <Typography sx={{ fontSize: 14, fontWeight: 600, color: '#f0f0f0' }}>Outstanding Assessments</Typography>
                 <Typography sx={{ fontSize: 12, color: '#777' }}>Select an assessment to pay</Typography>
               </Box>
-              {OUTSTANDING.map((a) => {
+              {assessments.map((a) => {
                 const sts = STATUS_CONFIG[a.status];
                 const isSelected = selectedAssessment === a.id;
                 return (

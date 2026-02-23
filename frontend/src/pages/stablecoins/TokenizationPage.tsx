@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   Box,
   Card,
@@ -14,6 +15,7 @@ import {
   Storefront,
   Code,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ── TypeScript Interfaces ────────────────────────────────────────────────────
 
@@ -28,6 +30,7 @@ interface TokenKpi {
 interface TokenizedAsset {
   symbol: string;
   name: string;
+  org_name: string;
   commodity: string;
   totalTokens: number;
   pricePerToken: string;
@@ -46,6 +49,7 @@ interface RecentTrade {
   price: string;
   total: string;
   trader: string;
+  org_name: string;
   timestamp: string;
 }
 
@@ -69,23 +73,23 @@ const KPIS: TokenKpi[] = [
 ];
 
 const ASSET_REGISTRY: TokenizedAsset[] = [
-  { symbol: 'tCOF', name: 'Kenya AA Coffee', commodity: 'Coffee', totalTokens: 5_000_000, pricePerToken: '$4.82', marketCap: 24_100_000, change24h: 2.3, holders: 1847, status: 'trading' },
-  { symbol: 'tTEA', name: 'Kenya Purple Tea', commodity: 'Tea', totalTokens: 8_000_000, pricePerToken: '$2.15', marketCap: 17_200_000, change24h: -0.8, holders: 1234, status: 'trading' },
-  { symbol: 'tGLD', name: 'East Africa Gold', commodity: 'Gold', totalTokens: 1_000_000, pricePerToken: '$68.40', marketCap: 68_400_000, change24h: 1.1, holders: 2341, status: 'trading' },
-  { symbol: 'tCSH', name: 'Kilifi Cashews', commodity: 'Cashew Nuts', totalTokens: 3_000_000, pricePerToken: '$3.20', marketCap: 9_600_000, change24h: 4.7, holders: 567, status: 'trading' },
-  { symbol: 'tSIS', name: 'Tanzania Sisal', commodity: 'Sisal', totalTokens: 6_000_000, pricePerToken: '$1.45', marketCap: 8_700_000, change24h: -1.2, holders: 423, status: 'trading' },
-  { symbol: 'tCOL', name: 'DRC Coltan', commodity: 'Coltan', totalTokens: 500_000, pricePerToken: '$112.00', marketCap: 56_000_000, change24h: 3.8, holders: 1892, status: 'minting' },
-  { symbol: 'tVAN', name: 'Uganda Vanilla', commodity: 'Vanilla', totalTokens: 2_000_000, pricePerToken: '$5.60', marketCap: 11_200_000, change24h: 0.5, holders: 312, status: 'minting' },
-  { symbol: 'tPYR', name: 'Rwanda Pyrethrum', commodity: 'Pyrethrum', totalTokens: 4_000_000, pricePerToken: '$0.00', marketCap: 0, change24h: 0, holders: 0, status: 'paused' },
+  { symbol: 'tCOF', name: 'Kenya AA Coffee', org_name: 'Nairobi Exports Ltd', commodity: 'Coffee', totalTokens: 5_000_000, pricePerToken: '$4.82', marketCap: 24_100_000, change24h: 2.3, holders: 1847, status: 'trading' },
+  { symbol: 'tTEA', name: 'Kenya Purple Tea', org_name: 'Nairobi Exports Ltd', commodity: 'Tea', totalTokens: 8_000_000, pricePerToken: '$2.15', marketCap: 17_200_000, change24h: -0.8, holders: 1234, status: 'trading' },
+  { symbol: 'tGLD', name: 'East Africa Gold', org_name: 'EAC Digital Assets', commodity: 'Gold', totalTokens: 1_000_000, pricePerToken: '$68.40', marketCap: 68_400_000, change24h: 1.1, holders: 2341, status: 'trading' },
+  { symbol: 'tCSH', name: 'Kilifi Cashews', org_name: 'Kilifi Cashew Ltd', commodity: 'Cashew Nuts', totalTokens: 3_000_000, pricePerToken: '$3.20', marketCap: 9_600_000, change24h: 4.7, holders: 567, status: 'trading' },
+  { symbol: 'tSIS', name: 'Tanzania Sisal', org_name: 'Dar Capital Ventures', commodity: 'Sisal', totalTokens: 6_000_000, pricePerToken: '$1.45', marketCap: 8_700_000, change24h: -1.2, holders: 423, status: 'trading' },
+  { symbol: 'tCOL', name: 'DRC Coltan', org_name: 'EAC Digital Assets', commodity: 'Coltan', totalTokens: 500_000, pricePerToken: '$112.00', marketCap: 56_000_000, change24h: 3.8, holders: 1892, status: 'minting' },
+  { symbol: 'tVAN', name: 'Uganda Vanilla', org_name: 'Kampala Investment Fund', commodity: 'Vanilla', totalTokens: 2_000_000, pricePerToken: '$5.60', marketCap: 11_200_000, change24h: 0.5, holders: 312, status: 'minting' },
+  { symbol: 'tPYR', name: 'Rwanda Pyrethrum', org_name: 'Nairobi Exports Ltd', commodity: 'Pyrethrum', totalTokens: 4_000_000, pricePerToken: '$0.00', marketCap: 0, change24h: 0, holders: 0, status: 'paused' },
 ];
 
 const RECENT_TRADES: RecentTrade[] = [
-  { id: 'TRD-001', asset: 'Kenya AA Coffee', symbol: 'tCOF', type: 'buy', quantity: 12500, price: '$4.82', total: '$60,250', trader: 'Nairobi Capital Partners', timestamp: '3 min ago' },
-  { id: 'TRD-002', asset: 'East Africa Gold', symbol: 'tGLD', type: 'sell', quantity: 800, price: '$68.40', total: '$54,720', trader: 'Kampala Investment Fund', timestamp: '8 min ago' },
-  { id: 'TRD-003', asset: 'DRC Coltan', symbol: 'tCOL', type: 'buy', quantity: 250, price: '$112.00', total: '$28,000', trader: 'EAC Digital Assets', timestamp: '15 min ago' },
-  { id: 'TRD-004', asset: 'Kenya Purple Tea', symbol: 'tTEA', type: 'buy', quantity: 45000, price: '$2.15', total: '$96,750', trader: 'Mombasa Trading House', timestamp: '22 min ago' },
-  { id: 'TRD-005', asset: 'Kilifi Cashews', symbol: 'tCSH', type: 'sell', quantity: 8000, price: '$3.20', total: '$25,600', trader: 'Coast Finance Ltd', timestamp: '31 min ago' },
-  { id: 'TRD-006', asset: 'Tanzania Sisal', symbol: 'tSIS', type: 'buy', quantity: 20000, price: '$1.45', total: '$29,000', trader: 'Dar Capital Ventures', timestamp: '45 min ago' },
+  { id: 'TRD-001', asset: 'Kenya AA Coffee', symbol: 'tCOF', type: 'buy', quantity: 12500, price: '$4.82', total: '$60,250', trader: 'Nairobi Exports Ltd', org_name: 'Nairobi Exports Ltd', timestamp: '3 min ago' },
+  { id: 'TRD-002', asset: 'East Africa Gold', symbol: 'tGLD', type: 'sell', quantity: 800, price: '$68.40', total: '$54,720', trader: 'Kampala Investment Fund', org_name: 'Kampala Investment Fund', timestamp: '8 min ago' },
+  { id: 'TRD-003', asset: 'DRC Coltan', symbol: 'tCOL', type: 'buy', quantity: 250, price: '$112.00', total: '$28,000', trader: 'EAC Digital Assets', org_name: 'EAC Digital Assets', timestamp: '15 min ago' },
+  { id: 'TRD-004', asset: 'Kenya Purple Tea', symbol: 'tTEA', type: 'buy', quantity: 45000, price: '$2.15', total: '$96,750', trader: 'Nairobi Exports Ltd', org_name: 'Nairobi Exports Ltd', timestamp: '22 min ago' },
+  { id: 'TRD-005', asset: 'Kilifi Cashews', symbol: 'tCSH', type: 'sell', quantity: 8000, price: '$3.20', total: '$25,600', trader: 'Coast Finance Ltd', org_name: 'Coast Finance Ltd', timestamp: '31 min ago' },
+  { id: 'TRD-006', asset: 'Tanzania Sisal', symbol: 'tSIS', type: 'buy', quantity: 20000, price: '$1.45', total: '$29,000', trader: 'Dar Capital Ventures', org_name: 'Dar Capital Ventures', timestamp: '45 min ago' },
 ];
 
 const SMART_CONTRACTS: SmartContract[] = [
@@ -121,6 +125,18 @@ const CONTRACT_STATUS: Record<string, { color: string; bg: string }> = {
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export default function TokenizationPage() {
+  const { filterByOrgName } = useDataIsolation();
+
+  const visibleAssets = useMemo(
+    () => filterByOrgName(ASSET_REGISTRY, 'org_name'),
+    [filterByOrgName],
+  );
+
+  const visibleTrades = useMemo(
+    () => filterByOrgName(RECENT_TRADES, 'org_name'),
+    [filterByOrgName],
+  );
+
   return (
     <Box>
       <Box sx={{ mb: 3 }}>
@@ -160,7 +176,7 @@ export default function TokenizationPage() {
               Commodity Token Registry
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {ASSET_REGISTRY.map((a) => {
+              {visibleAssets.map((a) => {
                 const as = ASSET_STATUS[a.status];
                 const maxMktCap = 68_400_000;
                 return (
@@ -221,7 +237,7 @@ export default function TokenizationPage() {
                 Recent Token Trades
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {RECENT_TRADES.map((t) => (
+                {visibleTrades.map((t) => (
                   <Box key={t.id} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 0.75, borderBottom: '1px solid rgba(212,175,55,0.05)' }}>
                     <Box sx={{
                       width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Box,
   Button,
@@ -30,15 +30,9 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { useAuthStore } from '../../stores/authStore';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
-
-const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor'];
-
-function isGovtUser(role: string): boolean {
-  return GOVT_ROLES.includes(role);
-}
 
 function formatCurrency(value: number): string {
   if (value >= 1000000) return `KSh ${(value / 1000000).toFixed(1)}M`;
@@ -290,11 +284,11 @@ function GovtTaxDashboard() {
 // ─── Trader Dashboard View ──────────────────────────────────────────────────
 
 function TraderTaxDashboard() {
-  const user = useAuthStore((s) => s.user);
-  const traderName = user?.organization_name || 'My Company';
+  const { orgName, filterByOrgName } = useDataIsolation();
+  const traderName = orgName || 'My Company';
 
   // Filter assessments for this trader only
-  const myAssessments = ALL_RECENT_ASSESSMENTS.filter((a) => a.trader === 'Nairobi Exports Ltd');
+  const myAssessments = useMemo(() => filterByOrgName(ALL_RECENT_ASSESSMENTS, 'trader'), [filterByOrgName]);
   const totalOwed = myAssessments.filter((a) => a.status === 'pending' || a.status === 'overdue').reduce((s, a) => s + a.total_tax, 0);
   const totalPaid = myAssessments.filter((a) => a.status === 'paid').reduce((s, a) => s + a.total_tax, 0);
   const pendingCount = myAssessments.filter((a) => a.status === 'pending').length;
@@ -468,10 +462,9 @@ function TraderTaxDashboard() {
 // ─── Main Page Component ────────────────────────────────────────────────────
 
 export default function TaxDashboardPage() {
-  const user = useAuthStore((s) => s.user);
-  const role = user?.role || 'trader';
+  const { isOversight } = useDataIsolation();
 
-  if (isGovtUser(role)) {
+  if (isOversight) {
     return <GovtTaxDashboard />;
   }
 

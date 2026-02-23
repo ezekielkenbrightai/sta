@@ -15,6 +15,7 @@ import {
   Search as SearchIcon,
   Add as AddIcon,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -23,6 +24,7 @@ interface Claim {
   reference: string;
   policy_ref: string;
   trader: string;
+  provider: string;
   type: string;
   claim_type: 'damage' | 'loss' | 'delay' | 'non_payment' | 'theft' | 'natural_disaster';
   amount_usd: number;
@@ -36,14 +38,14 @@ interface Claim {
 }
 
 const MOCK_CLAIMS: Claim[] = [
-  { id: 'clm-001', reference: 'CLM-2026-0089', policy_ref: 'POL-2026-MC-0421', trader: 'Kenya Pharma Distributors', type: 'Marine Cargo', claim_type: 'damage', amount_usd: 45000, settled_usd: null, status: 'under_review', filed_date: '2026-02-22', incident_date: '2026-02-18', description: 'Water damage to pharmaceutical shipment in container MSKU4821033. Estimated 15% of cargo affected during storm.', assessor: 'James Kimani', documents_count: 8 },
-  { id: 'clm-002', reference: 'CLM-2026-0088', policy_ref: 'POL-2026-TC-0189', trader: 'Cairo Trade House', type: 'Trade Credit', claim_type: 'non_payment', amount_usd: 120000, settled_usd: 108000, status: 'approved', filed_date: '2026-02-21', incident_date: '2026-01-30', description: 'Buyer default on electronics import payment. 90-day overdue. Buyer declared insolvency.', assessor: 'Grace Oduya', documents_count: 12 },
-  { id: 'clm-003', reference: 'CLM-2026-0087', policy_ref: 'POL-2026-MC-0398', trader: 'Lagos Electronics Ltd', type: 'Marine Cargo', claim_type: 'theft', amount_usd: 88000, settled_usd: null, status: 'investigation', filed_date: '2026-02-21', incident_date: '2026-02-15', description: 'Pilferage detected at Mombasa port. 12 cartons of smartphones missing from container. Police report filed.', assessor: 'James Kimani', documents_count: 15 },
-  { id: 'clm-004', reference: 'CLM-2026-0086', policy_ref: 'POL-2026-IT-0067', trader: 'East Africa Cement Ltd', type: 'Inland Transit', claim_type: 'damage', amount_usd: 15000, settled_usd: 13500, status: 'paid', filed_date: '2026-02-20', incident_date: '2026-02-17', description: 'Truck rollover on Mombasa-Nairobi highway. 8 tonnes of cement damaged due to rain exposure.', assessor: 'Peter Mutua', documents_count: 6 },
-  { id: 'clm-005', reference: 'CLM-2026-0085', policy_ref: 'POL-2026-WS-0012', trader: 'Nairobi Exports Ltd', type: 'Warehouse Stock', claim_type: 'natural_disaster', amount_usd: 32000, settled_usd: null, status: 'denied', filed_date: '2026-02-19', incident_date: '2026-02-12', description: 'Flooding at ICD warehouse. Claim denied — force majeure exclusion clause applies per policy Section 4.2.', assessor: 'Grace Oduya', documents_count: 10 },
-  { id: 'clm-006', reference: 'CLM-2026-0084', policy_ref: 'POL-2026-TC-0178', trader: 'Addis Pharmaceutical', type: 'Trade Credit', claim_type: 'non_payment', amount_usd: 67000, settled_usd: null, status: 'under_review', filed_date: '2026-02-18', incident_date: '2026-02-01', description: 'Partial payment default from Ethiopian buyer. KSh 67,000 equivalent outstanding beyond 60-day terms.', assessor: null, documents_count: 5 },
-  { id: 'clm-007', reference: 'CLM-2026-0083', policy_ref: 'POL-2026-MC-0398', trader: 'Lagos Electronics Ltd', type: 'Marine Cargo', claim_type: 'delay', amount_usd: 22000, settled_usd: null, status: 'appealed', filed_date: '2026-02-15', incident_date: '2026-02-10', description: 'Perishable electronics accessories expired due to 14-day port delay. Initially denied — trader appealing.', assessor: 'James Kimani', documents_count: 9 },
-  { id: 'clm-008', reference: 'CLM-2026-0082', policy_ref: 'POL-2026-IT-0067', trader: 'East Africa Cement Ltd', type: 'Inland Transit', claim_type: 'loss', amount_usd: 8000, settled_usd: 8000, status: 'paid', filed_date: '2026-02-10', incident_date: '2026-02-08', description: 'Complete loss of 3 pallets during rail transfer. SGR confirmed mishandling. Full settlement.', assessor: 'Peter Mutua', documents_count: 4 },
+  { id: 'clm-001', reference: 'CLM-2026-0089', policy_ref: 'POL-2026-MC-0421', trader: 'Kenya Pharma Distributors', provider: 'APA Insurance', type: 'Marine Cargo', claim_type: 'damage', amount_usd: 45000, settled_usd: null, status: 'under_review', filed_date: '2026-02-22', incident_date: '2026-02-18', description: 'Water damage to pharmaceutical shipment in container MSKU4821033. Estimated 15% of cargo affected during storm.', assessor: 'James Kimani', documents_count: 8 },
+  { id: 'clm-002', reference: 'CLM-2026-0088', policy_ref: 'POL-2026-TC-0189', trader: 'Cairo Trade House', provider: 'Jubilee Insurance', type: 'Trade Credit', claim_type: 'non_payment', amount_usd: 120000, settled_usd: 108000, status: 'approved', filed_date: '2026-02-21', incident_date: '2026-01-30', description: 'Buyer default on electronics import payment. 90-day overdue. Buyer declared insolvency.', assessor: 'Grace Oduya', documents_count: 12 },
+  { id: 'clm-003', reference: 'CLM-2026-0087', policy_ref: 'POL-2026-MC-0398', trader: 'Lagos Electronics Ltd', provider: 'Britam Insurance', type: 'Marine Cargo', claim_type: 'theft', amount_usd: 88000, settled_usd: null, status: 'investigation', filed_date: '2026-02-21', incident_date: '2026-02-15', description: 'Pilferage detected at Mombasa port. 12 cartons of smartphones missing from container. Police report filed.', assessor: 'James Kimani', documents_count: 15 },
+  { id: 'clm-004', reference: 'CLM-2026-0086', policy_ref: 'POL-2026-IT-0067', trader: 'East Africa Cement Ltd', provider: 'CIC Insurance', type: 'Inland Transit', claim_type: 'damage', amount_usd: 15000, settled_usd: 13500, status: 'paid', filed_date: '2026-02-20', incident_date: '2026-02-17', description: 'Truck rollover on Mombasa-Nairobi highway. 8 tonnes of cement damaged due to rain exposure.', assessor: 'Peter Mutua', documents_count: 6 },
+  { id: 'clm-005', reference: 'CLM-2026-0085', policy_ref: 'POL-2026-WS-0012', trader: 'Nairobi Exports Ltd', provider: 'APA Insurance', type: 'Warehouse Stock', claim_type: 'natural_disaster', amount_usd: 32000, settled_usd: null, status: 'denied', filed_date: '2026-02-19', incident_date: '2026-02-12', description: 'Flooding at ICD warehouse. Claim denied — force majeure exclusion clause applies per policy Section 4.2.', assessor: 'Grace Oduya', documents_count: 10 },
+  { id: 'clm-006', reference: 'CLM-2026-0084', policy_ref: 'POL-2026-TC-0178', trader: 'Addis Pharmaceutical', provider: 'Jubilee Insurance', type: 'Trade Credit', claim_type: 'non_payment', amount_usd: 67000, settled_usd: null, status: 'under_review', filed_date: '2026-02-18', incident_date: '2026-02-01', description: 'Partial payment default from Ethiopian buyer. KSh 67,000 equivalent outstanding beyond 60-day terms.', assessor: null, documents_count: 5 },
+  { id: 'clm-007', reference: 'CLM-2026-0083', policy_ref: 'POL-2026-MC-0398', trader: 'Lagos Electronics Ltd', provider: 'Britam Insurance', type: 'Marine Cargo', claim_type: 'delay', amount_usd: 22000, settled_usd: null, status: 'appealed', filed_date: '2026-02-15', incident_date: '2026-02-10', description: 'Perishable electronics accessories expired due to 14-day port delay. Initially denied — trader appealing.', assessor: 'James Kimani', documents_count: 9 },
+  { id: 'clm-008', reference: 'CLM-2026-0082', policy_ref: 'POL-2026-IT-0067', trader: 'East Africa Cement Ltd', provider: 'APA Insurance', type: 'Inland Transit', claim_type: 'loss', amount_usd: 8000, settled_usd: 8000, status: 'paid', filed_date: '2026-02-10', incident_date: '2026-02-08', description: 'Complete loss of 3 pallets during rail transfer. SGR confirmed mishandling. Full settlement.', assessor: 'Peter Mutua', documents_count: 4 },
 ];
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
@@ -74,11 +76,20 @@ function formatUSD(v: number): string {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function ClaimsPage() {
+  const { filterCustom, orgName, orgType } = useDataIsolation();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
+  const orgFiltered = useMemo(
+    () => filterCustom(MOCK_CLAIMS, (c) => {
+      if (orgType === 'insurance') return c.provider === orgName;
+      return c.trader === orgName;
+    }),
+    [filterCustom, orgName, orgType],
+  );
+
   const filtered = useMemo(() => {
-    return MOCK_CLAIMS.filter((c) => {
+    return orgFiltered.filter((c) => {
       if (statusFilter !== 'all' && c.status !== statusFilter) return false;
       if (search) {
         const q = search.toLowerCase();
@@ -86,11 +97,11 @@ export default function ClaimsPage() {
       }
       return true;
     });
-  }, [search, statusFilter]);
+  }, [orgFiltered, search, statusFilter]);
 
-  const totalClaimValue = MOCK_CLAIMS.reduce((s, c) => s + c.amount_usd, 0);
-  const totalSettled = MOCK_CLAIMS.reduce((s, c) => s + (c.settled_usd || 0), 0);
-  const openClaims = MOCK_CLAIMS.filter((c) => ['submitted', 'under_review', 'investigation', 'appealed'].includes(c.status)).length;
+  const totalClaimValue = orgFiltered.reduce((s, c) => s + c.amount_usd, 0);
+  const totalSettled = orgFiltered.reduce((s, c) => s + (c.settled_usd || 0), 0);
+  const openClaims = orgFiltered.filter((c) => ['submitted', 'under_review', 'investigation', 'appealed'].includes(c.status)).length;
 
   return (
     <Box>
@@ -112,7 +123,7 @@ export default function ClaimsPage() {
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Total Claims', value: MOCK_CLAIMS.length.toString(), color: '#D4AF37' },
+          { label: 'Total Claims', value: orgFiltered.length.toString(), color: '#D4AF37' },
           { label: 'Open Claims', value: openClaims.toString(), color: '#3B82F6' },
           { label: 'Total Claimed', value: formatUSD(totalClaimValue), color: '#EF4444' },
           { label: 'Total Settled', value: formatUSD(totalSettled), color: '#22C55E' },
@@ -205,7 +216,7 @@ export default function ClaimsPage() {
 
       <Box sx={{ mt: 2 }}>
         <Typography sx={{ fontSize: 12, color: '#777' }}>
-          Showing {filtered.length} of {MOCK_CLAIMS.length} claims
+          Showing {filtered.length} of {orgFiltered.length} claims
         </Typography>
       </Box>
     </Box>

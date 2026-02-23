@@ -16,9 +16,7 @@ import {
   TrendingUp,
   TrendingDown,
 } from '@mui/icons-material';
-import { useAuthStore } from '../../stores/authStore';
-
-const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor', 'bank_officer'];
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -83,17 +81,15 @@ function scoreColor(score: number): string {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function CreditAppraisalPage() {
-  const user = useAuthStore((s) => s.user);
-  const isBank = GOVT_ROLES.includes(user?.role || 'trader');
-  const traderOrg = user?.organization_name || 'Nairobi Exports Ltd';
+  const { isOversight, filterByOrgName, orgName } = useDataIsolation();
 
   const [search, setSearch] = useState('');
   const [gradeFilter, setGradeFilter] = useState('all');
 
-  const baseProfiles = useMemo(() => {
-    if (isBank) return MOCK_PROFILES;
-    return MOCK_PROFILES.filter((p) => p.trader === traderOrg);
-  }, [isBank, traderOrg]);
+  const baseProfiles = useMemo(
+    () => filterByOrgName(MOCK_PROFILES, 'trader'),
+    [filterByOrgName],
+  );
 
   const filtered = useMemo(() => {
     return baseProfiles.filter((p) => {
@@ -114,10 +110,10 @@ export default function CreditAppraisalPage() {
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
           <CreditScore sx={{ color: '#D4AF37' }} />
-          <Typography variant="h4">{isBank ? 'Credit Appraisal' : 'My Credit Profile'}</Typography>
+          <Typography variant="h4">{isOversight ? 'Credit Appraisal' : 'My Credit Profile'}</Typography>
         </Box>
         <Typography sx={{ color: 'text.secondary' }}>
-          {isBank ? 'Centralized credit scoring and risk assessment for trade counterparties.' : `Credit profile for ${traderOrg}.`}
+          {isOversight ? 'Centralized credit scoring and risk assessment for trade counterparties.' : `Credit profile for ${orgName}.`}
         </Typography>
       </Box>
 

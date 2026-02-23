@@ -17,9 +17,11 @@ import {
   ArrowBack,
   Download,
   Edit,
+  Lock,
   Print,
   Share,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock detail data ────────────────────────────────────────────────────────
 
@@ -83,7 +85,24 @@ function formatDate(dateStr: string) {
 export default function TradeDocumentDetailPage() {
   const { id: _id } = useParams();
   const navigate = useNavigate();
+  const { isOversight, orgName } = useDataIsolation();
   const doc = MOCK_DOC; // In production, fetch by id
+
+  // Org-scoped users can only view documents belonging to their organization
+  const hasAccess = isOversight || !orgName || doc.trader_name === orgName;
+
+  if (!hasAccess) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 8 }}>
+        <Lock sx={{ fontSize: 48, color: '#555', mb: 2 }} />
+        <Typography variant="h5" sx={{ mb: 1, color: '#f0f0f0' }}>Access Restricted</Typography>
+        <Typography sx={{ color: '#999', mb: 3 }}>This document belongs to another organization.</Typography>
+        <Button variant="outlined" onClick={() => navigate('/trade/documents')} sx={{ color: '#D4AF37', borderColor: 'rgba(212,175,55,0.3)' }}>
+          Back to Documents
+        </Button>
+      </Box>
+    );
+  }
 
   const activeStep = useMemo(() => {
     const idx = STATUSES_ORDER.indexOf(doc.status);

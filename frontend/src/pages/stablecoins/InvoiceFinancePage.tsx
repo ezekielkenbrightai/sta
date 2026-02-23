@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   Box,
   Card,
@@ -14,6 +15,7 @@ import {
   LocalShipping,
   EventNote,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ── TypeScript Interfaces ────────────────────────────────────────────────────
 
@@ -28,6 +30,7 @@ interface FinanceKpi {
 interface FinancePipelineItem {
   id: string;
   supplier: string;
+  org_name: string;
   buyer: string;
   amount: string;
   term: string;
@@ -50,6 +53,7 @@ interface SupplierProgram {
 interface RepaymentSchedule {
   id: string;
   borrower: string;
+  org_name: string;
   amount: string;
   dueDate: string;
   daysUntilDue: number;
@@ -66,13 +70,13 @@ const KPIS: FinanceKpi[] = [
 ];
 
 const PIPELINE: FinancePipelineItem[] = [
-  { id: 'SCF-2026-301', supplier: 'Thika Garments Ltd', buyer: 'Shoprite Holdings SA', amount: 'KES 42,800,000', term: '90 days', status: 'disbursed', submittedAt: '5 days ago' },
-  { id: 'SCF-2026-302', supplier: 'Athi River Cement', buyer: 'National Construction Authority', amount: 'KES 28,500,000', term: '60 days', status: 'approved', submittedAt: '2 days ago' },
-  { id: 'SCF-2026-303', supplier: 'Kisumu Sugar Mills', buyer: 'Nakumatt Holdings', amount: 'KES 15,200,000', term: '45 days', status: 'pending', submittedAt: '1 day ago' },
-  { id: 'SCF-2026-304', supplier: 'Nanyuki Horticulture', buyer: 'Multiflora SA Auctions', amount: 'KES 67,300,000', term: '30 days', status: 'repaid', submittedAt: '38 days ago' },
-  { id: 'SCF-2026-305', supplier: 'Meru Dairy Co-op', buyer: 'Brookside Distributors', amount: 'KES 8,900,000', term: '45 days', status: 'disbursed', submittedAt: '12 days ago' },
-  { id: 'SCF-2026-306', supplier: 'Mombasa Steel Works', buyer: 'SGR Kenya Ltd', amount: 'KES 124,000,000', term: '120 days', status: 'approved', submittedAt: '3 days ago' },
-  { id: 'SCF-2026-307', supplier: 'Machakos Textiles', buyer: 'PVH Africa', amount: 'KES 19,400,000', term: '60 days', status: 'pending', submittedAt: '6 hrs ago' },
+  { id: 'SCF-2026-301', supplier: 'Nairobi Exports Ltd', org_name: 'Nairobi Exports Ltd', buyer: 'Shoprite Holdings SA', amount: 'KES 42,800,000', term: '90 days', status: 'disbursed', submittedAt: '5 days ago' },
+  { id: 'SCF-2026-302', supplier: 'Athi River Cement', org_name: 'Athi River Cement', buyer: 'National Construction Authority', amount: 'KES 28,500,000', term: '60 days', status: 'approved', submittedAt: '2 days ago' },
+  { id: 'SCF-2026-303', supplier: 'Kisumu Sugar Mills', org_name: 'Kisumu Sugar Mills', buyer: 'Nakumatt Holdings', amount: 'KES 15,200,000', term: '45 days', status: 'pending', submittedAt: '1 day ago' },
+  { id: 'SCF-2026-304', supplier: 'Nairobi Exports Ltd', org_name: 'Nairobi Exports Ltd', buyer: 'Multiflora SA Auctions', amount: 'KES 67,300,000', term: '30 days', status: 'repaid', submittedAt: '38 days ago' },
+  { id: 'SCF-2026-305', supplier: 'Meru Dairy Co-op', org_name: 'Meru Dairy Co-op', buyer: 'Brookside Distributors', amount: 'KES 8,900,000', term: '45 days', status: 'disbursed', submittedAt: '12 days ago' },
+  { id: 'SCF-2026-306', supplier: 'Mombasa Steel Works', org_name: 'Mombasa Steel Works', buyer: 'SGR Kenya Ltd', amount: 'KES 124,000,000', term: '120 days', status: 'approved', submittedAt: '3 days ago' },
+  { id: 'SCF-2026-307', supplier: 'Nairobi Exports Ltd', org_name: 'Nairobi Exports Ltd', buyer: 'PVH Africa', amount: 'KES 19,400,000', term: '60 days', status: 'pending', submittedAt: '6 hrs ago' },
 ];
 
 const SUPPLIER_PROGRAMS: SupplierProgram[] = [
@@ -83,12 +87,12 @@ const SUPPLIER_PROGRAMS: SupplierProgram[] = [
 ];
 
 const REPAYMENT_SCHEDULE: RepaymentSchedule[] = [
-  { id: 'RPY-001', borrower: 'Thika Garments Ltd', amount: 'KES 14,500,000', dueDate: '2026-02-25', daysUntilDue: 2, status: 'due_soon' },
-  { id: 'RPY-002', borrower: 'Meru Dairy Co-op', amount: 'KES 4,600,000', dueDate: '2026-02-28', daysUntilDue: 5, status: 'upcoming' },
-  { id: 'RPY-003', borrower: 'Nakuru Plastics', amount: 'KES 7,200,000', dueDate: '2026-02-22', daysUntilDue: -1, status: 'overdue' },
-  { id: 'RPY-004', borrower: 'Lamu Marine Supplies', amount: 'KES 3,100,000', dueDate: '2026-03-05', daysUntilDue: 10, status: 'upcoming' },
-  { id: 'RPY-005', borrower: 'Athi River Cement', amount: 'KES 28,500,000', dueDate: '2026-03-12', daysUntilDue: 17, status: 'upcoming' },
-  { id: 'RPY-006', borrower: 'Mombasa Steel Works', amount: 'KES 42,000,000', dueDate: '2026-03-20', daysUntilDue: 25, status: 'upcoming' },
+  { id: 'RPY-001', borrower: 'Nairobi Exports Ltd', org_name: 'Nairobi Exports Ltd', amount: 'KES 14,500,000', dueDate: '2026-02-25', daysUntilDue: 2, status: 'due_soon' },
+  { id: 'RPY-002', borrower: 'Meru Dairy Co-op', org_name: 'Meru Dairy Co-op', amount: 'KES 4,600,000', dueDate: '2026-02-28', daysUntilDue: 5, status: 'upcoming' },
+  { id: 'RPY-003', borrower: 'Nakuru Plastics', org_name: 'Nakuru Plastics', amount: 'KES 7,200,000', dueDate: '2026-02-22', daysUntilDue: -1, status: 'overdue' },
+  { id: 'RPY-004', borrower: 'Lamu Marine Supplies', org_name: 'Lamu Marine Supplies', amount: 'KES 3,100,000', dueDate: '2026-03-05', daysUntilDue: 10, status: 'upcoming' },
+  { id: 'RPY-005', borrower: 'Nairobi Exports Ltd', org_name: 'Nairobi Exports Ltd', amount: 'KES 28,500,000', dueDate: '2026-03-12', daysUntilDue: 17, status: 'upcoming' },
+  { id: 'RPY-006', borrower: 'Mombasa Steel Works', org_name: 'Mombasa Steel Works', amount: 'KES 42,000,000', dueDate: '2026-03-20', daysUntilDue: 25, status: 'upcoming' },
 ];
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -115,6 +119,18 @@ const REPAY_STATUS: Record<string, { color: string; bg: string }> = {
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export default function InvoiceFinancePage() {
+  const { filterByOrgName } = useDataIsolation();
+
+  const visiblePipeline = useMemo(
+    () => filterByOrgName(PIPELINE, 'org_name'),
+    [filterByOrgName],
+  );
+
+  const visibleRepayments = useMemo(
+    () => filterByOrgName(REPAYMENT_SCHEDULE, 'org_name'),
+    [filterByOrgName],
+  );
+
   return (
     <Box>
       <Box sx={{ mb: 3 }}>
@@ -154,7 +170,7 @@ export default function InvoiceFinancePage() {
               Financing Pipeline
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {PIPELINE.map((p) => {
+              {visiblePipeline.map((p) => {
                 const st = PIPELINE_STATUS[p.status];
                 return (
                   <Box key={p.id} sx={{ p: 1.5, borderRadius: 1, backgroundColor: 'rgba(212,175,55,0.03)', border: '1px solid rgba(212,175,55,0.06)' }}>
@@ -236,7 +252,7 @@ export default function InvoiceFinancePage() {
                 Upcoming Repayments
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {REPAYMENT_SCHEDULE.map((r) => {
+                {visibleRepayments.map((r) => {
                   const rs = REPAY_STATUS[r.status];
                   return (
                     <Box key={r.id} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 0.75, borderBottom: '1px solid rgba(212,175,55,0.05)' }}>

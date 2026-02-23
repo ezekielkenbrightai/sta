@@ -14,12 +14,14 @@ import {
   Security,
   Search as SearchIcon,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
 interface RiskAssessment {
   id: string;
   trader: string;
+  provider: string;
   trade_doc_ref: string;
   route: string;
   cargo_type: string;
@@ -34,7 +36,7 @@ interface RiskAssessment {
 
 const MOCK_ASSESSMENTS: RiskAssessment[] = [
   {
-    id: 'ra-001', trader: 'Kenya Pharma Distributors', trade_doc_ref: 'TD-2026-1842', route: 'Dar es Salaam → Mombasa', cargo_type: 'Pharmaceuticals (cold chain)', cargo_value_usd: 250000, transport_mode: 'sea', risk_score: 62, risk_level: 'medium',
+    id: 'ra-001', trader: 'Kenya Pharma Distributors', provider: 'APA Insurance', trade_doc_ref: 'TD-2026-1842', route: 'Dar es Salaam → Mombasa', cargo_type: 'Pharmaceuticals (cold chain)', cargo_value_usd: 250000, transport_mode: 'sea', risk_score: 62, risk_level: 'medium',
     factors: [
       { name: 'Route Piracy Risk', score: 4, max: 10, impact: 'negative' },
       { name: 'Cargo Perishability', score: 7, max: 10, impact: 'negative' },
@@ -45,7 +47,7 @@ const MOCK_ASSESSMENTS: RiskAssessment[] = [
     recommended_premium_rate: 1.5, last_assessed: '2026-02-22',
   },
   {
-    id: 'ra-002', trader: 'Lagos Electronics Ltd', trade_doc_ref: 'TD-2026-1838', route: 'Lagos → Mombasa', cargo_type: 'Consumer Electronics', cargo_value_usd: 800000, transport_mode: 'sea', risk_score: 78, risk_level: 'high',
+    id: 'ra-002', trader: 'Lagos Electronics Ltd', provider: 'Britam Insurance', trade_doc_ref: 'TD-2026-1838', route: 'Lagos → Mombasa', cargo_type: 'Consumer Electronics', cargo_value_usd: 800000, transport_mode: 'sea', risk_score: 78, risk_level: 'high',
     factors: [
       { name: 'High-Value Target', score: 8, max: 10, impact: 'negative' },
       { name: 'Theft History (Port)', score: 7, max: 10, impact: 'negative' },
@@ -56,7 +58,7 @@ const MOCK_ASSESSMENTS: RiskAssessment[] = [
     recommended_premium_rate: 2.0, last_assessed: '2026-02-22',
   },
   {
-    id: 'ra-003', trader: 'Nairobi Exports Ltd', trade_doc_ref: 'TD-2026-1841', route: 'Mombasa → Dar es Salaam', cargo_type: 'Tea & Coffee', cargo_value_usd: 120000, transport_mode: 'sea', risk_score: 28, risk_level: 'low',
+    id: 'ra-003', trader: 'Nairobi Exports Ltd', provider: 'APA Insurance', trade_doc_ref: 'TD-2026-1841', route: 'Mombasa → Dar es Salaam', cargo_type: 'Tea & Coffee', cargo_value_usd: 120000, transport_mode: 'sea', risk_score: 28, risk_level: 'low',
     factors: [
       { name: 'Short Route', score: 2, max: 10, impact: 'positive' },
       { name: 'Non-Perishable', score: 1, max: 10, impact: 'positive' },
@@ -67,7 +69,7 @@ const MOCK_ASSESSMENTS: RiskAssessment[] = [
     recommended_premium_rate: 0.8, last_assessed: '2026-02-21',
   },
   {
-    id: 'ra-004', trader: 'Auto Kenya Ltd', trade_doc_ref: 'TD-2026-1835', route: 'Durban → Mombasa', cargo_type: 'Used Motor Vehicles', cargo_value_usd: 450000, transport_mode: 'sea', risk_score: 55, risk_level: 'medium',
+    id: 'ra-004', trader: 'Auto Kenya Ltd', provider: 'APA Insurance', trade_doc_ref: 'TD-2026-1835', route: 'Durban → Mombasa', cargo_type: 'Used Motor Vehicles', cargo_value_usd: 450000, transport_mode: 'sea', risk_score: 55, risk_level: 'medium',
     factors: [
       { name: 'Depreciation Risk', score: 5, max: 10, impact: 'negative' },
       { name: 'Damage in Transit', score: 4, max: 10, impact: 'neutral' },
@@ -78,7 +80,7 @@ const MOCK_ASSESSMENTS: RiskAssessment[] = [
     recommended_premium_rate: 1.2, last_assessed: '2026-02-21',
   },
   {
-    id: 'ra-005', trader: 'Dar es Salaam Freight', trade_doc_ref: 'TD-2026-1834', route: 'Cairo → Mombasa → Dar', cargo_type: 'Steel Pipes', cargo_value_usd: 600000, transport_mode: 'sea', risk_score: 85, risk_level: 'very_high',
+    id: 'ra-005', trader: 'Dar es Salaam Freight', provider: 'Britam Insurance', trade_doc_ref: 'TD-2026-1834', route: 'Cairo → Mombasa → Dar', cargo_type: 'Steel Pipes', cargo_value_usd: 600000, transport_mode: 'sea', risk_score: 85, risk_level: 'very_high',
     factors: [
       { name: 'Weight Discrepancy', score: 9, max: 10, impact: 'negative' },
       { name: 'Origin Risk (Re-export)', score: 8, max: 10, impact: 'negative' },
@@ -89,7 +91,7 @@ const MOCK_ASSESSMENTS: RiskAssessment[] = [
     recommended_premium_rate: 3.5, last_assessed: '2026-02-20',
   },
   {
-    id: 'ra-006', trader: 'East Africa Cement Ltd', trade_doc_ref: 'TD-2026-1840', route: 'Mombasa → Nairobi (SGR)', cargo_type: 'Cement & Steel', cargo_value_usd: 150000, transport_mode: 'rail', risk_score: 35, risk_level: 'low',
+    id: 'ra-006', trader: 'East Africa Cement Ltd', provider: 'CIC Insurance', trade_doc_ref: 'TD-2026-1840', route: 'Mombasa → Nairobi (SGR)', cargo_type: 'Cement & Steel', cargo_value_usd: 150000, transport_mode: 'rail', risk_score: 35, risk_level: 'low',
     factors: [
       { name: 'Rail Safety', score: 2, max: 10, impact: 'positive' },
       { name: 'Non-Fragile Cargo', score: 1, max: 10, impact: 'positive' },
@@ -130,11 +132,20 @@ function scoreColor(score: number): string {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function RiskScoringPage() {
+  const { filterCustom, orgName, orgType } = useDataIsolation();
   const [search, setSearch] = useState('');
   const [riskFilter, setRiskFilter] = useState('all');
 
+  const orgFiltered = useMemo(
+    () => filterCustom(MOCK_ASSESSMENTS, (a) => {
+      if (orgType === 'insurance') return a.provider === orgName;
+      return a.trader === orgName;
+    }),
+    [filterCustom, orgName, orgType],
+  );
+
   const filtered = useMemo(() => {
-    return MOCK_ASSESSMENTS.filter((a) => {
+    return orgFiltered.filter((a) => {
       if (riskFilter !== 'all' && a.risk_level !== riskFilter) return false;
       if (search) {
         const q = search.toLowerCase();
@@ -142,7 +153,7 @@ export default function RiskScoringPage() {
       }
       return true;
     });
-  }, [search, riskFilter]);
+  }, [orgFiltered, search, riskFilter]);
 
   return (
     <Box>
@@ -159,10 +170,10 @@ export default function RiskScoringPage() {
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Assessed', value: MOCK_ASSESSMENTS.length.toString(), color: '#D4AF37' },
-          { label: 'Low Risk', value: MOCK_ASSESSMENTS.filter((a) => a.risk_level === 'low').length.toString(), color: '#22C55E' },
-          { label: 'Medium Risk', value: MOCK_ASSESSMENTS.filter((a) => a.risk_level === 'medium').length.toString(), color: '#E6A817' },
-          { label: 'High / Very High', value: MOCK_ASSESSMENTS.filter((a) => ['high', 'very_high'].includes(a.risk_level)).length.toString(), color: '#EF4444' },
+          { label: 'Assessed', value: orgFiltered.length.toString(), color: '#D4AF37' },
+          { label: 'Low Risk', value: orgFiltered.filter((a) => a.risk_level === 'low').length.toString(), color: '#22C55E' },
+          { label: 'Medium Risk', value: orgFiltered.filter((a) => a.risk_level === 'medium').length.toString(), color: '#E6A817' },
+          { label: 'High / Very High', value: orgFiltered.filter((a) => ['high', 'very_high'].includes(a.risk_level)).length.toString(), color: '#EF4444' },
         ].map((s) => (
           <Grid size={{ xs: 6, md: 3 }} key={s.label}>
             <Card sx={{ p: 2.5 }}>
@@ -248,7 +259,7 @@ export default function RiskScoringPage() {
 
       <Box sx={{ mt: 2 }}>
         <Typography sx={{ fontSize: 12, color: '#777' }}>
-          Showing {filtered.length} of {MOCK_ASSESSMENTS.length} risk assessments
+          Showing {filtered.length} of {orgFiltered.length} risk assessments
         </Typography>
       </Box>
     </Box>

@@ -16,9 +16,7 @@ import {
   Search as SearchIcon,
   FileDownload,
 } from '@mui/icons-material';
-import { useAuthStore } from '../../stores/authStore';
-
-const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor'];
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -27,6 +25,7 @@ interface PaymentRecord {
   reference: string;
   assessment_ref: string;
   trader: string;
+  processing_bank: string;
   amount: number;
   currency: string;
   method: 'bank_transfer' | 'mobile_money' | 'card' | 'stablecoins';
@@ -36,16 +35,16 @@ interface PaymentRecord {
 }
 
 const MOCK_PAYMENTS: PaymentRecord[] = [
-  { id: 'ph-001', reference: 'PAY-2026-0188', assessment_ref: 'KE-2026-0042', trader: 'Nairobi Exports Ltd', amount: 48500, currency: 'KES', method: 'bank_transfer', status: 'completed', initiated_at: '2026-02-22 14:30', completed_at: '2026-02-22 14:32' },
-  { id: 'ph-002', reference: 'PAY-2026-0187', assessment_ref: 'KE-2026-0040', trader: 'Lagos Trading Co', amount: 156000, currency: 'KES', method: 'mobile_money', status: 'completed', initiated_at: '2026-02-22 13:15', completed_at: '2026-02-22 13:15' },
-  { id: 'ph-003', reference: 'PAY-2026-0186', assessment_ref: 'KE-2026-0039', trader: 'Kampala Imports Inc', amount: 22500, currency: 'KES', method: 'card', status: 'completed', initiated_at: '2026-02-22 11:45', completed_at: '2026-02-22 11:46' },
-  { id: 'ph-004', reference: 'PAY-2026-0185', assessment_ref: 'KE-2026-0038', trader: 'Accra Commodities Ltd', amount: 87000, currency: 'KES', method: 'bank_transfer', status: 'pending', initiated_at: '2026-02-22 10:20', completed_at: null },
-  { id: 'ph-005', reference: 'PAY-2026-0184', assessment_ref: 'KE-2026-0037', trader: 'Dar es Salaam Freight', amount: 31200, currency: 'KES', method: 'stablecoins', status: 'completed', initiated_at: '2026-02-21 16:50', completed_at: '2026-02-21 16:50' },
-  { id: 'ph-006', reference: 'PAY-2026-0183', assessment_ref: 'KE-2026-0036', trader: 'Cairo Trade House', amount: 45000, currency: 'KES', method: 'bank_transfer', status: 'failed', initiated_at: '2026-02-21 15:30', completed_at: null },
-  { id: 'ph-007', reference: 'PAY-2026-0182', assessment_ref: 'KE-2026-0035', trader: 'Nairobi Exports Ltd', amount: 12750, currency: 'KES', method: 'mobile_money', status: 'completed', initiated_at: '2026-02-21 09:15', completed_at: '2026-02-21 09:15' },
-  { id: 'ph-008', reference: 'PAY-2026-0181', assessment_ref: 'KE-2026-0034', trader: 'Lagos Trading Co', amount: 9800, currency: 'KES', method: 'card', status: 'refunded', initiated_at: '2026-02-20 14:00', completed_at: '2026-02-20 14:01' },
-  { id: 'ph-009', reference: 'PAY-2026-0180', assessment_ref: 'KE-2026-0033', trader: 'Kampala Imports Inc', amount: 68200, currency: 'KES', method: 'bank_transfer', status: 'completed', initiated_at: '2026-02-20 11:30', completed_at: '2026-02-20 11:33' },
-  { id: 'ph-010', reference: 'PAY-2026-0179', assessment_ref: 'KE-2026-0032', trader: 'Accra Commodities Ltd', amount: 41500, currency: 'KES', method: 'stablecoins', status: 'processing', initiated_at: '2026-02-20 10:00', completed_at: null },
+  { id: 'ph-001', reference: 'PAY-2026-0188', assessment_ref: 'KE-2026-0042', trader: 'Nairobi Exports Ltd', processing_bank: 'KCB Bank', amount: 48500, currency: 'KES', method: 'bank_transfer', status: 'completed', initiated_at: '2026-02-22 14:30', completed_at: '2026-02-22 14:32' },
+  { id: 'ph-002', reference: 'PAY-2026-0187', assessment_ref: 'KE-2026-0040', trader: 'Lagos Trading Co', processing_bank: 'KCB Bank', amount: 156000, currency: 'KES', method: 'mobile_money', status: 'completed', initiated_at: '2026-02-22 13:15', completed_at: '2026-02-22 13:15' },
+  { id: 'ph-003', reference: 'PAY-2026-0186', assessment_ref: 'KE-2026-0039', trader: 'Kampala Imports Inc', processing_bank: 'Standard Bank', amount: 22500, currency: 'KES', method: 'card', status: 'completed', initiated_at: '2026-02-22 11:45', completed_at: '2026-02-22 11:46' },
+  { id: 'ph-004', reference: 'PAY-2026-0185', assessment_ref: 'KE-2026-0038', trader: 'Accra Commodities Ltd', processing_bank: 'Standard Bank', amount: 87000, currency: 'KES', method: 'bank_transfer', status: 'pending', initiated_at: '2026-02-22 10:20', completed_at: null },
+  { id: 'ph-005', reference: 'PAY-2026-0184', assessment_ref: 'KE-2026-0037', trader: 'Dar es Salaam Freight', processing_bank: 'KCB Bank', amount: 31200, currency: 'KES', method: 'stablecoins', status: 'completed', initiated_at: '2026-02-21 16:50', completed_at: '2026-02-21 16:50' },
+  { id: 'ph-006', reference: 'PAY-2026-0183', assessment_ref: 'KE-2026-0036', trader: 'Cairo Trade House', processing_bank: 'KCB Bank', amount: 45000, currency: 'KES', method: 'bank_transfer', status: 'failed', initiated_at: '2026-02-21 15:30', completed_at: null },
+  { id: 'ph-007', reference: 'PAY-2026-0182', assessment_ref: 'KE-2026-0035', trader: 'Nairobi Exports Ltd', processing_bank: 'KCB Bank', amount: 12750, currency: 'KES', method: 'mobile_money', status: 'completed', initiated_at: '2026-02-21 09:15', completed_at: '2026-02-21 09:15' },
+  { id: 'ph-008', reference: 'PAY-2026-0181', assessment_ref: 'KE-2026-0034', trader: 'Lagos Trading Co', processing_bank: 'Standard Bank', amount: 9800, currency: 'KES', method: 'card', status: 'refunded', initiated_at: '2026-02-20 14:00', completed_at: '2026-02-20 14:01' },
+  { id: 'ph-009', reference: 'PAY-2026-0180', assessment_ref: 'KE-2026-0033', trader: 'Kampala Imports Inc', processing_bank: 'KCB Bank', amount: 68200, currency: 'KES', method: 'bank_transfer', status: 'completed', initiated_at: '2026-02-20 11:30', completed_at: '2026-02-20 11:33' },
+  { id: 'ph-010', reference: 'PAY-2026-0179', assessment_ref: 'KE-2026-0032', trader: 'Accra Commodities Ltd', processing_bank: 'Standard Bank', amount: 41500, currency: 'KES', method: 'stablecoins', status: 'processing', initiated_at: '2026-02-20 10:00', completed_at: null },
 ];
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
@@ -66,18 +65,16 @@ const METHOD_LABELS: Record<string, { label: string; color: string }> = {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function PaymentHistoryPage() {
-  const user = useAuthStore((s) => s.user);
-  const isGovt = GOVT_ROLES.includes(user?.role || 'trader');
-  const traderOrg = user?.organization_name || 'Nairobi Exports Ltd';
+  const { isOversight, filterCustom, orgName } = useDataIsolation();
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [methodFilter, setMethodFilter] = useState('all');
 
-  const basePayments = useMemo(() => {
-    if (isGovt) return MOCK_PAYMENTS;
-    return MOCK_PAYMENTS.filter((p) => p.trader === traderOrg);
-  }, [isGovt, traderOrg]);
+  const basePayments = useMemo(
+    () => filterCustom(MOCK_PAYMENTS, (p) => p.trader === orgName || p.processing_bank === orgName),
+    [filterCustom, orgName],
+  );
 
   const filtered = useMemo(() => {
     return basePayments.filter((p) => {
@@ -99,10 +96,10 @@ export default function PaymentHistoryPage() {
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
             <History sx={{ color: '#D4AF37' }} />
-            <Typography variant="h4">{isGovt ? 'Payment History' : 'My Payment History'}</Typography>
+            <Typography variant="h4">{isOversight ? 'Payment History' : 'My Payment History'}</Typography>
           </Box>
           <Typography sx={{ color: 'text.secondary' }}>
-            {isGovt ? 'Complete transaction history with receipts and audit trail.' : `Payment history for ${traderOrg}.`}
+            {isOversight ? 'Complete transaction history with receipts and audit trail.' : `Payment history for ${orgName}.`}
           </Typography>
         </Box>
       </Box>

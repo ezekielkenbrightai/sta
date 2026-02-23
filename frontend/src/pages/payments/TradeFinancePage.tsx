@@ -18,9 +18,7 @@ import {
   Search as SearchIcon,
   Visibility as ViewIcon,
 } from '@mui/icons-material';
-import { useAuthStore } from '../../stores/authStore';
-
-const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor', 'bank_officer'];
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -75,17 +73,15 @@ function formatAmount(value: number): string {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function TradeFinancePage() {
-  const user = useAuthStore((s) => s.user);
-  const isBank = GOVT_ROLES.includes(user?.role || 'trader');
-  const traderOrg = user?.organization_name || 'Nairobi Exports Ltd';
+  const { isOversight, filterByOrgName, orgName } = useDataIsolation();
 
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
 
-  const baseFacilities = useMemo(() => {
-    if (isBank) return MOCK_FACILITIES;
-    return MOCK_FACILITIES.filter((f) => f.trader === traderOrg);
-  }, [isBank, traderOrg]);
+  const baseFacilities = useMemo(
+    () => filterByOrgName(MOCK_FACILITIES, 'trader'),
+    [filterByOrgName],
+  );
 
   const filtered = useMemo(() => {
     return baseFacilities.filter((f) => {
@@ -106,10 +102,10 @@ export default function TradeFinancePage() {
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
             <RequestQuote sx={{ color: '#D4AF37' }} />
-            <Typography variant="h4">{isBank ? 'Trade Finance' : 'My Trade Finance'}</Typography>
+            <Typography variant="h4">{isOversight ? 'Trade Finance' : 'My Trade Finance'}</Typography>
           </Box>
           <Typography sx={{ color: 'text.secondary' }}>
-            {isBank ? 'Manage letters of credit, trade loans, guarantees, and other trade finance instruments.' : `Trade finance facilities for ${traderOrg}.`}
+            {isOversight ? 'Manage letters of credit, trade loans, guarantees, and other trade finance instruments.' : `Trade finance facilities for ${orgName}.`}
           </Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />}>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Box,
@@ -25,6 +25,7 @@ import {
   RISK_TIER_CONFIG,
   STATUS_CONFIG,
 } from './ComplianceDashboardPage';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Directors mock data ─────────────────────────────────────────────────────
 
@@ -166,10 +167,18 @@ const PEP_COLORS: Record<string, { color: string; bg: string }> = {
 
 export default function CompanyDueDiligencePage() {
   const { id } = useParams<{ id: string }>();
+  const { filterByOrgName } = useDataIsolation();
   const [notes, setNotes] = useState('');
 
-  // Default to first entity with good data if no ID or invalid
-  const entityId = id && SCREENED_ENTITIES.find((e) => e.id === id) ? id : 'ent-001';
+  const allowedEntities = useMemo(
+    () => filterByOrgName(SCREENED_ENTITIES, 'name'),
+    [filterByOrgName],
+  );
+
+  // Default to first allowed entity if no ID, invalid, or not in allowed set
+  const entityId = id && allowedEntities.find((e) => e.id === id)
+    ? id
+    : allowedEntities[0]?.id ?? 'ent-001';
   const entity = SCREENED_ENTITIES.find((e) => e.id === entityId)!;
   const directors = DIRECTORS.filter((d) => d.entityId === entityId);
   const docs = DOC_CHECKLIST[entityId] || [];

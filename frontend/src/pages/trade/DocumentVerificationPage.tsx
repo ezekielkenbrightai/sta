@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -15,6 +15,7 @@ import {
   HourglassEmpty,
   Warning,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 const MOCK_QUEUE = [
   {
@@ -44,7 +45,11 @@ const VERIFIED = [
 
 export default function DocumentVerificationPage() {
   const navigate = useNavigate();
+  const { filterByOrgName } = useDataIsolation();
   const [tab, setTab] = useState(0);
+
+  const queue = useMemo(() => filterByOrgName(MOCK_QUEUE, 'trader'), [filterByOrgName]);
+  const verified = useMemo(() => filterByOrgName(VERIFIED, 'trader'), [filterByOrgName]);
 
   return (
     <Box>
@@ -56,9 +61,9 @@ export default function DocumentVerificationPage() {
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Pending Review', value: MOCK_QUEUE.length, icon: <HourglassEmpty />, color: '#E6A817' },
-          { label: 'High Priority', value: MOCK_QUEUE.filter((d) => d.priority === 'high').length, icon: <Warning />, color: '#EF4444' },
-          { label: 'Verified Today', value: VERIFIED.length, icon: <CheckCircle />, color: '#22C55E' },
+          { label: 'Pending Review', value: queue.length, icon: <HourglassEmpty />, color: '#E6A817' },
+          { label: 'High Priority', value: queue.filter((d) => d.priority === 'high').length, icon: <Warning />, color: '#EF4444' },
+          { label: 'Verified Today', value: verified.length, icon: <CheckCircle />, color: '#22C55E' },
         ].map((s) => (
           <Grid size={{ xs: 12, sm: 4 }} key={s.label}>
             <Card sx={{ p: 2.5, display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -87,13 +92,13 @@ export default function DocumentVerificationPage() {
             '& .MuiTabs-indicator': { backgroundColor: '#D4AF37' },
           }}
         >
-          <Tab label={`Pending Review (${MOCK_QUEUE.length})`} />
-          <Tab label={`Verified (${VERIFIED.length})`} />
+          <Tab label={`Pending Review (${queue.length})`} />
+          <Tab label={`Verified (${verified.length})`} />
         </Tabs>
 
         {tab === 0 && (
           <Box>
-            {MOCK_QUEUE.map((doc, i) => (
+            {queue.map((doc, i) => (
               <Box
                 key={doc.id}
                 sx={{
@@ -101,7 +106,7 @@ export default function DocumentVerificationPage() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  borderBottom: i < MOCK_QUEUE.length - 1 ? '1px solid rgba(212,175,55,0.05)' : 'none',
+                  borderBottom: i < queue.length - 1 ? '1px solid rgba(212,175,55,0.05)' : 'none',
                   cursor: 'pointer',
                   '&:hover': { backgroundColor: 'rgba(212,175,55,0.04)' },
                   flexWrap: 'wrap',
@@ -140,7 +145,7 @@ export default function DocumentVerificationPage() {
 
         {tab === 1 && (
           <Box>
-            {VERIFIED.map((doc) => (
+            {verified.map((doc) => (
               <Box key={doc.id} sx={{ p: 2.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
                   <Typography sx={{ fontSize: 14, fontWeight: 600, color: '#22C55E' }}>{doc.reference}</Typography>

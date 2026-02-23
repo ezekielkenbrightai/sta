@@ -15,9 +15,7 @@ import {
   Search as SearchIcon,
   Add as AddIcon,
 } from '@mui/icons-material';
-import { useAuthStore } from '../../stores/authStore';
-
-const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor', 'insurance_agent'];
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -75,18 +73,19 @@ function formatUSD(v: number): string {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function PolicyManagementPage() {
-  const user = useAuthStore((s) => s.user);
-  const isInsurer = GOVT_ROLES.includes(user?.role || 'trader');
-  const traderOrg = user?.organization_name || 'Nairobi Exports Ltd';
+  const { isOversight, filterCustom, orgName, orgType } = useDataIsolation();
 
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  const basePolicies = useMemo(() => {
-    if (isInsurer) return MOCK_POLICIES;
-    return MOCK_POLICIES.filter((p) => p.trader === traderOrg);
-  }, [isInsurer, traderOrg]);
+  const basePolicies = useMemo(
+    () => filterCustom(MOCK_POLICIES, (p) => {
+      if (orgType === 'insurance') return p.provider === orgName;
+      return p.trader === orgName;
+    }),
+    [filterCustom, orgName, orgType],
+  );
 
   const filtered = useMemo(() => {
     return basePolicies.filter((p) => {
@@ -109,10 +108,10 @@ export default function PolicyManagementPage() {
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
             <Policy sx={{ color: '#D4AF37' }} />
-            <Typography variant="h4">{isInsurer ? 'Policy Management' : 'My Insurance Policies'}</Typography>
+            <Typography variant="h4">{isOversight || orgType === 'insurance' ? 'Policy Management' : 'My Insurance Policies'}</Typography>
           </Box>
           <Typography sx={{ color: 'text.secondary' }}>
-            {isInsurer ? 'Manage trade insurance policies — marine cargo, transit, warehouse, credit, and political risk.' : `Insurance policies for ${traderOrg}.`}
+            {isOversight || orgType === 'insurance' ? 'Manage trade insurance policies — marine cargo, transit, warehouse, credit, and political risk.' : `Insurance policies for ${orgName ?? 'your organization'}.`}
           </Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />}>

@@ -25,6 +25,7 @@ import {
   CartesianGrid,
   Tooltip,
 } from 'recharts';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -48,6 +49,7 @@ interface RecentPayment {
   id: string;
   reference: string;
   trader: string;
+  processing_bank: string;
   amount: number;
   currency: string;
   method: string;
@@ -56,12 +58,12 @@ interface RecentPayment {
 }
 
 const RECENT_PAYMENTS: RecentPayment[] = [
-  { id: 'pay-001', reference: 'PAY-2026-0188', trader: 'Nairobi Exports Ltd', amount: 48500, currency: 'KES', method: 'Bank Transfer', status: 'completed', timestamp: '2026-02-22 14:30' },
-  { id: 'pay-002', reference: 'PAY-2026-0187', trader: 'Lagos Trading Co', amount: 156000, currency: 'NGN', method: 'M-Pesa', status: 'processing', timestamp: '2026-02-22 13:15' },
-  { id: 'pay-003', reference: 'PAY-2026-0186', trader: 'Kampala Imports Inc', amount: 22500, currency: 'UGX', method: 'Card', status: 'completed', timestamp: '2026-02-22 11:45' },
-  { id: 'pay-004', reference: 'PAY-2026-0185', trader: 'Accra Commodities Ltd', amount: 87000, currency: 'GHS', method: 'Bank Transfer', status: 'pending', timestamp: '2026-02-22 10:20' },
-  { id: 'pay-005', reference: 'PAY-2026-0184', trader: 'Dar es Salaam Freight', amount: 31200, currency: 'TZS', method: 'Stable Coins', status: 'completed', timestamp: '2026-02-21 16:50' },
-  { id: 'pay-006', reference: 'PAY-2026-0183', trader: 'Cairo Trade House', amount: 45000, currency: 'EGP', method: 'Bank Transfer', status: 'failed', timestamp: '2026-02-21 15:30' },
+  { id: 'pay-001', reference: 'PAY-2026-0188', trader: 'Nairobi Exports Ltd', processing_bank: 'KCB Bank', amount: 48500, currency: 'KES', method: 'Bank Transfer', status: 'completed', timestamp: '2026-02-22 14:30' },
+  { id: 'pay-002', reference: 'PAY-2026-0187', trader: 'Lagos Trading Co', processing_bank: 'KCB Bank', amount: 156000, currency: 'NGN', method: 'M-Pesa', status: 'processing', timestamp: '2026-02-22 13:15' },
+  { id: 'pay-003', reference: 'PAY-2026-0186', trader: 'Kampala Imports Inc', processing_bank: 'Standard Bank', amount: 22500, currency: 'UGX', method: 'Card', status: 'completed', timestamp: '2026-02-22 11:45' },
+  { id: 'pay-004', reference: 'PAY-2026-0185', trader: 'Accra Commodities Ltd', processing_bank: 'Standard Bank', amount: 87000, currency: 'GHS', method: 'Bank Transfer', status: 'pending', timestamp: '2026-02-22 10:20' },
+  { id: 'pay-005', reference: 'PAY-2026-0184', trader: 'Dar es Salaam Freight', processing_bank: 'KCB Bank', amount: 31200, currency: 'TZS', method: 'Stable Coins', status: 'completed', timestamp: '2026-02-21 16:50' },
+  { id: 'pay-006', reference: 'PAY-2026-0183', trader: 'Cairo Trade House', processing_bank: 'KCB Bank', amount: 45000, currency: 'EGP', method: 'Bank Transfer', status: 'failed', timestamp: '2026-02-21 15:30' },
 ];
 
 interface MethodBreakdown {
@@ -94,6 +96,13 @@ function formatCurrency(value: number): string {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function PaymentDashboardPage() {
+  const { filterCustom, orgName, isOversight } = useDataIsolation();
+
+  const recentPayments = useMemo(
+    () => filterCustom(RECENT_PAYMENTS, (p) => p.trader === orgName || p.processing_bank === orgName),
+    [filterCustom, orgName],
+  );
+
   const todayVolume = DAILY_VOLUMES[DAILY_VOLUMES.length - 1];
   const yesterdayVolume = DAILY_VOLUMES[DAILY_VOLUMES.length - 2];
   const volumeChange = ((todayVolume.amount - yesterdayVolume.amount) / yesterdayVolume.amount * 100).toFixed(1);
@@ -101,8 +110,8 @@ export default function PaymentDashboardPage() {
 
   const totalMethodVolume = METHOD_BREAKDOWN.reduce((s, m) => s + m.volume, 0);
 
-  const settledToday = useMemo(() => RECENT_PAYMENTS.filter((p) => p.status === 'completed').length, []);
-  const pendingToday = useMemo(() => RECENT_PAYMENTS.filter((p) => p.status === 'pending' || p.status === 'processing').length, []);
+  const settledToday = useMemo(() => recentPayments.filter((p) => p.status === 'completed').length, [recentPayments]);
+  const pendingToday = useMemo(() => recentPayments.filter((p) => p.status === 'pending' || p.status === 'processing').length, [recentPayments]);
 
   return (
     <Box>
@@ -112,7 +121,7 @@ export default function PaymentDashboardPage() {
           <Typography variant="h4">Payment Dashboard</Typography>
         </Box>
         <Typography sx={{ color: 'text.secondary' }}>
-          Real-time payment processing and settlement overview.
+          {isOversight ? 'Real-time payment processing and settlement overview.' : `Payment activity for ${orgName}.`}
         </Typography>
       </Box>
 
@@ -242,7 +251,7 @@ export default function PaymentDashboardPage() {
                 <Typography key={h} sx={{ fontSize: 11, fontWeight: 600, color: '#777', textTransform: 'uppercase' }}>{h}</Typography>
               ))}
             </Box>
-            {RECENT_PAYMENTS.map((p, i) => {
+            {recentPayments.map((p, i) => {
               const sts = STATUS_CONFIG[p.status];
               return (
                 <Box
@@ -252,7 +261,7 @@ export default function PaymentDashboardPage() {
                     gridTemplateColumns: '130px 1fr 100px 60px 110px 90px 130px',
                     gap: 1, px: 2.5, py: 1.75,
                     alignItems: 'center',
-                    borderBottom: i < RECENT_PAYMENTS.length - 1 ? '1px solid rgba(212,175,55,0.05)' : 'none',
+                    borderBottom: i < recentPayments.length - 1 ? '1px solid rgba(212,175,55,0.05)' : 'none',
                     '&:hover': { backgroundColor: 'rgba(212,175,55,0.03)' },
                     cursor: 'pointer',
                   }}

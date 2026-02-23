@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   Box,
   Card,
@@ -13,6 +14,7 @@ import {
   Business,
   CompareArrows,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ── TypeScript Interfaces ────────────────────────────────────────────────────
 
@@ -27,6 +29,7 @@ interface DiscountingKpi {
 interface InvoiceQueueItem {
   id: string;
   seller: string;
+  org_name: string;
   buyer: string;
   invoiceAmount: string;
   discountedAmount: string;
@@ -63,12 +66,12 @@ const KPIS: DiscountingKpi[] = [
 ];
 
 const INVOICE_QUEUE: InvoiceQueueItem[] = [
-  { id: 'INV-2026-0841', seller: 'Mombasa Tea Exports', buyer: 'Johannesburg Commodities Ltd', invoiceAmount: 'KES 24,500,000', discountedAmount: 'KES 23,187,000', discountRate: '5.4%', status: 'funded', dueDate: '2026-04-15', submittedAt: '2 days ago' },
-  { id: 'INV-2026-0842', seller: 'Nairobi Coffee Co-op', buyer: 'Casablanca Trading SA', invoiceAmount: 'KES 18,200,000', discountedAmount: 'KES 17,018,000', discountRate: '6.5%', status: 'approved', dueDate: '2026-04-22', submittedAt: '1 day ago' },
-  { id: 'INV-2026-0843', seller: 'Kilifi Cashew Ltd', buyer: 'Dar es Salaam Nuts Co', invoiceAmount: 'KES 8,700,000', discountedAmount: 'KES 8,135,400', discountRate: '6.5%', status: 'under_review', dueDate: '2026-05-01', submittedAt: '5 hrs ago' },
-  { id: 'INV-2026-0844', seller: 'Kisumu Fish Traders', buyer: 'Kampala Fresh Foods', invoiceAmount: 'KES 3,400,000', discountedAmount: '—', discountRate: '—', status: 'submitted', dueDate: '2026-05-10', submittedAt: '1 hr ago' },
-  { id: 'INV-2026-0845', seller: 'Eldoret Grain Millers', buyer: 'Juba Foodstuffs Co', invoiceAmount: 'KES 12,100,000', discountedAmount: 'KES 11,374,000', discountRate: '6.0%', status: 'approved', dueDate: '2026-04-28', submittedAt: '18 hrs ago' },
-  { id: 'INV-2026-0846', seller: 'Dar Sisal Exporters', buyer: 'Lagos Import Corp', invoiceAmount: 'KES 31,500,000', discountedAmount: 'KES 29,295,000', discountRate: '7.0%', status: 'under_review', dueDate: '2026-05-15', submittedAt: '4 hrs ago' },
+  { id: 'INV-2026-0841', seller: 'Mombasa Tea Exports', org_name: 'Mombasa Tea Exports', buyer: 'Johannesburg Commodities Ltd', invoiceAmount: 'KES 24,500,000', discountedAmount: 'KES 23,187,000', discountRate: '5.4%', status: 'funded', dueDate: '2026-04-15', submittedAt: '2 days ago' },
+  { id: 'INV-2026-0842', seller: 'Nairobi Exports Ltd', org_name: 'Nairobi Exports Ltd', buyer: 'Casablanca Trading SA', invoiceAmount: 'KES 18,200,000', discountedAmount: 'KES 17,018,000', discountRate: '6.5%', status: 'approved', dueDate: '2026-04-22', submittedAt: '1 day ago' },
+  { id: 'INV-2026-0843', seller: 'Kilifi Cashew Ltd', org_name: 'Kilifi Cashew Ltd', buyer: 'Dar es Salaam Nuts Co', invoiceAmount: 'KES 8,700,000', discountedAmount: 'KES 8,135,400', discountRate: '6.5%', status: 'under_review', dueDate: '2026-05-01', submittedAt: '5 hrs ago' },
+  { id: 'INV-2026-0844', seller: 'Nairobi Exports Ltd', org_name: 'Nairobi Exports Ltd', buyer: 'Kampala Fresh Foods', invoiceAmount: 'KES 3,400,000', discountedAmount: '—', discountRate: '—', status: 'submitted', dueDate: '2026-05-10', submittedAt: '1 hr ago' },
+  { id: 'INV-2026-0845', seller: 'Eldoret Grain Millers', org_name: 'Eldoret Grain Millers', buyer: 'Juba Foodstuffs Co', invoiceAmount: 'KES 12,100,000', discountedAmount: 'KES 11,374,000', discountRate: '6.0%', status: 'approved', dueDate: '2026-04-28', submittedAt: '18 hrs ago' },
+  { id: 'INV-2026-0846', seller: 'Nairobi Exports Ltd', org_name: 'Nairobi Exports Ltd', buyer: 'Lagos Import Corp', invoiceAmount: 'KES 31,500,000', discountedAmount: 'KES 29,295,000', discountRate: '7.0%', status: 'under_review', dueDate: '2026-05-15', submittedAt: '4 hrs ago' },
 ];
 
 const RATE_COMPARISONS: RateComparison[] = [
@@ -105,6 +108,13 @@ const QUEUE_STATUS: Record<string, { label: string; color: string; bg: string }>
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export default function DiscountingPage() {
+  const { filterByOrgName } = useDataIsolation();
+
+  const visibleInvoices = useMemo(
+    () => filterByOrgName(INVOICE_QUEUE, 'org_name'),
+    [filterByOrgName],
+  );
+
   return (
     <Box>
       <Box sx={{ mb: 3 }}>
@@ -144,7 +154,7 @@ export default function DiscountingPage() {
               Invoice Discounting Queue
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {INVOICE_QUEUE.map((inv) => {
+              {visibleInvoices.map((inv) => {
                 const st = QUEUE_STATUS[inv.status];
                 return (
                   <Box key={inv.id} sx={{ p: 1.5, borderRadius: 1, backgroundColor: 'rgba(212,175,55,0.03)', border: '1px solid rgba(212,175,55,0.06)' }}>

@@ -24,6 +24,7 @@ import {
   RISK_TIER_CONFIG,
   STATUS_CONFIG,
 } from './ComplianceDashboardPage';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Check sources ───────────────────────────────────────────────────────────
 
@@ -98,18 +99,24 @@ const RESULT_CONFIG: Record<string, { label: string; color: string; bg: string; 
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function EntityScreeningPage() {
+  const { filterByOrgName } = useDataIsolation();
   const [search, setSearch] = useState('');
   const [selectedEntity, setSelectedEntity] = useState<string | null>(null);
   const [screeningActive, setScreeningActive] = useState(false);
   const [screeningProgress, setScreeningProgress] = useState(0);
 
+  const orgEntities = useMemo(
+    () => filterByOrgName(SCREENED_ENTITIES, 'name'),
+    [filterByOrgName],
+  );
+
   const filteredEntities = useMemo(() => {
-    if (!search) return SCREENED_ENTITIES;
+    if (!search) return orgEntities;
     const q = search.toLowerCase();
-    return SCREENED_ENTITIES.filter((e) =>
+    return orgEntities.filter((e) =>
       e.name.toLowerCase().includes(q) || e.country.toLowerCase().includes(q),
     );
-  }, [search]);
+  }, [orgEntities, search]);
 
   const entityResults = useMemo(() => {
     if (!selectedEntity) return [];

@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   Box,
   Card,
@@ -15,6 +16,7 @@ import {
   CreditScore,
   PieChart,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ── TypeScript Interfaces ────────────────────────────────────────────────────
 
@@ -29,6 +31,7 @@ interface LendingKpi {
 interface LoanRequest {
   id: string;
   borrower: string;
+  org_name: string;
   country: string;
   flag: string;
   amount: string;
@@ -69,14 +72,14 @@ const KPIS: LendingKpi[] = [
 ];
 
 const LOAN_REQUESTS: LoanRequest[] = [
-  { id: 'LN-2026-4201', borrower: 'Machakos Poultry Farm', country: 'Kenya', flag: '\ud83c\uddf0\ud83c\uddea', amount: 'KES 2,500,000', term: '12 months', apr: '12.5%', purpose: 'Equipment Purchase', riskRating: 'A', funded: 85, status: 'funding' },
-  { id: 'LN-2026-4202', borrower: 'Kampala Auto Spares', country: 'Uganda', flag: '\ud83c\uddfa\ud83c\uddec', amount: 'UGX 45,000,000', term: '6 months', apr: '16.0%', purpose: 'Inventory Financing', riskRating: 'B', funded: 62, status: 'funding' },
-  { id: 'LN-2026-4203', borrower: 'Arusha Coffee Collective', country: 'Tanzania', flag: '\ud83c\uddf9\ud83c\uddff', amount: 'TZS 18,000,000', term: '9 months', apr: '14.0%', purpose: 'Harvest Pre-finance', riskRating: 'A', funded: 100, status: 'funded' },
-  { id: 'LN-2026-4204', borrower: 'Kigali Tech Hub', country: 'Rwanda', flag: '\ud83c\uddf7\ud83c\uddfc', amount: 'RWF 8,500,000', term: '18 months', apr: '13.5%', purpose: 'Workspace Expansion', riskRating: 'B', funded: 41, status: 'funding' },
-  { id: 'LN-2026-4205', borrower: 'Mombasa Fish Traders Co-op', country: 'Kenya', flag: '\ud83c\uddf0\ud83c\uddea', amount: 'KES 4,200,000', term: '6 months', apr: '11.0%', purpose: 'Working Capital', riskRating: 'A', funded: 0, status: 'open' },
-  { id: 'LN-2026-4206', borrower: 'Juba Construction Ltd', country: 'South Sudan', flag: '\ud83c\uddf8\ud83c\uddf8', amount: 'SSP 12,000,000', term: '24 months', apr: '22.5%', purpose: 'Project Finance', riskRating: 'D', funded: 18, status: 'funding' },
-  { id: 'LN-2026-4207', borrower: 'Nairobi Ride-Share Co', country: 'Kenya', flag: '\ud83c\uddf0\ud83c\uddea', amount: 'KES 8,000,000', term: '12 months', apr: '15.0%', purpose: 'Fleet Expansion', riskRating: 'B', funded: 0, status: 'open' },
-  { id: 'LN-2026-4208', borrower: 'Dodoma Solar Installers', country: 'Tanzania', flag: '\ud83c\uddf9\ud83c\uddff', amount: 'TZS 25,000,000', term: '18 months', apr: '13.0%', purpose: 'Green Energy', riskRating: 'A', funded: 100, status: 'active' },
+  { id: 'LN-2026-4201', borrower: 'Nairobi Exports Ltd', org_name: 'Nairobi Exports Ltd', country: 'Kenya', flag: '\ud83c\uddf0\ud83c\uddea', amount: 'KES 2,500,000', term: '12 months', apr: '12.5%', purpose: 'Equipment Purchase', riskRating: 'A', funded: 85, status: 'funding' },
+  { id: 'LN-2026-4202', borrower: 'Kampala Auto Spares', org_name: 'Kampala Auto Spares', country: 'Uganda', flag: '\ud83c\uddfa\ud83c\uddec', amount: 'UGX 45,000,000', term: '6 months', apr: '16.0%', purpose: 'Inventory Financing', riskRating: 'B', funded: 62, status: 'funding' },
+  { id: 'LN-2026-4203', borrower: 'Arusha Coffee Collective', org_name: 'Arusha Coffee Collective', country: 'Tanzania', flag: '\ud83c\uddf9\ud83c\uddff', amount: 'TZS 18,000,000', term: '9 months', apr: '14.0%', purpose: 'Harvest Pre-finance', riskRating: 'A', funded: 100, status: 'funded' },
+  { id: 'LN-2026-4204', borrower: 'Kigali Tech Hub', org_name: 'Kigali Tech Hub', country: 'Rwanda', flag: '\ud83c\uddf7\ud83c\uddfc', amount: 'RWF 8,500,000', term: '18 months', apr: '13.5%', purpose: 'Workspace Expansion', riskRating: 'B', funded: 41, status: 'funding' },
+  { id: 'LN-2026-4205', borrower: 'Nairobi Exports Ltd', org_name: 'Nairobi Exports Ltd', country: 'Kenya', flag: '\ud83c\uddf0\ud83c\uddea', amount: 'KES 4,200,000', term: '6 months', apr: '11.0%', purpose: 'Working Capital', riskRating: 'A', funded: 0, status: 'open' },
+  { id: 'LN-2026-4206', borrower: 'Juba Construction Ltd', org_name: 'Juba Construction Ltd', country: 'South Sudan', flag: '\ud83c\uddf8\ud83c\uddf8', amount: 'SSP 12,000,000', term: '24 months', apr: '22.5%', purpose: 'Project Finance', riskRating: 'D', funded: 18, status: 'funding' },
+  { id: 'LN-2026-4207', borrower: 'Nairobi Exports Ltd', org_name: 'Nairobi Exports Ltd', country: 'Kenya', flag: '\ud83c\uddf0\ud83c\uddea', amount: 'KES 8,000,000', term: '12 months', apr: '15.0%', purpose: 'Fleet Expansion', riskRating: 'B', funded: 0, status: 'open' },
+  { id: 'LN-2026-4208', borrower: 'Dodoma Solar Installers', org_name: 'Dodoma Solar Installers', country: 'Tanzania', flag: '\ud83c\uddf9\ud83c\uddff', amount: 'TZS 25,000,000', term: '18 months', apr: '13.0%', purpose: 'Green Energy', riskRating: 'A', funded: 100, status: 'active' },
 ];
 
 const CREDIT_BREAKDOWN: CreditScoreBreakdown[] = [
@@ -120,6 +123,13 @@ const LOAN_STATUS: Record<string, { label: string; color: string; bg: string }> 
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export default function P2PLendingPage() {
+  const { filterByOrgName } = useDataIsolation();
+
+  const visibleLoans = useMemo(
+    () => filterByOrgName(LOAN_REQUESTS, 'org_name'),
+    [filterByOrgName],
+  );
+
   return (
     <Box>
       <Box sx={{ mb: 3 }}>
@@ -159,7 +169,7 @@ export default function P2PLendingPage() {
               Lending Marketplace
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {LOAN_REQUESTS.map((ln) => {
+              {visibleLoans.map((ln) => {
                 const rc = RISK_COLORS[ln.riskRating];
                 const ls = LOAN_STATUS[ln.status];
                 return (

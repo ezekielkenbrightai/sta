@@ -23,6 +23,7 @@ import {
   CartesianGrid,
   Tooltip,
 } from 'recharts';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -40,6 +41,7 @@ interface RecentJournal {
   reference: string;
   date: string;
   description: string;
+  org_name: string;
   source_type: 'trade_document' | 'tax_assessment' | 'payment' | 'fx_settlement' | 'manual';
   debit_total: number;
   credit_total: number;
@@ -55,12 +57,12 @@ interface AccountBalance_ {
 }
 
 const RECENT_JOURNALS: RecentJournal[] = [
-  { id: 'jnl-001', reference: 'JNL-2026-04821', date: '2026-02-22 14:30', description: 'Import duty — KE-2026-0042 (Nairobi Exports Ltd)', source_type: 'tax_assessment', debit_total: 485000, credit_total: 485000, status: 'posted' },
-  { id: 'jnl-002', reference: 'JNL-2026-04820', date: '2026-02-22 13:15', description: 'Payment received — PAY-2026-0188', source_type: 'payment', debit_total: 48500, credit_total: 48500, status: 'posted' },
-  { id: 'jnl-003', reference: 'JNL-2026-04819', date: '2026-02-22 11:45', description: 'FX settlement KES→NGN — FX-2026-0892', source_type: 'fx_settlement', debit_total: 1250000, credit_total: 1250000, status: 'posted' },
-  { id: 'jnl-004', reference: 'JNL-2026-04818', date: '2026-02-22 10:20', description: 'Trade document — Export declaration TZ-2026-0018', source_type: 'trade_document', debit_total: 320000, credit_total: 320000, status: 'pending' },
-  { id: 'jnl-005', reference: 'JNL-2026-04817', date: '2026-02-21 16:50', description: 'Manual adjustment — Reclassification of account 4200', source_type: 'manual', debit_total: 150000, credit_total: 150000, status: 'posted' },
-  { id: 'jnl-006', reference: 'JNL-2026-04816', date: '2026-02-21 15:30', description: 'VAT collection — Assessment ASM-2026-0412', source_type: 'tax_assessment', debit_total: 92000, credit_total: 92000, status: 'reversed' },
+  { id: 'jnl-001', reference: 'JNL-2026-04821', date: '2026-02-22 14:30', description: 'Import duty — KE-2026-0042 (Nairobi Exports Ltd)', org_name: 'Nairobi Exports Ltd', source_type: 'tax_assessment', debit_total: 485000, credit_total: 485000, status: 'posted' },
+  { id: 'jnl-002', reference: 'JNL-2026-04820', date: '2026-02-22 13:15', description: 'Payment received — PAY-2026-0188', org_name: 'Nairobi Exports Ltd', source_type: 'payment', debit_total: 48500, credit_total: 48500, status: 'posted' },
+  { id: 'jnl-003', reference: 'JNL-2026-04819', date: '2026-02-22 11:45', description: 'FX settlement KES→NGN — FX-2026-0892', org_name: 'KCB Bank', source_type: 'fx_settlement', debit_total: 1250000, credit_total: 1250000, status: 'posted' },
+  { id: 'jnl-004', reference: 'JNL-2026-04818', date: '2026-02-22 10:20', description: 'Trade document — Export declaration TZ-2026-0018', org_name: 'Dar es Salaam Freight', source_type: 'trade_document', debit_total: 320000, credit_total: 320000, status: 'pending' },
+  { id: 'jnl-005', reference: 'JNL-2026-04817', date: '2026-02-21 16:50', description: 'Manual adjustment — Reclassification of account 4200', org_name: 'KCB Bank', source_type: 'manual', debit_total: 150000, credit_total: 150000, status: 'posted' },
+  { id: 'jnl-006', reference: 'JNL-2026-04816', date: '2026-02-21 15:30', description: 'VAT collection — Assessment ASM-2026-0412', org_name: 'Lagos Trading Co', source_type: 'tax_assessment', debit_total: 92000, credit_total: 92000, status: 'reversed' },
 ];
 
 const TOP_ACCOUNTS: AccountBalance_[] = [
@@ -122,13 +124,20 @@ function formatAmount(v: number): string {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function LedgerDashboardPage() {
+  const { isOversight, filterByOrgName, orgName } = useDataIsolation();
+
+  const recentJournals = useMemo(
+    () => filterByOrgName(RECENT_JOURNALS, 'org_name'),
+    [filterByOrgName],
+  );
+
   const todayEntry = DAILY_ENTRIES[DAILY_ENTRIES.length - 1];
   const yesterdayEntry = DAILY_ENTRIES[DAILY_ENTRIES.length - 2];
   const journalChange = ((todayEntry.journals - yesterdayEntry.journals) / yesterdayEntry.journals * 100).toFixed(1);
   const isUp = todayEntry.journals >= yesterdayEntry.journals;
 
-  const postedCount = useMemo(() => RECENT_JOURNALS.filter((j) => j.status === 'posted').length, []);
-  const pendingCount = useMemo(() => RECENT_JOURNALS.filter((j) => j.status === 'pending').length, []);
+  const postedCount = useMemo(() => recentJournals.filter((j) => j.status === 'posted').length, [recentJournals]);
+  const pendingCount = useMemo(() => recentJournals.filter((j) => j.status === 'pending').length, [recentJournals]);
 
   const stats: LedgerStat[] = [
     {
@@ -151,7 +160,7 @@ export default function LedgerDashboardPage() {
           <Typography variant="h4">Ledger Dashboard</Typography>
         </Box>
         <Typography sx={{ color: 'text.secondary' }}>
-          Automated double-entry ledger — immutable, real-time, and audit-ready.
+          {isOversight ? 'Automated double-entry ledger — immutable, real-time, and audit-ready.' : `Ledger activity for ${orgName}.`}
         </Typography>
       </Box>
 
@@ -253,7 +262,7 @@ export default function LedgerDashboardPage() {
                 <Typography key={h} sx={{ fontSize: 11, fontWeight: 600, color: '#777', textTransform: 'uppercase' }}>{h}</Typography>
               ))}
             </Box>
-            {RECENT_JOURNALS.map((j, i) => {
+            {recentJournals.map((j, i) => {
               const sts = STATUS_CONFIG[j.status];
               const src = SOURCE_CONFIG[j.source_type];
               return (
@@ -264,7 +273,7 @@ export default function LedgerDashboardPage() {
                     gridTemplateColumns: '120px 1fr 80px 100px 100px 80px 130px',
                     gap: 1, px: 2.5, py: 1.75,
                     alignItems: 'center',
-                    borderBottom: i < RECENT_JOURNALS.length - 1 ? '1px solid rgba(212,175,55,0.05)' : 'none',
+                    borderBottom: i < recentJournals.length - 1 ? '1px solid rgba(212,175,55,0.05)' : 'none',
                     '&:hover': { backgroundColor: 'rgba(212,175,55,0.03)' },
                     cursor: 'pointer',
                   }}

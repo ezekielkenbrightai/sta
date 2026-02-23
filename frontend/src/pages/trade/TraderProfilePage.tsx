@@ -15,9 +15,11 @@ import {
   ArrowBack,
   Description,
   LocalShipping,
+  Lock,
   TrendingUp,
   VerifiedUser,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -77,7 +79,24 @@ const STATUS_COLORS: Record<string, string> = {
 export default function TraderProfilePage() {
   const { id: _id } = useParams();
   const navigate = useNavigate();
+  const { isOversight, orgName } = useDataIsolation();
   const trader = TRADER; // In production, fetch by id
+
+  // Org-scoped users can only view their own organization's profile
+  const hasAccess = isOversight || !orgName || trader.name === orgName;
+
+  if (!hasAccess) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 8 }}>
+        <Lock sx={{ fontSize: 48, color: '#555', mb: 2 }} />
+        <Typography variant="h5" sx={{ mb: 1, color: '#f0f0f0' }}>Access Restricted</Typography>
+        <Typography sx={{ color: '#999', mb: 3 }}>This trader profile belongs to another organization.</Typography>
+        <Button variant="outlined" onClick={() => navigate('/trade/traders')} sx={{ color: '#D4AF37', borderColor: 'rgba(212,175,55,0.3)' }}>
+          Back to Directory
+        </Button>
+      </Box>
+    );
+  }
 
   return (
     <Box>

@@ -23,6 +23,7 @@ import {
   NavigateNext,
   Save,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -54,6 +55,7 @@ interface LineItem {
 
 export default function NewTradeDocumentPage() {
   const navigate = useNavigate();
+  const { orgName } = useDataIsolation();
   const [activeStep, setActiveStep] = useState(0);
 
   // Form state — Step 1: Document Details
@@ -326,6 +328,7 @@ export default function NewTradeDocumentPage() {
                   Document Summary
                 </Typography>
                 {[
+                  ['Trader', orgName || '—'],
                   ['Type', docType.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())],
                   ['Route', `${originCountry || '—'} → ${destinationCountry || '—'}`],
                   ['Currency', currency],

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Box,
   Button,
@@ -18,6 +18,7 @@ import {
   Visibility as ViewIcon,
   RemoveCircle,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Types & Mock data ───────────────────────────────────────────────────────
 
@@ -104,20 +105,25 @@ function formatCurrency(value: number): string {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function TaxExemptionsPage() {
+  const { filterByOrgName } = useDataIsolation();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  const filtered = MOCK_EXEMPTIONS.filter((e) => {
-    if (statusFilter !== 'all' && e.status !== statusFilter) return false;
-    if (search) {
-      const q = search.toLowerCase();
-      return e.trader_name.toLowerCase().includes(q) || e.category.toLowerCase().includes(q);
-    }
-    return true;
-  });
+  const baseExemptions = useMemo(() => filterByOrgName(MOCK_EXEMPTIONS, 'trader_name'), [filterByOrgName]);
 
-  const totalSavings = MOCK_EXEMPTIONS.filter((e) => e.status === 'active').reduce((s, e) => s + e.savings, 0);
-  const activeCount = MOCK_EXEMPTIONS.filter((e) => e.status === 'active').length;
+  const filtered = useMemo(() => {
+    return baseExemptions.filter((e) => {
+      if (statusFilter !== 'all' && e.status !== statusFilter) return false;
+      if (search) {
+        const q = search.toLowerCase();
+        return e.trader_name.toLowerCase().includes(q) || e.category.toLowerCase().includes(q);
+      }
+      return true;
+    });
+  }, [baseExemptions, search, statusFilter]);
+
+  const totalSavings = useMemo(() => baseExemptions.filter((e) => e.status === 'active').reduce((s, e) => s + e.savings, 0), [baseExemptions]);
+  const activeCount = useMemo(() => baseExemptions.filter((e) => e.status === 'active').length, [baseExemptions]);
 
   return (
     <Box>
@@ -136,10 +142,10 @@ export default function TaxExemptionsPage() {
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Total Exemptions', value: MOCK_EXEMPTIONS.length.toString(), color: '#D4AF37' },
+          { label: 'Total Exemptions', value: baseExemptions.length.toString(), color: '#D4AF37' },
           { label: 'Active', value: activeCount.toString(), color: '#22C55E' },
           { label: 'Total Duty Savings', value: formatCurrency(totalSavings), color: '#3B82F6' },
-          { label: 'Pending Approval', value: MOCK_EXEMPTIONS.filter((e) => e.status === 'pending').length.toString(), color: '#E6A817' },
+          { label: 'Pending Approval', value: baseExemptions.filter((e) => e.status === 'pending').length.toString(), color: '#E6A817' },
         ].map((s) => (
           <Grid size={{ xs: 6, md: 3 }} key={s.label}>
             <Card sx={{ p: 2.5 }}>

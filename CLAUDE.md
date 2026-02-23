@@ -101,7 +101,7 @@ sta.com/
 | auditor | trade, tax, payments, ledger, supply_chain, customs, insurance, analytics, compliance |
 | compliance_officer | compliance, trade |
 | afcfta_admin | trade, tax, analytics, customs, afcfta |
-| ps_trade | executive, trade, tax, payments, analytics, customs, supply_chain, compliance, stablecoins |
+| ps_trade | executive |
 
 Route guard role arrays (App.tsx):
 - `ADMIN` = super_admin, govt_admin

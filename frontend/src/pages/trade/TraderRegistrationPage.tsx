@@ -18,6 +18,7 @@ import {
   NavigateBefore,
   NavigateNext,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 const COUNTRIES = [
   'Kenya', 'Nigeria', 'South Africa', 'Tanzania', 'Uganda', 'Rwanda',
@@ -28,18 +29,21 @@ const STEPS = ['Company Details', 'Contact Info', 'Trade Profile', 'Review'];
 
 export default function TraderRegistrationPage() {
   const navigate = useNavigate();
+  const { orgName, user } = useDataIsolation();
   const [activeStep, setActiveStep] = useState(0);
 
-  // Step 1
-  const [companyName, setCompanyName] = useState('');
+  // Step 1 — prefill from user context when available
+  const [companyName, setCompanyName] = useState(orgName || '');
   const [registrationNumber, setRegistrationNumber] = useState('');
   const [country, setCountry] = useState('');
   const [taxPin, setTaxPin] = useState('');
   const [address, setAddress] = useState('');
 
-  // Step 2
-  const [contactName, setContactName] = useState('');
-  const [contactEmail, setContactEmail] = useState('');
+  // Step 2 — prefill from user context
+  const [contactName, setContactName] = useState(
+    user ? `${user.first_name} ${user.last_name}`.trim() : '',
+  );
+  const [contactEmail, setContactEmail] = useState(user?.email || '');
   const [contactPhone, setContactPhone] = useState('');
 
   // Step 3

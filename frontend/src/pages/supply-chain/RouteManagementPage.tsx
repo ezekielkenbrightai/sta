@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   Box,
   Card,
@@ -12,6 +13,7 @@ import {
   FlightTakeoff,
   LocalShipping,
 } from '@mui/icons-material';
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -27,16 +29,17 @@ interface TradeRoute {
   reliability_pct: number;
   active_shipments: number;
   carriers: string[];
+  shippers: string[];
   bottlenecks: string[];
 }
 
 const MOCK_ROUTES: TradeRoute[] = [
-  { id: 'rt-001', name: 'Mombasa → Lagos (West Africa)', origin: 'Mombasa, KE', destination: 'Lagos, NG', mode: 'sea', distance_km: 6200, avg_transit_days: 14, monthly_volume_teu: 1250, reliability_pct: 88, active_shipments: 12, carriers: ['Maersk', 'MSC', 'CMA CGM'], bottlenecks: ['Suez Canal congestion', 'Lagos port delays'] },
-  { id: 'rt-002', name: 'Mombasa → Dar es Salaam', origin: 'Mombasa, KE', destination: 'Dar es Salaam, TZ', mode: 'sea', distance_km: 800, avg_transit_days: 3, monthly_volume_teu: 980, reliability_pct: 95, active_shipments: 8, carriers: ['MSC', 'PIL', 'Evergreen'], bottlenecks: [] },
-  { id: 'rt-003', name: 'JKIA → Addis Ababa (Air)', origin: 'Nairobi, KE', destination: 'Addis Ababa, ET', mode: 'air', distance_km: 1150, avg_transit_days: 1, monthly_volume_teu: 65, reliability_pct: 97, active_shipments: 4, carriers: ['Kenya Airways', 'Ethiopian Airlines'], bottlenecks: [] },
-  { id: 'rt-004', name: 'Northern Corridor Road', origin: 'Mombasa, KE', destination: 'Kampala, UG', mode: 'road', distance_km: 1200, avg_transit_days: 4, monthly_volume_teu: 820, reliability_pct: 82, active_shipments: 18, carriers: ['Bollore', 'SDV Transami', 'Siginon'], bottlenecks: ['Weighbridge delays', 'Busia border congestion'] },
-  { id: 'rt-005', name: 'Central Corridor (to Rwanda)', origin: 'Mombasa, KE', destination: 'Kigali, RW', mode: 'multimodal', distance_km: 1900, avg_transit_days: 7, monthly_volume_teu: 450, reliability_pct: 79, active_shipments: 6, carriers: ['Bollore', 'SDV', 'K&K Logistics'], bottlenecks: ['Gatuna border processing', 'Road conditions Isaka-Kigali'] },
-  { id: 'rt-006', name: 'SA → East Africa', origin: 'Johannesburg, ZA', destination: 'Nairobi, KE', mode: 'road', distance_km: 4800, avg_transit_days: 12, monthly_volume_teu: 280, reliability_pct: 75, active_shipments: 5, carriers: ['Bollore', 'Imperial Logistics'], bottlenecks: ['Multiple border crossings', 'Road quality DRC section'] },
+  { id: 'rt-001', name: 'Mombasa → Lagos (West Africa)', origin: 'Mombasa, KE', destination: 'Lagos, NG', mode: 'sea', distance_km: 6200, avg_transit_days: 14, monthly_volume_teu: 1250, reliability_pct: 88, active_shipments: 12, carriers: ['Maersk', 'MSC', 'CMA CGM'], shippers: ['Nairobi Exports Ltd', 'Lagos Electronics Ltd'], bottlenecks: ['Suez Canal congestion', 'Lagos port delays'] },
+  { id: 'rt-002', name: 'Mombasa → Dar es Salaam', origin: 'Mombasa, KE', destination: 'Dar es Salaam, TZ', mode: 'sea', distance_km: 800, avg_transit_days: 3, monthly_volume_teu: 980, reliability_pct: 95, active_shipments: 8, carriers: ['MSC', 'PIL', 'Evergreen'], shippers: ['Nairobi Exports Ltd', 'East Africa Cement Ltd'], bottlenecks: [] },
+  { id: 'rt-003', name: 'JKIA → Addis Ababa (Air)', origin: 'Nairobi, KE', destination: 'Addis Ababa, ET', mode: 'air', distance_km: 1150, avg_transit_days: 1, monthly_volume_teu: 65, reliability_pct: 97, active_shipments: 4, carriers: ['Kenya Airways', 'Ethiopian Airlines'], shippers: ['Addis Pharmaceutical', 'Kenya Pharma Distributors'], bottlenecks: [] },
+  { id: 'rt-004', name: 'Northern Corridor Road', origin: 'Mombasa, KE', destination: 'Kampala, UG', mode: 'road', distance_km: 1200, avg_transit_days: 4, monthly_volume_teu: 820, reliability_pct: 82, active_shipments: 18, carriers: ['Bolloré Logistics Kenya', 'SDV Transami', 'Siginon'], shippers: ['Nairobi Exports Ltd', 'Auto Kenya Ltd'], bottlenecks: ['Weighbridge delays', 'Busia border congestion'] },
+  { id: 'rt-005', name: 'Central Corridor (to Rwanda)', origin: 'Mombasa, KE', destination: 'Kigali, RW', mode: 'multimodal', distance_km: 1900, avg_transit_days: 7, monthly_volume_teu: 450, reliability_pct: 79, active_shipments: 6, carriers: ['Bolloré Logistics Kenya', 'SDV Transami', 'K&K Logistics'], shippers: ['East Africa Cement Ltd'], bottlenecks: ['Gatuna border processing', 'Road conditions Isaka-Kigali'] },
+  { id: 'rt-006', name: 'SA → East Africa', origin: 'Johannesburg, ZA', destination: 'Nairobi, KE', mode: 'road', distance_km: 4800, avg_transit_days: 12, monthly_volume_teu: 280, reliability_pct: 75, active_shipments: 5, carriers: ['Bolloré Logistics Kenya', 'Imperial Logistics'], shippers: ['Auto Kenya Ltd', 'Dar es Salaam Freight'], bottlenecks: ['Multiple border crossings', 'Road quality DRC section'] },
 ];
 
 const MODE_CONFIG: Record<string, { icon: typeof DirectionsBoat; color: string }> = {
@@ -49,9 +52,23 @@ const MODE_CONFIG: Record<string, { icon: typeof DirectionsBoat; color: string }
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function RouteManagementPage() {
-  const totalVolume = MOCK_ROUTES.reduce((s, r) => s + r.monthly_volume_teu, 0);
-  const avgReliability = (MOCK_ROUTES.reduce((s, r) => s + r.reliability_pct, 0) / MOCK_ROUTES.length).toFixed(0);
-  const maxVolume = Math.max(...MOCK_ROUTES.map((r) => r.monthly_volume_teu));
+  const { filterCustom, orgName, orgType } = useDataIsolation();
+
+  const routes = useMemo(
+    () => filterCustom(MOCK_ROUTES, (r) => {
+      if (orgType === 'logistics') return r.carriers.includes(orgName ?? '');
+      return r.shippers.includes(orgName ?? '');
+    }),
+    [filterCustom, orgName, orgType],
+  );
+
+  const totalVolume = routes.reduce((s, r) => s + r.monthly_volume_teu, 0);
+  const avgReliability = routes.length > 0
+    ? (routes.reduce((s, r) => s + r.reliability_pct, 0) / routes.length).toFixed(0)
+    : '0';
+  const maxVolume = routes.length > 0
+    ? Math.max(...routes.map((r) => r.monthly_volume_teu))
+    : 1;
 
   return (
     <Box>
@@ -68,10 +85,10 @@ export default function RouteManagementPage() {
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Active Routes', value: MOCK_ROUTES.length.toString(), color: '#D4AF37' },
+          { label: 'Active Routes', value: routes.length.toString(), color: '#D4AF37' },
           { label: 'Monthly Volume', value: `${(totalVolume / 1000).toFixed(1)}K TEU`, color: '#3B82F6' },
           { label: 'Avg Reliability', value: `${avgReliability}%`, color: '#22C55E' },
-          { label: 'Active Shipments', value: MOCK_ROUTES.reduce((s, r) => s + r.active_shipments, 0).toString(), color: '#8B5CF6' },
+          { label: 'Active Shipments', value: routes.reduce((s, r) => s + r.active_shipments, 0).toString(), color: '#8B5CF6' },
         ].map((s) => (
           <Grid size={{ xs: 6, md: 3 }} key={s.label}>
             <Card sx={{ p: 2.5 }}>
@@ -84,7 +101,7 @@ export default function RouteManagementPage() {
 
       {/* Route Cards */}
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {MOCK_ROUTES.map((r) => {
+        {routes.map((r) => {
           const mode = MODE_CONFIG[r.mode];
           const ModeIcon = mode.icon;
           const reliColor = r.reliability_pct >= 90 ? '#22C55E' : r.reliability_pct >= 80 ? '#E6A817' : '#EF4444';

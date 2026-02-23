@@ -20,9 +20,7 @@ import {
   CheckCircle,
   Warning,
 } from '@mui/icons-material';
-import { useAuthStore } from '../../stores/authStore';
-
-const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor'];
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -62,17 +60,15 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function PaymentReconciliationPage() {
-  const user = useAuthStore((s) => s.user);
-  const isGovt = GOVT_ROLES.includes(user?.role || 'trader');
-  const traderOrg = user?.organization_name || 'Nairobi Exports Ltd';
+  const { isOversight, filterByOrgName, orgName } = useDataIsolation();
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  const baseItems = useMemo(() => {
-    if (isGovt) return MOCK_ITEMS;
-    return MOCK_ITEMS.filter((r) => r.trader === traderOrg);
-  }, [isGovt, traderOrg]);
+  const baseItems = useMemo(
+    () => filterByOrgName(MOCK_ITEMS, 'trader'),
+    [filterByOrgName],
+  );
 
   const filtered = useMemo(() => {
     return baseItems.filter((r) => {
@@ -96,10 +92,10 @@ export default function PaymentReconciliationPage() {
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
             <CompareArrows sx={{ color: '#D4AF37' }} />
-            <Typography variant="h4">{isGovt ? 'Payment Reconciliation' : 'My Payment Reconciliation'}</Typography>
+            <Typography variant="h4">{isOversight ? 'Payment Reconciliation' : 'My Payment Reconciliation'}</Typography>
           </Box>
           <Typography sx={{ color: 'text.secondary' }}>
-            {isGovt ? 'Match payments to tax assessments and resolve discrepancies.' : `Reconciliation status for ${traderOrg}.`}
+            {isOversight ? 'Match payments to tax assessments and resolve discrepancies.' : `Reconciliation status for ${orgName}.`}
           </Typography>
         </Box>
         <Button variant="contained" startIcon={<LinkIcon />}>

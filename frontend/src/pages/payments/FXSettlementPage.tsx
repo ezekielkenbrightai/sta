@@ -16,9 +16,7 @@ import {
   CheckCircle,
   Schedule,
 } from '@mui/icons-material';
-import { useAuthStore } from '../../stores/authStore';
-
-const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor'];
+import { useDataIsolation } from '../../hooks/useDataIsolation';
 
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
@@ -64,16 +62,14 @@ const PRIORITY_CONFIG: Record<string, { label: string; color: string }> = {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function FXSettlementPage() {
-  const user = useAuthStore((s) => s.user);
-  const isGovt = GOVT_ROLES.includes(user?.role || 'trader');
-  const traderOrg = user?.organization_name || 'Nairobi Exports Ltd';
+  const { isOversight, filterByOrgName, orgName } = useDataIsolation();
 
   const [statusFilter, setStatusFilter] = useState('all');
 
-  const baseQueue = useMemo(() => {
-    if (isGovt) return SETTLEMENT_QUEUE;
-    return SETTLEMENT_QUEUE.filter((s) => s.trader === traderOrg);
-  }, [isGovt, traderOrg]);
+  const baseQueue = useMemo(
+    () => filterByOrgName(SETTLEMENT_QUEUE, 'trader'),
+    [filterByOrgName],
+  );
 
   const filtered = baseQueue.filter((s) => {
     if (statusFilter !== 'all' && s.status !== statusFilter) return false;
@@ -92,10 +88,10 @@ export default function FXSettlementPage() {
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
             <SwapHoriz sx={{ color: '#D4AF37' }} />
-            <Typography variant="h4">{isGovt ? 'FX Settlement' : 'My FX Settlements'}</Typography>
+            <Typography variant="h4">{isOversight ? 'FX Settlement' : 'My FX Settlements'}</Typography>
           </Box>
           <Typography sx={{ color: 'text.secondary' }}>
-            {isGovt ? 'Real-time cross-currency settlement via PAPSS — atomic settlement in under 3 seconds.' : `FX settlement history for ${traderOrg}.`}
+            {isOversight ? 'Real-time cross-currency settlement via PAPSS — atomic settlement in under 3 seconds.' : `FX settlement history for ${orgName}.`}
           </Typography>
         </Box>
         <Button variant="contained" startIcon={<SwapHoriz />}>
