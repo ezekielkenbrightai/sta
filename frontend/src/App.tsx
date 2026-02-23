@@ -8,6 +8,7 @@ import { useAuthStore } from './stores/authStore';
 // ─── Lazy-loaded pages ──────────────────────────────────────────────────────────
 
 const LoginPage = lazy(() => import('./pages/LoginPage'));
+const TradeExplorerPage = lazy(() => import('./pages/explore/TradeExplorerPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 
 // Trade pages (Phase 2)
@@ -211,6 +212,7 @@ export default function App() {
             <Routes>
               {/* ── Public routes ──────────────────────────────────────── */}
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/explore" element={<TradeExplorerPage />} />
 
               {/* ── Protected app shell ────────────────────────────────── */}
               <Route element={<P><AppLayout /></P>}>
