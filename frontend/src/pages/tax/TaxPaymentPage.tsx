@@ -20,6 +20,9 @@ import {
   Warning,
   Download,
 } from '@mui/icons-material';
+import { useAuthStore } from '../../stores/authStore';
+
+const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor'];
 
 // ─── Types & Mock data ───────────────────────────────────────────────────────
 
@@ -101,11 +104,21 @@ function formatDate(dateStr: string | null): string {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function TaxPaymentPage() {
+  const user = useAuthStore((s) => s.user);
+  const isGovt = GOVT_ROLES.includes(user?.role || 'trader');
+  const traderOrg = user?.organization_name || 'Nairobi Exports Ltd';
+
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
+  // Traders only see their own payments; govt sees all
+  const basePayments = useMemo(() => {
+    if (isGovt) return MOCK_PAYMENTS;
+    return MOCK_PAYMENTS.filter((p) => p.trader_name === traderOrg);
+  }, [isGovt, traderOrg]);
+
   const filtered = useMemo(() => {
-    return MOCK_PAYMENTS.filter((p) => {
+    return basePayments.filter((p) => {
       if (statusFilter !== 'all' && p.status !== statusFilter) return false;
       if (search) {
         const q = search.toLowerCase();
@@ -117,22 +130,24 @@ export default function TaxPaymentPage() {
       }
       return true;
     });
-  }, [search, statusFilter]);
+  }, [basePayments, search, statusFilter]);
 
   const stats = useMemo(() => ({
-    total: MOCK_PAYMENTS.length,
-    completed: MOCK_PAYMENTS.filter((p) => p.status === 'completed').reduce((s, p) => s + p.amount, 0),
-    pending: MOCK_PAYMENTS.filter((p) => p.status === 'pending' || p.status === 'processing').reduce((s, p) => s + p.amount, 0),
-    failed: MOCK_PAYMENTS.filter((p) => p.status === 'failed').length,
-  }), []);
+    total: basePayments.length,
+    completed: basePayments.filter((p) => p.status === 'completed').reduce((s, p) => s + p.amount, 0),
+    pending: basePayments.filter((p) => p.status === 'pending' || p.status === 'processing').reduce((s, p) => s + p.amount, 0),
+    failed: basePayments.filter((p) => p.status === 'failed').length,
+  }), [basePayments]);
 
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3, flexWrap: 'wrap', gap: 1 }}>
         <Box>
-          <Typography variant="h4" sx={{ mb: 0.5 }}>Tax Payments</Typography>
+          <Typography variant="h4" sx={{ mb: 0.5 }}>{isGovt ? 'Tax Payments' : 'My Tax Payments'}</Typography>
           <Typography sx={{ color: 'text.secondary' }}>
-            Track and manage tax payment transactions.
+            {isGovt
+              ? 'Track and manage tax payment transactions.'
+              : `Payment history for ${traderOrg}.`}
           </Typography>
         </Box>
         <Button variant="contained" startIcon={<Payment />}>
@@ -248,7 +263,7 @@ export default function TaxPaymentPage() {
 
         <Box sx={{ px: 2.5, py: 2, borderTop: '1px solid rgba(212,175,55,0.1)', display: 'flex', justifyContent: 'space-between' }}>
           <Typography sx={{ fontSize: 12, color: '#777' }}>
-            Showing {filtered.length} of {MOCK_PAYMENTS.length} payments
+            Showing {filtered.length} of {basePayments.length} payments
           </Typography>
         </Box>
       </Card>

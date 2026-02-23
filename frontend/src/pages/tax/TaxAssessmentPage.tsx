@@ -19,6 +19,9 @@ import {
   HourglassEmpty,
   Warning,
 } from '@mui/icons-material';
+import { useAuthStore } from '../../stores/authStore';
+
+const GOVT_ROLES = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor'];
 
 // ─── Types & Mock data ───────────────────────────────────────────────────────
 
@@ -108,11 +111,21 @@ function formatCurrency(value: number): string {
 
 export default function TaxAssessmentPage() {
   const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
+  const isGovt = GOVT_ROLES.includes(user?.role || 'trader');
+  const traderOrg = user?.organization_name || 'Nairobi Exports Ltd';
+
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
+  // Traders only see their own assessments; govt sees all
+  const baseAssessments = useMemo(() => {
+    if (isGovt) return MOCK_ASSESSMENTS;
+    return MOCK_ASSESSMENTS.filter((a) => a.trader_name === traderOrg);
+  }, [isGovt, traderOrg]);
+
   const filtered = useMemo(() => {
-    return MOCK_ASSESSMENTS.filter((a) => {
+    return baseAssessments.filter((a) => {
       if (statusFilter !== 'all' && a.status !== statusFilter) return false;
       if (search) {
         const q = search.toLowerCase();
@@ -120,22 +133,24 @@ export default function TaxAssessmentPage() {
       }
       return true;
     });
-  }, [search, statusFilter]);
+  }, [baseAssessments, search, statusFilter]);
 
   const stats = useMemo(() => ({
-    total: MOCK_ASSESSMENTS.length,
-    totalTax: MOCK_ASSESSMENTS.reduce((sum, a) => sum + a.total_tax, 0),
-    paid: MOCK_ASSESSMENTS.filter((a) => a.status === 'paid').length,
-    overdue: MOCK_ASSESSMENTS.filter((a) => a.status === 'overdue').length,
-  }), []);
+    total: baseAssessments.length,
+    totalTax: baseAssessments.reduce((sum, a) => sum + a.total_tax, 0),
+    paid: baseAssessments.filter((a) => a.status === 'paid').length,
+    overdue: baseAssessments.filter((a) => a.status === 'overdue').length,
+  }), [baseAssessments]);
 
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3, flexWrap: 'wrap', gap: 1 }}>
         <Box>
-          <Typography variant="h4" sx={{ mb: 0.5 }}>Tax Assessments</Typography>
+          <Typography variant="h4" sx={{ mb: 0.5 }}>{isGovt ? 'Tax Assessments' : 'My Tax Assessments'}</Typography>
           <Typography sx={{ color: 'text.secondary' }}>
-            Review and manage tax assessments for trade documents.
+            {isGovt
+              ? 'Review and manage tax assessments for trade documents.'
+              : `Tax assessments for ${traderOrg}.`}
           </Typography>
         </Box>
       </Box>
@@ -271,7 +286,7 @@ export default function TaxAssessmentPage() {
 
         <Box sx={{ px: 2.5, py: 2, borderTop: '1px solid rgba(212,175,55,0.1)', display: 'flex', justifyContent: 'space-between' }}>
           <Typography sx={{ fontSize: 12, color: '#777' }}>
-            Showing {filtered.length} of {MOCK_ASSESSMENTS.length} assessments
+            Showing {filtered.length} of {baseAssessments.length} assessments
           </Typography>
           <Typography sx={{ fontSize: 12, fontWeight: 600, color: '#D4AF37' }}>
             Total: {formatCurrency(filtered.reduce((s, a) => s + a.total_tax, 0))}
