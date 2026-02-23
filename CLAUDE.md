@@ -76,7 +76,7 @@ sta.com/
 - Zustand for client state (auth, app UI), React Query for server state (5min staleTime)
 - JWT auth with access tokens (60min expiry), stored in localStorage
 - Axios interceptors: auto-attach JWT, auto-logout on 401, retry 502/503/504
-- Mock auth mode: `VITE_MOCK_AUTH=true` with 11 predefined dev users (all roles)
+- Mock auth mode: `VITE_MOCK_AUTH=true` with 12 predefined dev users (all roles)
 - MUI DataGrid for tabular data
 - Recharts for visualizations
 - i18next for en/sw/fr translations
@@ -93,8 +93,9 @@ sta.com/
 | customs_officer | trade, customs |
 | insurance_agent | insurance |
 | auditor | trade, tax, payments, ledger, supply_chain, customs, insurance, analytics, compliance |
-| compliance_officer | compliance |
-| afcfta_admin | afcfta |
+| compliance_officer | compliance, trade |
+| afcfta_admin | trade, tax, analytics, customs, afcfta |
+| ps_trade | executive, trade, tax, payments, analytics, customs, supply_chain, compliance, cbdc |
 
 Route guard role arrays (App.tsx):
 - `ADMIN` = super_admin, govt_admin
@@ -109,6 +110,7 @@ Route guard role arrays (App.tsx):
 - `AUDITOR_ROLES` = super_admin, auditor, govt_admin, govt_analyst
 - `COMPLIANCE` = super_admin, compliance_officer, govt_admin, auditor
 - `AFCFTA` = super_admin, afcfta_admin, govt_admin, govt_analyst
+- `PS_EXECUTIVE` = super_admin, ps_trade
 
 **CRITICAL**: Route-level `roles` arrays MUST match `ROLE_MODULES` in layoutConstants.ts. If a role has module access in `ROLE_MODULES`, it MUST be included in the route's role array — otherwise the sidebar shows the module but the route redirects the user away.
 
@@ -149,6 +151,7 @@ Route guard role arrays (App.tsx):
 - auditor@oag.go.ke (auditor, Michael Wekesa, Office of the Auditor General)
 - compliance@frc.go.ke (compliance_officer, Faith Njeri, Financial Reporting Centre)
 - afcfta@au.int (afcfta_admin, Wamkele Mene, AfCFTA Secretariat)
+- ps@trade.go.ke (ps_trade, PS Trade, Ministry of Trade)
 
 ## Commands
 - Frontend dev: `cd frontend && npm run dev` (port 5173)
@@ -227,8 +230,14 @@ Route guard role arrays (App.tsx):
 13. **`.env.production` must be tracked in git**: `.env` is gitignored (local dev), but `.env.production` must be committed so Railway has `VITE_MOCK_AUTH=true` at build time. Added `!frontend/.env.production` exception in `.gitignore`.
 14. **localStorage "undefined" string bug**: `localStorage.setItem('key', undefined)` stores the literal string `"undefined"`, which `!!` evaluates as truthy. The `getValidToken()` function in authStore guards against this.
 15. **Null-safe property access on user/module**: Always add fallback defaults when calling `.replace()` on values that could be null — e.g., `(selectedModule || 'trade').replace(...)` and `(user.role || 'trader').replace(...)`.
+16. **Worktree merge conflicts**: When developing on a worktree branch and merging to main, parallel commits on main (e.g., from another worktree) cause conflicts. Always `git pull origin main --no-edit` before pushing main, and resolve conflicts by keeping both sides (ours + theirs) since they're usually additive features.
+17. **Executive module palette convention**: The `pages/executive/` module uses a distinct deep-navy palette (`#0B1426` / `#0F1D35`) instead of the standard `#0a0a0a` / `#111111` black theme. This is intentional to create visual authority for government executive users. Future authority-level modules can follow this pattern with their own distinct palettes.
+18. **Adding a new role checklist**: When adding a new user role, update ALL of these in order: (1) `DEV_USERS` in authStore.ts, (2) `ROLE_MODULES` in layoutConstants.ts, (3) `DEFAULT_MODULE` in layoutConstants.ts, (4) `MODULE_NAV` for the new module, (5) `defaultLandingPage()` in ProtectedRoute.tsx, (6) route role array const in App.tsx, (7) `<Route>` definitions in App.tsx, (8) `PATH_TO_MODULE` in appStore.ts if new path prefix, (9) `DEMO_ACCOUNTS` in LoginPage.tsx, (10) `MODULES` array in layoutConstants.ts if new module.
 
-## Frontend Pages (92 total across 14 modules)
+## Research Documents
+- **PS Trade mandate & global benchmarks**: [`docs/ps-trade-research.md`](docs/ps-trade-research.md) — Comprehensive research on PS Trade responsibilities, KPIs, global trade ministry digital systems (Singapore TradeNet, UK DBT, US Commerce, EU DG Trade), African regional context, and authority-level dashboard features.
+
+## Frontend Pages (98 total across 15 modules)
 | Module | Pages | Directory |
 |--------|-------|-----------|
 | Core (Dashboard, Login, Landing) | 3 | `pages/` |
@@ -243,6 +252,7 @@ Route guard role arrays (App.tsx):
 | CBDC & Future Finance | 5 | `pages/cbdc/` |
 | Compliance & KYC | 8 | `pages/compliance/` |
 | AfCFTA Hub | 8 | `pages/afcfta/` |
+| Executive (PS Trade) | 6 | `pages/executive/` |
 | Admin & Platform Management | 8 | `pages/admin/` |
 | Profile & Settings | 1 | `pages/profile/` |
 
@@ -292,3 +302,12 @@ All pages use mock data with realistic African trade scenarios (Africa-to-Africa
 ### Login Page (LoginPage.tsx)
 - Demo account chips (visible when `VITE_MOCK_AUTH=true`) — click to auto-fill email + password
 - `initForRole(role)` on login sets the correct default module for the user's role
+
+### Executive Module (pages/executive/)
+- Uses a distinct deep-navy color palette (`EX` object) — NOT the standard MUI theme colors
+- Each page overrides layout padding with `mx: -3, mt: -3, mb: -3` to fill the full viewport
+- `ExecCard` reusable component wraps all cards with navy gradient background, gold border, optional gold top-bar glow
+- Government seal/crest in header with "Office of the Permanent Secretary" branding
+- "Classified — For Official Use Only" footer on every page
+- All Recharts tooltips use consistent navy/gold styling
+- `LIVE` indicator with CSS pulse animation
