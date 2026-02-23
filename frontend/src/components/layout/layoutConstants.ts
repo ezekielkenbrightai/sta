@@ -115,6 +115,12 @@ export const MODULES: ModuleDef[] = [
     description: 'Platform Administration',
     defaultRoute: '/admin/dashboard',
   },
+  {
+    id: 'executive',
+    label: 'Executive Office',
+    description: 'Permanent Secretary — Trade Command Centre',
+    defaultRoute: '/executive/dashboard',
+  },
 ];
 
 export const MODULE_MAP = Object.fromEntries(
@@ -420,6 +426,31 @@ export const MODULE_NAV: Record<string, NavSection[]> = {
       ],
     },
   ],
+  executive: [
+    {
+      label: 'Command Centre',
+      items: [
+        { to: '/executive/dashboard', label: 'Executive Dashboard', icon: 'Dashboard' },
+      ],
+    },
+    {
+      label: 'Strategic Intelligence',
+      collapsible: true,
+      items: [
+        { to: '/executive/trade-performance', label: 'National Trade Performance', icon: 'TrendingUp' },
+        { to: '/executive/policy-tracker', label: 'Policy & Treaty Tracker', icon: 'Gavel' },
+        { to: '/executive/sector-analysis', label: 'Sector Analysis', icon: 'PieChart' },
+      ],
+    },
+    {
+      label: 'Reports & Briefings',
+      collapsible: true,
+      items: [
+        { to: '/executive/briefings', label: 'Executive Briefings', icon: 'Article' },
+        { to: '/executive/alerts', label: 'Strategic Alerts', icon: 'NotificationsActive' },
+      ],
+    },
+  ],
   admin: [
     {
       label: 'Admin Overview',
@@ -462,6 +493,7 @@ export const DEFAULT_MODULE: Record<string, string> = {
   auditor: 'ledger',
   compliance_officer: 'compliance',
   afcfta_admin: 'afcfta',
+  ps_trade: 'executive',
 };
 
 /** Which modules each role can access */
@@ -477,4 +509,5 @@ export const ROLE_MODULES: Record<string, string[]> = {
   auditor: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'compliance'],
   compliance_officer: ['compliance', 'trade'],
   afcfta_admin: ['trade', 'tax', 'analytics', 'customs', 'afcfta'],
+  ps_trade: ['executive', 'trade', 'tax', 'payments', 'analytics', 'customs', 'supply_chain', 'compliance', 'cbdc'],
 };

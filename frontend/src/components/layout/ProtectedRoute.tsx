@@ -28,6 +28,8 @@ function defaultLandingPage(role: string): string {
       return '/compliance/dashboard';
     case 'afcfta_admin':
       return '/afcfta/dashboard';
+    case 'ps_trade':
+      return '/executive/dashboard';
     default:
       return '/dashboard';
   }
