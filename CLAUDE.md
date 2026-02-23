@@ -39,7 +39,7 @@ sta.com/
 │   │   ├── main.tsx         # React 19 entry point
 │   │   ├── api/             # client.ts (Axios), endpoints.ts
 │   │   ├── components/layout/ # AppLayout, ProtectedRoute, Sidebar, TopNav
-│   │   ├── pages/           # 82 pages across 15 modules
+│   │   ├── pages/           # 99 pages across 16 modules
 │   │   ├── stores/          # authStore.ts, appStore.ts (Zustand)
 │   │   ├── theme/           # theme.ts (MUI black/gold)
 │   │   ├── types/           # index.ts (all TypeScript interfaces)
@@ -80,7 +80,7 @@ sta.com/
 - Zustand for client state (auth, app UI), React Query for server state (5min staleTime)
 - JWT auth with access tokens (60min expiry), stored in localStorage
 - Axios interceptors: auto-attach JWT, auto-logout on 401, retry 502/503/504
-- Mock auth mode: `VITE_MOCK_AUTH=true` with 11 predefined dev users (all roles)
+- Mock auth mode: `VITE_MOCK_AUTH=true` with 12 predefined dev users (all roles)
 - MUI DataGrid for tabular data
 - Recharts for visualizations
 - Inline SVG maps with no external dependencies (see `/explore` page)
@@ -101,20 +101,22 @@ sta.com/
 | auditor | trade, tax, payments, ledger, supply_chain, customs, insurance, analytics, compliance |
 | compliance_officer | compliance, trade |
 | afcfta_admin | trade, tax, analytics, customs, afcfta |
+| ps_trade | executive, trade, tax, payments, analytics, customs, supply_chain, compliance, cbdc |
 
 Route guard role arrays (App.tsx):
 - `ADMIN` = super_admin, govt_admin
 - `SUPER` = super_admin
-- `TAX_VIEW` = super_admin, govt_admin, govt_analyst, trader, auditor, afcfta_admin
-- `ANALYTICS_VIEW` = super_admin, govt_admin, govt_analyst, auditor, afcfta_admin
+- `TAX_VIEW` = super_admin, govt_admin, govt_analyst, trader, auditor
+- `ANALYTICS_VIEW` = super_admin, govt_admin, govt_analyst, auditor
 - `BANK` = super_admin, bank_officer
-- `TRADER_ROLES` = super_admin, trader, customs_officer, govt_admin, afcfta_admin
-- `CUSTOMS` = super_admin, customs_officer, govt_admin, auditor, afcfta_admin
+- `TRADER_ROLES` = super_admin, trader, customs_officer, govt_admin
+- `CUSTOMS` = super_admin, customs_officer, govt_admin, auditor
 - `LOGISTICS` = super_admin, logistics_officer, trader
 - `INSURANCE` = super_admin, insurance_agent, trader
 - `AUDITOR_ROLES` = super_admin, auditor, govt_admin, govt_analyst
-- `AFCFTA` = super_admin, afcfta_admin, govt_admin, govt_analyst
 - `COMPLIANCE` = super_admin, compliance_officer, govt_admin, auditor
+- `AFCFTA` = super_admin, afcfta_admin, govt_admin, govt_analyst
+- `PS_EXECUTIVE` = super_admin, ps_trade
 
 **CRITICAL**: Route-level `roles` arrays MUST match `ROLE_MODULES` in layoutConstants.ts. If a role has module access in `ROLE_MODULES`, it MUST be included in the route's role array — otherwise the sidebar shows the module but the route redirects the user away.
 
@@ -155,6 +157,7 @@ Route guard role arrays (App.tsx):
 - auditor@oag.go.ke (auditor, Michael Wekesa, Office of the Auditor General)
 - compliance@frc.go.ke (compliance_officer, Faith Njeri, Financial Reporting Centre)
 - afcfta@au.int (afcfta_admin, Wamkele Mene, AfCFTA Secretariat)
+- ps@trade.go.ke (ps_trade, PS Trade, Ministry of Trade)
 
 ## Commands
 - Frontend dev: `cd frontend && npm run dev` (port 5173)
@@ -233,11 +236,18 @@ Route guard role arrays (App.tsx):
 13. **`.env.production` must be tracked in git**: `.env` is gitignored (local dev), but `.env.production` must be committed so Railway has `VITE_MOCK_AUTH=true` at build time. Added `!frontend/.env.production` exception in `.gitignore`.
 14. **localStorage "undefined" string bug**: `localStorage.setItem('key', undefined)` stores the literal string `"undefined"`, which `!!` evaluates as truthy. The `getValidToken()` function in authStore guards against this.
 15. **Null-safe property access on user/module**: Always add fallback defaults when calling `.replace()` on values that could be null — e.g., `(selectedModule || 'trade').replace(...)` and `(user.role || 'trader').replace(...)`.
-16. **Recharts Tooltip dark theme visibility**: When using Recharts on a dark background, the default Tooltip text is black and invisible. Always add `itemStyle={{ color: '#f0f0f0' }}` and `labelStyle={{ color: '#D4AF37', fontWeight: 600 }}` alongside `contentStyle` for dark-themed charts.
-17. **Inline SVG maps over mapping libraries**: For clickable country maps, use inline SVG `<path>` elements instead of Leaflet/Mapbox/D3. This avoids heavy dependencies, works with React state natively, and keeps the bundle small (~17 kB gzipped for 54 African countries). Source: flekschas/simple-world-map (MIT License) for Natural Earth 110m simplified paths.
-18. **SVG animated arcs for trade flows**: Use SVG quadratic bezier curves (`Q` path command) with `stroke-dasharray` + `<animate attributeName="stroke-dashoffset">` for flowing trade arc animations. No JS animation libraries needed — pure SVG + CSS.
+16. **Worktree merge conflicts**: When developing on a worktree branch and merging to main, parallel commits on main (e.g., from another worktree) cause conflicts. Always `git pull origin main --no-edit` before pushing main, and resolve conflicts by keeping both sides (ours + theirs) since they're usually additive features.
+17. **Executive module palette convention**: The `pages/executive/` module uses a distinct deep-navy palette (`#0B1426` / `#0F1D35`) instead of the standard `#0a0a0a` / `#111111` black theme. This is intentional to create visual authority for government executive users. Future authority-level modules can follow this pattern with their own distinct palettes.
+18. **Adding a new role checklist**: When adding a new user role, update ALL of these in order: (1) `DEV_USERS` in authStore.ts, (2) `ROLE_MODULES` in layoutConstants.ts, (3) `DEFAULT_MODULE` in layoutConstants.ts, (4) `MODULE_NAV` for the new module, (5) `defaultLandingPage()` in ProtectedRoute.tsx, (6) route role array const in App.tsx, (7) `<Route>` definitions in App.tsx, (8) `PATH_TO_MODULE` in appStore.ts if new path prefix, (9) `DEMO_ACCOUNTS` in LoginPage.tsx, (10) `MODULES` array in layoutConstants.ts if new module.
+19. **Recharts Tooltip dark theme visibility**: When using Recharts on a dark background, the default Tooltip text is black and invisible. Always add `itemStyle={{ color: '#f0f0f0' }}` and `labelStyle={{ color: '#D4AF37', fontWeight: 600 }}` alongside `contentStyle` for dark-themed charts.
+20. **Inline SVG maps over mapping libraries**: For clickable country maps, use inline SVG `<path>` elements instead of Leaflet/Mapbox/D3. This avoids heavy dependencies, works with React state natively, and keeps the bundle small (~17 kB gzipped for 54 African countries). Source: flekschas/simple-world-map (MIT License) for Natural Earth 110m simplified paths.
+21. **SVG animated arcs for trade flows**: Use SVG quadratic bezier curves (`Q` path command) with `stroke-dasharray` + `<animate attributeName="stroke-dashoffset">` for flowing trade arc animations. No JS animation libraries needed — pure SVG + CSS.
 
-## Frontend Pages (82 total across 15 modules)
+## Research Documents
+- **PS Trade mandate & global benchmarks**: [`docs/ps-trade-research.md`](docs/ps-trade-research.md) — Comprehensive research on PS Trade responsibilities, KPIs, global trade ministry digital systems (Singapore TradeNet, UK DBT, US Commerce, EU DG Trade), African regional context, and authority-level dashboard features.
+- **Intra-African trade data & sources**: [`docs/intra-african-trade-data.md`](docs/intra-african-trade-data.md) — UN COMTRADE, Afreximbank, Trade Map (ITC), WITS data: bilateral flows (65+ country pairs), annual trends, top exporters, RECs, product categories, corridors.
+
+## Frontend Pages (100 total across 16 modules)
 | Module | Pages | Directory |
 |--------|-------|-----------|
 | Core (Dashboard, Login, Landing) | 3 | `pages/` |
@@ -251,10 +261,19 @@ Route guard role arrays (App.tsx):
 | Insurance | 5 | `pages/insurance/` |
 | Analytics & Government | 10 | `pages/analytics/` |
 | CBDC & Future Finance | 5 | `pages/cbdc/` |
-| Compliance & KYC | 7 | `pages/compliance/` |
-| AfCFTA Trade Monitor | 4 | `pages/afcfta/` |
+| Compliance & KYC | 8 | `pages/compliance/` |
+| AfCFTA Hub | 8 | `pages/afcfta/` |
+| Executive (PS Trade) | 6 | `pages/executive/` |
 | Admin & Platform Management | 8 | `pages/admin/` |
 | Profile & Settings | 1 | `pages/profile/` |
+
+### Page Re-export Pattern
+When pages are shared across modules (e.g., AfCFTA pages accessible from both analytics and afcfta routes), the **canonical** file lives in the primary module directory and the secondary location re-exports it:
+```typescript
+// pages/afcfta/AfCFTAProgressPage.tsx (re-export)
+export { default } from '../analytics/AfCFTAProgressPage';
+```
+This keeps a single source of truth while both route paths work. When naming lazy imports in App.tsx, suffix with `Hub` to avoid conflicts (e.g., `AfCFTAProgressPageHub` for the afcfta route vs `AfCFTAProgressPage` for the analytics route).
 
 All pages use mock data with realistic African trade scenarios (Africa-to-Africa only). No PlaceholderPage routes remain.
 
@@ -309,6 +328,15 @@ All pages use mock data with realistic African trade scenarios (Africa-to-Africa
   - `tradeData.ts` — 65+ bilateral flows, annual trends, top exporters, 7 RECs, product categories, corridors
   - `countryMetadata.ts` — 54 countries with ISO codes, flag emojis, SVG centroids, REC memberships
 - **Key patterns**: IntersectionObserver scroll-reveal (`useReveal` hook), clickable trade corridors auto-select origin country, map responsive resize
+
+### Executive Module (pages/executive/)
+- Uses a distinct deep-navy color palette (`EX` object) — NOT the standard MUI theme colors
+- Each page overrides layout padding with `mx: -3, mt: -3, mb: -3` to fill the full viewport
+- `ExecCard` reusable component wraps all cards with navy gradient background, gold border, optional gold top-bar glow
+- Government seal/crest in header with "Office of the Permanent Secretary" branding
+- "Classified — For Official Use Only" footer on every page
+- All Recharts tooltips use consistent navy/gold styling
+- `LIVE` indicator with CSS pulse animation
 
 ## Related Documents
 - [`MEMORY.md`](MEMORY.md) — Session learnings, technical decisions, patterns, and bugs found

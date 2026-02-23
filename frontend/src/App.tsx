@@ -83,6 +83,7 @@ const RiskRankingPage = lazy(() => import('./pages/compliance/RiskRankingPage'))
 const WatchlistMonitorPage = lazy(() => import('./pages/compliance/WatchlistMonitorPage'));
 const DirectorScreeningPage = lazy(() => import('./pages/compliance/DirectorScreeningPage'));
 const ComplianceReportsPage = lazy(() => import('./pages/compliance/ComplianceReportsPage'));
+const TradeDocumentReviewPage = lazy(() => import('./pages/compliance/TradeDocumentReviewPage'));
 
 // Profile page
 const ProfilePage = lazy(() => import('./pages/profile/ProfilePage'));
@@ -99,6 +100,10 @@ const AfCFTADashboardPage = lazy(() => import('./pages/afcfta/AfCFTADashboardPag
 const AfCFTACorridorsPage = lazy(() => import('./pages/afcfta/AfCFTACorridorsPage'));
 const AfCFTARECsPage = lazy(() => import('./pages/afcfta/AfCFTARECsPage'));
 const AfCFTATariffTrackerPage = lazy(() => import('./pages/afcfta/AfCFTATariffTrackerPage'));
+const AfCFTAProgressPageHub = lazy(() => import('./pages/afcfta/AfCFTAProgressPage'));
+const AfCFTATariffPageHub = lazy(() => import('./pages/afcfta/AfCFTATariffPage'));
+const TradeFlowsPageHub = lazy(() => import('./pages/afcfta/TradeFlowsPage'));
+const RulesOfOriginPage = lazy(() => import('./pages/afcfta/RulesOfOriginPage'));
 
 // Analytics pages (Phase 8)
 const AnalyticsDashboardPage = lazy(() => import('./pages/analytics/AnalyticsDashboardPage'));
@@ -111,6 +116,14 @@ const ScheduledReportsPage = lazy(() => import('./pages/analytics/ScheduledRepor
 const DataExportPage = lazy(() => import('./pages/analytics/DataExportPage'));
 const EconomicImpactPage = lazy(() => import('./pages/analytics/EconomicImpactPage'));
 const AfCFTAProgressPage = lazy(() => import('./pages/analytics/AfCFTAProgressPage'));
+
+// Executive pages (PS Trade)
+const ExecutiveDashboardPage = lazy(() => import('./pages/executive/ExecutiveDashboardPage'));
+const TradePerformancePage = lazy(() => import('./pages/executive/TradePerformancePage'));
+const PolicyTrackerPage = lazy(() => import('./pages/executive/PolicyTrackerPage'));
+const SectorAnalysisPage = lazy(() => import('./pages/executive/SectorAnalysisPage'));
+const ExecutiveBriefingsPage = lazy(() => import('./pages/executive/ExecutiveBriefingsPage'));
+const StrategicAlertsPage = lazy(() => import('./pages/executive/StrategicAlertsPage'));
 
 // Admin pages (Phase 9)
 const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'));
@@ -165,19 +178,21 @@ function P({ children, roles }: { children: React.ReactNode; roles?: string[] })
 const ADMIN = ['super_admin', 'govt_admin'];
 const SUPER = ['super_admin'];
 const BANK = ['super_admin', 'bank_officer'];
-const TRADER_ROLES = ['super_admin', 'trader', 'customs_officer', 'govt_admin', 'afcfta_admin'];
-const CUSTOMS = ['super_admin', 'customs_officer', 'govt_admin', 'auditor', 'afcfta_admin'];
+const TRADER_ROLES = ['super_admin', 'trader', 'customs_officer', 'govt_admin'];
+const CUSTOMS = ['super_admin', 'customs_officer', 'govt_admin', 'auditor'];
 const LOGISTICS = ['super_admin', 'logistics_officer', 'trader'];
 const INSURANCE = ['super_admin', 'insurance_agent', 'trader'];
 const AUDITOR_ROLES = ['super_admin', 'auditor', 'govt_admin', 'govt_analyst'];
 // Tax: govt + trader (view their own) + auditor (read-only)
-const TAX_VIEW = ['super_admin', 'govt_admin', 'govt_analyst', 'trader', 'auditor', 'afcfta_admin'];
+const TAX_VIEW = ['super_admin', 'govt_admin', 'govt_analyst', 'trader', 'auditor'];
 // Analytics: govt + auditor (read-only access per ROLE_MODULES)
-const ANALYTICS_VIEW = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor', 'afcfta_admin'];
+const ANALYTICS_VIEW = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor'];
 // Compliance: compliance officer + govt + auditor
 const COMPLIANCE = ['super_admin', 'compliance_officer', 'govt_admin', 'auditor'];
 // AfCFTA: afcfta_admin + super_admin + govt + analyst
 const AFCFTA = ['super_admin', 'afcfta_admin', 'govt_admin', 'govt_analyst'];
+// Executive: PS Trade + super_admin
+const PS_EXECUTIVE = ['super_admin', 'ps_trade'];
 
 // ─── App ────────────────────────────────────────────────────────────────────────
 
@@ -299,6 +314,7 @@ export default function App() {
                 <Route path="/compliance/risk-ranking" element={<P roles={COMPLIANCE}><RiskRankingPage /></P>} />
                 <Route path="/compliance/watchlist" element={<P roles={COMPLIANCE}><WatchlistMonitorPage /></P>} />
                 <Route path="/compliance/directors" element={<P roles={COMPLIANCE}><DirectorScreeningPage /></P>} />
+                <Route path="/compliance/trade-review" element={<P roles={COMPLIANCE}><TradeDocumentReviewPage /></P>} />
                 <Route path="/compliance/reports" element={<P roles={COMPLIANCE}><ComplianceReportsPage /></P>} />
 
                 {/* ── CBDC & Future Finance ──────────────────────────── */}
@@ -310,9 +326,21 @@ export default function App() {
 
                 {/* ── AfCFTA Monitor ────────────────────────────────── */}
                 <Route path="/afcfta/dashboard" element={<P roles={AFCFTA}><AfCFTADashboardPage /></P>} />
+                <Route path="/afcfta/progress" element={<P roles={AFCFTA}><AfCFTAProgressPageHub /></P>} />
+                <Route path="/afcfta/trade-flows" element={<P roles={AFCFTA}><TradeFlowsPageHub /></P>} />
                 <Route path="/afcfta/corridors" element={<P roles={AFCFTA}><AfCFTACorridorsPage /></P>} />
                 <Route path="/afcfta/recs" element={<P roles={AFCFTA}><AfCFTARECsPage /></P>} />
                 <Route path="/afcfta/tariff-tracker" element={<P roles={AFCFTA}><AfCFTATariffTrackerPage /></P>} />
+                <Route path="/afcfta/tariffs" element={<P roles={AFCFTA}><AfCFTATariffPageHub /></P>} />
+                <Route path="/afcfta/rules-of-origin" element={<P roles={AFCFTA}><RulesOfOriginPage /></P>} />
+
+                {/* ── Executive (PS Trade) ──────────────────────────── */}
+                <Route path="/executive/dashboard" element={<P roles={PS_EXECUTIVE}><ExecutiveDashboardPage /></P>} />
+                <Route path="/executive/trade-performance" element={<P roles={PS_EXECUTIVE}><TradePerformancePage /></P>} />
+                <Route path="/executive/policy-tracker" element={<P roles={PS_EXECUTIVE}><PolicyTrackerPage /></P>} />
+                <Route path="/executive/sector-analysis" element={<P roles={PS_EXECUTIVE}><SectorAnalysisPage /></P>} />
+                <Route path="/executive/briefings" element={<P roles={PS_EXECUTIVE}><ExecutiveBriefingsPage /></P>} />
+                <Route path="/executive/alerts" element={<P roles={PS_EXECUTIVE}><StrategicAlertsPage /></P>} />
 
                 {/* ── Admin ──────────────────────────────────────────── */}
                 <Route path="/admin/dashboard" element={<P roles={ADMIN}><AdminDashboardPage /></P>} />

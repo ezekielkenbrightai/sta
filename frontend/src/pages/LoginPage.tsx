@@ -28,6 +28,7 @@ const DEMO_ACCOUNTS = [
   { email: 'compliance@frc.go.ke', label: 'Compliance', color: '#14B8A6' },
   { email: 'afcfta@au.int', label: 'AfCFTA', color: '#10B981' },
   { email: 'admin@sta.africa', label: 'Super Admin', color: '#D4AF37' },
+  { email: 'ps@trade.go.ke', label: 'PS Trade', color: '#FFD700' },
 ];
 
 export default function LoginPage() {

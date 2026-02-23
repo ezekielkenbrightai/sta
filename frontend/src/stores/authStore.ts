@@ -83,7 +83,7 @@ const DEV_USERS: Record<string, User> = {
     organization_id: 'o-frc', organization_name: 'Financial Reporting Centre',
     organization_type: 'government', country_id: 'c-ken', country_name: 'Kenya',
     country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
-    modules: ['compliance', 'trade'],
+    modules: ['compliance'],
   },
   'afcfta@au.int': {
     id: 'u-afcfta', email: 'afcfta@au.int',
@@ -91,7 +91,15 @@ const DEV_USERS: Record<string, User> = {
     organization_id: 'o-afcfta', organization_name: 'AfCFTA Secretariat',
     organization_type: 'government', country_id: 'c-gha', country_name: 'Ghana',
     country_code: 'GHA', country_flag_emoji: '🇬🇭', is_active: true,
-    modules: ['trade', 'tax', 'analytics', 'customs', 'afcfta'],
+    modules: ['afcfta'],
+  },
+  'ps@trade.go.ke': {
+    id: 'u-ps-trade', email: 'ps@trade.go.ke',
+    first_name: 'PS', last_name: 'Trade', role: 'ps_trade',
+    organization_id: 'o-mot', organization_name: 'Ministry of Trade',
+    organization_type: 'government', country_id: 'c-ken', country_name: 'Kenya',
+    country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
+    modules: ['executive', 'trade', 'tax', 'payments', 'analytics', 'customs', 'supply_chain', 'compliance', 'cbdc'],
   },
 };
 
