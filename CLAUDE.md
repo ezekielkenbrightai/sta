@@ -39,7 +39,7 @@ sta.com/
 │   │   ├── main.tsx         # React 19 entry point
 │   │   ├── api/             # client.ts (Axios), endpoints.ts
 │   │   ├── components/layout/ # AppLayout, ProtectedRoute, Sidebar, TopNav
-│   │   ├── pages/           # 81 pages across 14 modules
+│   │   ├── pages/           # 92 pages across 14 modules
 │   │   ├── stores/          # authStore.ts, appStore.ts (Zustand)
 │   │   ├── theme/           # theme.ts (MUI black/gold)
 │   │   ├── types/           # index.ts (all TypeScript interfaces)
@@ -93,22 +93,22 @@ sta.com/
 | customs_officer | trade, customs |
 | insurance_agent | insurance |
 | auditor | trade, tax, payments, ledger, supply_chain, customs, insurance, analytics, compliance |
-| compliance_officer | compliance, trade |
-| afcfta_admin | trade, tax, analytics, customs, afcfta |
+| compliance_officer | compliance |
+| afcfta_admin | afcfta |
 
 Route guard role arrays (App.tsx):
 - `ADMIN` = super_admin, govt_admin
 - `SUPER` = super_admin
-- `TAX_VIEW` = super_admin, govt_admin, govt_analyst, trader, auditor, afcfta_admin
-- `ANALYTICS_VIEW` = super_admin, govt_admin, govt_analyst, auditor, afcfta_admin
+- `TAX_VIEW` = super_admin, govt_admin, govt_analyst, trader, auditor
+- `ANALYTICS_VIEW` = super_admin, govt_admin, govt_analyst, auditor
 - `BANK` = super_admin, bank_officer
-- `TRADER_ROLES` = super_admin, trader, customs_officer, govt_admin, afcfta_admin
-- `CUSTOMS` = super_admin, customs_officer, govt_admin, auditor, afcfta_admin
+- `TRADER_ROLES` = super_admin, trader, customs_officer, govt_admin
+- `CUSTOMS` = super_admin, customs_officer, govt_admin, auditor
 - `LOGISTICS` = super_admin, logistics_officer, trader
 - `INSURANCE` = super_admin, insurance_agent, trader
 - `AUDITOR_ROLES` = super_admin, auditor, govt_admin, govt_analyst
-- `AFCFTA` = super_admin, afcfta_admin, govt_admin, govt_analyst
 - `COMPLIANCE` = super_admin, compliance_officer, govt_admin, auditor
+- `AFCFTA` = super_admin, afcfta_admin, govt_admin, govt_analyst
 
 **CRITICAL**: Route-level `roles` arrays MUST match `ROLE_MODULES` in layoutConstants.ts. If a role has module access in `ROLE_MODULES`, it MUST be included in the route's role array — otherwise the sidebar shows the module but the route redirects the user away.
 
@@ -228,7 +228,7 @@ Route guard role arrays (App.tsx):
 14. **localStorage "undefined" string bug**: `localStorage.setItem('key', undefined)` stores the literal string `"undefined"`, which `!!` evaluates as truthy. The `getValidToken()` function in authStore guards against this.
 15. **Null-safe property access on user/module**: Always add fallback defaults when calling `.replace()` on values that could be null — e.g., `(selectedModule || 'trade').replace(...)` and `(user.role || 'trader').replace(...)`.
 
-## Frontend Pages (81 total across 14 modules)
+## Frontend Pages (92 total across 14 modules)
 | Module | Pages | Directory |
 |--------|-------|-----------|
 | Core (Dashboard, Login, Landing) | 3 | `pages/` |
@@ -241,10 +241,18 @@ Route guard role arrays (App.tsx):
 | Insurance | 5 | `pages/insurance/` |
 | Analytics & Government | 10 | `pages/analytics/` |
 | CBDC & Future Finance | 5 | `pages/cbdc/` |
-| Compliance & KYC | 7 | `pages/compliance/` |
-| AfCFTA Trade Monitor | 4 | `pages/afcfta/` |
+| Compliance & KYC | 8 | `pages/compliance/` |
+| AfCFTA Hub | 8 | `pages/afcfta/` |
 | Admin & Platform Management | 8 | `pages/admin/` |
 | Profile & Settings | 1 | `pages/profile/` |
+
+### Page Re-export Pattern
+When pages are shared across modules (e.g., AfCFTA pages accessible from both analytics and afcfta routes), the **canonical** file lives in the primary module directory and the secondary location re-exports it:
+```typescript
+// pages/afcfta/AfCFTAProgressPage.tsx (re-export)
+export { default } from '../analytics/AfCFTAProgressPage';
+```
+This keeps a single source of truth while both route paths work. When naming lazy imports in App.tsx, suffix with `Hub` to avoid conflicts (e.g., `AfCFTAProgressPageHub` for the afcfta route vs `AfCFTAProgressPage` for the analytics route).
 
 All pages use mock data with realistic African trade scenarios (Africa-to-Africa only). No PlaceholderPage routes remain.
 

@@ -83,7 +83,7 @@ const DEV_USERS: Record<string, User> = {
     organization_id: 'o-frc', organization_name: 'Financial Reporting Centre',
     organization_type: 'government', country_id: 'c-ken', country_name: 'Kenya',
     country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
-    modules: ['compliance', 'trade'],
+    modules: ['compliance'],
   },
   'afcfta@au.int': {
     id: 'u-afcfta', email: 'afcfta@au.int',
@@ -91,7 +91,7 @@ const DEV_USERS: Record<string, User> = {
     organization_id: 'o-afcfta', organization_name: 'AfCFTA Secretariat',
     organization_type: 'government', country_id: 'c-gha', country_name: 'Ghana',
     country_code: 'GHA', country_flag_emoji: '🇬🇭', is_active: true,
-    modules: ['trade', 'tax', 'analytics', 'customs', 'afcfta'],
+    modules: ['afcfta'],
   },
 };
 
