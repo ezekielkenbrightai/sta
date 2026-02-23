@@ -7,7 +7,7 @@ interface ProtectedRouteProps {
   allowedRoles?: string[];
 }
 
-function defaultLandingPage(role: string): string {
+export function defaultLandingPage(role: string): string {
   switch (role) {
     case 'super_admin':
     case 'govt_admin':

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { defaultLandingPage } from '../components/layout/ProtectedRoute';
 import {
   Box,
   Button,
@@ -48,8 +49,12 @@ export default function LoginPage() {
     try {
       await login(email, password);
       const user = useAuthStore.getState().user;
-      if (user) initForRole(user.role);
-      navigate('/dashboard');
+      if (user) {
+        initForRole(user.role);
+        navigate(defaultLandingPage(user.role));
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Invalid credentials';
       setError(message);
