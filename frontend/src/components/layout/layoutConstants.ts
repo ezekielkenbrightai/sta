@@ -525,6 +525,6 @@ export const ROLE_MODULES: Record<string, string[]> = {
   insurance_agent: ['insurance'],
   auditor: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'compliance'],
   compliance_officer: ['compliance', 'trade'],
-  afcfta_admin: ['trade', 'tax', 'analytics', 'customs', 'afcfta'],
+  afcfta_admin: ['afcfta'],
   ps_trade: ['executive'],
 };
