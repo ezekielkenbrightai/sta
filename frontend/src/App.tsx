@@ -212,14 +212,14 @@ export default function App() {
             <Routes>
               {/* ── Public routes ──────────────────────────────────────── */}
               <Route path="/login" element={<LoginPage />} />
-              <Route path="/explore" element={<TradeExplorerPage />} />
+              <Route path="/" element={<TradeExplorerPage />} />
+              <Route path="/explore" element={<Navigate to="/" replace />} />
 
               {/* ── Protected app shell ────────────────────────────────── */}
               <Route element={<P><AppLayout /></P>}>
 
                 {/* ── Dashboard ──────────────────────────────────────── */}
                 <Route path="/dashboard" element={<P><DashboardPage /></P>} />
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
                 {/* ── Trade Documents ────────────────────────────────── */}
                 <Route path="/trade/documents" element={<P roles={TRADER_ROLES}><TradeDocumentListPage /></P>} />
