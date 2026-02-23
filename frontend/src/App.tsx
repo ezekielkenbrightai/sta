@@ -7,6 +7,7 @@ import { useAuthStore } from './stores/authStore';
 
 // ─── Lazy-loaded pages ──────────────────────────────────────────────────────────
 
+const LandingPage = lazy(() => import('./pages/LandingPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const TradeExplorerPage = lazy(() => import('./pages/explore/TradeExplorerPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
@@ -211,6 +212,7 @@ export default function App() {
           <Suspense fallback={<PageLoader />}>
             <Routes>
               {/* ── Public routes ──────────────────────────────────────── */}
+              <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/explore" element={<TradeExplorerPage />} />
 
@@ -219,7 +221,6 @@ export default function App() {
 
                 {/* ── Dashboard ──────────────────────────────────────── */}
                 <Route path="/dashboard" element={<P><DashboardPage /></P>} />
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
                 {/* ── Trade Documents ────────────────────────────────── */}
                 <Route path="/trade/documents" element={<P roles={TRADER_ROLES}><TradeDocumentListPage /></P>} />
@@ -356,7 +357,7 @@ export default function App() {
                 <Route path="/profile" element={<P><ProfilePage /></P>} />
 
                 {/* ── Catch-all ──────────────────────────────────────── */}
-                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
               </Route>
             </Routes>
           </Suspense>
