@@ -123,7 +123,7 @@ export default function InvoiceFinancePage() {
           <Typography variant="h4">Invoice Finance</Typography>
         </Box>
         <Typography sx={{ color: 'text.secondary' }}>
-          Supply chain finance and invoice financing powered by CBDC rails for East African trade networks.
+          Supply chain finance and invoice financing powered by Stable Coins rails for East African trade networks.
         </Typography>
       </Box>
 

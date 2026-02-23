@@ -11,7 +11,7 @@ const DEV_USERS: Record<string, User> = {
     organization_id: 'o-nex', organization_name: 'Nairobi Exports Ltd',
     organization_type: 'trader', country_id: 'c-ken', country_name: 'Kenya',
     country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
-    modules: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'insurance', 'cbdc'],
+    modules: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'insurance', 'stablecoins'],
   },
   'admin@sta.africa': {
     id: 'u-super', email: 'admin@sta.africa',
@@ -19,7 +19,7 @@ const DEV_USERS: Record<string, User> = {
     organization_id: null, organization_name: null,
     organization_type: null, country_id: null, country_name: null,
     country_code: null, country_flag_emoji: null, is_active: true,
-    modules: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'cbdc', 'admin', 'compliance'],
+    modules: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'stablecoins', 'admin', 'compliance'],
   },
   'govt@kra.go.ke': {
     id: 'u-govt', email: 'govt@kra.go.ke',
@@ -27,7 +27,7 @@ const DEV_USERS: Record<string, User> = {
     organization_id: 'o-kra', organization_name: 'Kenya Revenue Authority',
     organization_type: 'government', country_id: 'c-ken', country_name: 'Kenya',
     country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
-    modules: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'cbdc', 'compliance'],
+    modules: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'stablecoins', 'compliance'],
   },
   'officer@kcb.co.ke': {
     id: 'u-bank', email: 'officer@kcb.co.ke',
@@ -99,7 +99,7 @@ const DEV_USERS: Record<string, User> = {
     organization_id: 'o-mot', organization_name: 'Ministry of Trade',
     organization_type: 'government', country_id: 'c-ken', country_name: 'Kenya',
     country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
-    modules: ['executive', 'trade', 'tax', 'payments', 'analytics', 'customs', 'supply_chain', 'compliance', 'cbdc'],
+    modules: ['executive', 'trade', 'tax', 'payments', 'analytics', 'customs', 'supply_chain', 'compliance', 'stablecoins'],
   },
 };
 

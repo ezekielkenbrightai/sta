@@ -26,7 +26,7 @@ import {
 
 // ── TypeScript Interfaces ────────────────────────────────────────────────────
 
-interface CBDCKpi {
+interface StableCoinsKpi {
   label: string;
   value: string;
   change: number;
@@ -45,7 +45,7 @@ interface DigitalSettlement {
   txHash: string;
 }
 
-interface CBDCCorridor {
+interface StableCoinsCorridor {
   from: string;
   fromFlag: string;
   to: string;
@@ -64,7 +64,7 @@ interface MonthlyVolume {
 
 // ── Mock Data ────────────────────────────────────────────────────────────────
 
-const KPIS: CBDCKpi[] = [
+const KPIS: StableCoinsKpi[] = [
   { label: 'Digital KES Balance', value: 'KES 2.47B', change: 18.4, icon: <AccountBalanceWallet sx={{ fontSize: 18 }} />, color: '#D4AF37' },
   { label: 'Digital Transactions MTD', value: '34,821', change: 23.7, icon: <SwapHoriz sx={{ fontSize: 18 }} />, color: '#22C55E' },
   { label: 'Settlement Speed (Avg)', value: '4.2 sec', change: -32.1, icon: <Speed sx={{ fontSize: 18 }} />, color: '#3B82F6' },
@@ -72,20 +72,20 @@ const KPIS: CBDCKpi[] = [
 ];
 
 const SETTLEMENTS: DigitalSettlement[] = [
-  { id: 'CBDC-001', from: 'KenTrade Holdings', to: 'TZ Export Corp', amount: 'KES 12,450,000', currency: 'dKES', status: 'completed', timestamp: '2 min ago', txHash: '0x7a3f...e821' },
-  { id: 'CBDC-002', from: 'Mombasa Port Authority', to: 'Uganda Revenue', amount: 'UGX 87,200,000', currency: 'dUGX', status: 'completed', timestamp: '8 min ago', txHash: '0x9b2c...d445' },
-  { id: 'CBDC-003', from: 'Nairobi Coffee Exporter', to: 'Dar es Salaam Imports', amount: 'KES 5,800,000', currency: 'dKES', status: 'processing', timestamp: '15 min ago', txHash: '0x4d1e...f932' },
-  { id: 'CBDC-004', from: 'EAC Trade Finance Ltd', to: 'Rwanda Minerals Corp', amount: 'RWF 34,500,000', currency: 'dRWF', status: 'pending', timestamp: '22 min ago', txHash: '0x6c8a...b017' },
-  { id: 'CBDC-005', from: 'Kampala Textiles', to: 'Kenya Garments Ltd', amount: 'KES 3,200,000', currency: 'dKES', status: 'completed', timestamp: '35 min ago', txHash: '0x2e5f...a773' },
-  { id: 'CBDC-006', from: 'Zanzibar Spice Co', to: 'Mombasa Distributors', amount: 'TZS 18,900,000', currency: 'dTZS', status: 'completed', timestamp: '48 min ago', txHash: '0x1f3d...c289' },
+  { id: 'SC-001', from: 'KenTrade Holdings', to: 'TZ Export Corp', amount: 'KES 12,450,000', currency: 'dKES', status: 'completed', timestamp: '2 min ago', txHash: '0x7a3f...e821' },
+  { id: 'SC-002', from: 'Mombasa Port Authority', to: 'Uganda Revenue', amount: 'UGX 87,200,000', currency: 'dUGX', status: 'completed', timestamp: '8 min ago', txHash: '0x9b2c...d445' },
+  { id: 'SC-003', from: 'Nairobi Coffee Exporter', to: 'Dar es Salaam Imports', amount: 'KES 5,800,000', currency: 'dKES', status: 'processing', timestamp: '15 min ago', txHash: '0x4d1e...f932' },
+  { id: 'SC-004', from: 'EAC Trade Finance Ltd', to: 'Rwanda Minerals Corp', amount: 'RWF 34,500,000', currency: 'dRWF', status: 'pending', timestamp: '22 min ago', txHash: '0x6c8a...b017' },
+  { id: 'SC-005', from: 'Kampala Textiles', to: 'Kenya Garments Ltd', amount: 'KES 3,200,000', currency: 'dKES', status: 'completed', timestamp: '35 min ago', txHash: '0x2e5f...a773' },
+  { id: 'SC-006', from: 'Zanzibar Spice Co', to: 'Mombasa Distributors', amount: 'TZS 18,900,000', currency: 'dTZS', status: 'completed', timestamp: '48 min ago', txHash: '0x1f3d...c289' },
 ];
 
-const CORRIDORS: CBDCCorridor[] = [
+const CORRIDORS: StableCoinsCorridor[] = [
   { from: 'Kenya', fromFlag: '\ud83c\uddf0\ud83c\uddea', to: 'Tanzania', toFlag: '\ud83c\uddf9\ud83c\uddff', volume_mtd: 4_200_000_000, transactions: 12847, avgSettlement: '3.8 sec', status: 'active' },
   { from: 'Kenya', fromFlag: '\ud83c\uddf0\ud83c\uddea', to: 'Uganda', toFlag: '\ud83c\uddfa\ud83c\uddec', volume_mtd: 2_870_000_000, transactions: 8234, avgSettlement: '4.1 sec', status: 'active' },
   { from: 'Tanzania', fromFlag: '\ud83c\uddf9\ud83c\uddff', to: 'Rwanda', toFlag: '\ud83c\uddf7\ud83c\uddfc', volume_mtd: 1_340_000_000, transactions: 3921, avgSettlement: '5.2 sec', status: 'pilot' },
   { from: 'Uganda', fromFlag: '\ud83c\uddfa\ud83c\uddec', to: 'DRC', toFlag: '\ud83c\udde8\ud83c\udde9', volume_mtd: 890_000_000, transactions: 2156, avgSettlement: '6.7 sec', status: 'pilot' },
-  { from: 'Kenya', fromFlag: '\ud83c\uddf0\ud83c\uddea', to: 'Ethiopia', toFlag: '\ud83c\uddea\ud83c\uddf9', volume_mtd: 560_000_000, transactions: 1423, avgSettlement: '—', status: 'planned' },
+  { from: 'Kenya', fromFlag: '\ud83c\uddf0\ud83c\uddea', to: 'Ethiopia', toFlag: '\ud83c\uddea\ud83c\uddf9', volume_mtd: 560_000_000, transactions: 1423, avgSettlement: '\u2014', status: 'planned' },
 ];
 
 const MONTHLY_VOLUMES: MonthlyVolume[] = [
@@ -116,14 +116,14 @@ const STATUS_COLORS: Record<string, { color: string; bg: string }> = {
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 
-export default function CBDCDashboardPage() {
+export default function StableCoinsDashboardPage() {
 
   return (
     <Box>
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
           <AccountBalanceWallet sx={{ color: '#D4AF37' }} />
-          <Typography variant="h4">CBDC Overview</Typography>
+          <Typography variant="h4">Stable Coins Overview</Typography>
         </Box>
         <Typography sx={{ color: 'text.secondary' }}>
           Digital currency operations, cross-border settlements, and wallet analytics across East Africa.
@@ -155,7 +155,7 @@ export default function CBDCDashboardPage() {
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Typography sx={{ fontSize: 14, fontWeight: 600, color: '#f0f0f0' }}>
                 <BarChartIcon sx={{ fontSize: 16, verticalAlign: 'middle', mr: 0.5, color: '#D4AF37' }} />
-                CBDC Transaction Volume (6-Month)
+                Stable Coins Transaction Volume (6-Month)
               </Typography>
               <Typography sx={{ fontSize: 11, color: '#555' }}>
                 <TrendingUp sx={{ fontSize: 12, verticalAlign: 'middle', mr: 0.5, color: '#22C55E' }} />
@@ -212,12 +212,12 @@ export default function CBDCDashboardPage() {
           </Card>
         </Grid>
 
-        {/* Cross-border CBDC Corridors */}
+        {/* Cross-border Stable Coins Corridors */}
         <Grid size={{ xs: 12 }}>
           <Card sx={{ p: 2.5 }}>
             <Typography sx={{ fontSize: 14, fontWeight: 600, color: '#f0f0f0', mb: 2 }}>
               <Public sx={{ fontSize: 16, verticalAlign: 'middle', mr: 0.5, color: '#D4AF37' }} />
-              Cross-Border CBDC Corridors
+              Cross-Border Stable Coins Corridors
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
               {CORRIDORS.map((c) => {

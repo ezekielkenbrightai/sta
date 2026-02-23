@@ -65,12 +65,12 @@ async def seed():
             User(
                 id="u-super", email="admin@sta.africa", first_name="Platform", last_name="Admin",
                 role="super_admin", hashed_password=password,
-                modules="trade,tax,payments,ledger,supply_chain,customs,insurance,analytics,cbdc,admin,afcfta",
+                modules="trade,tax,payments,ledger,supply_chain,customs,insurance,analytics,stablecoins,admin,afcfta",
             ),
             User(
                 id="u-govt", email="govt@kra.go.ke", first_name="Jane", last_name="Mwangi",
                 role="govt_admin", organization_id="o-kra", hashed_password=password,
-                modules="trade,tax,payments,ledger,supply_chain,customs,insurance,analytics,cbdc,afcfta",
+                modules="trade,tax,payments,ledger,supply_chain,customs,insurance,analytics,stablecoins,afcfta",
             ),
             User(
                 id="u-analyst", email="analyst@kra.go.ke", first_name="David", last_name="Ochieng",
@@ -85,7 +85,7 @@ async def seed():
             User(
                 id="u-trader", email="trader@nairobiexports.co.ke", first_name="John", last_name="Kipchoge",
                 role="trader", organization_id="o-nex", hashed_password=password,
-                modules="trade,tax,payments,ledger,supply_chain,insurance,cbdc",
+                modules="trade,tax,payments,ledger,supply_chain,insurance,stablecoins",
             ),
             User(
                 id="u-logistics", email="ops@kenyalogistics.co.ke", first_name="Grace", last_name="Wanjiku",

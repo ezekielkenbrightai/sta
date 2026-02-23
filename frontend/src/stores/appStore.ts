@@ -11,7 +11,7 @@ const PATH_TO_MODULE: Record<string, string> = {
   '/customs': 'customs',
   '/insurance': 'insurance',
   '/analytics': 'analytics',
-  '/cbdc': 'cbdc',
+  '/stablecoins': 'stablecoins',
   '/afcfta': 'afcfta',
   '/admin': 'admin',
   '/executive': 'executive',
@@ -19,8 +19,8 @@ const PATH_TO_MODULE: Record<string, string> = {
 
 /** Detect module from a pathname. */
 export function moduleFromPath(pathname: string): string | null {
-  // /dashboard and / are the main trade dashboard (no /trade prefix)
-  if (pathname === '/dashboard' || pathname === '/') return 'trade';
+  // /dashboard is the main trade dashboard (no /trade prefix)
+  if (pathname === '/dashboard') return 'trade';
   for (const [prefix, mod] of Object.entries(PATH_TO_MODULE)) {
     if (pathname.startsWith(prefix)) return mod;
   }

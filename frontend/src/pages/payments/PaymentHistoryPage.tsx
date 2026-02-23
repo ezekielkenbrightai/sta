@@ -29,7 +29,7 @@ interface PaymentRecord {
   trader: string;
   amount: number;
   currency: string;
-  method: 'bank_transfer' | 'mobile_money' | 'card' | 'cbdc';
+  method: 'bank_transfer' | 'mobile_money' | 'card' | 'stablecoins';
   status: 'completed' | 'pending' | 'processing' | 'failed' | 'refunded';
   initiated_at: string;
   completed_at: string | null;
@@ -40,12 +40,12 @@ const MOCK_PAYMENTS: PaymentRecord[] = [
   { id: 'ph-002', reference: 'PAY-2026-0187', assessment_ref: 'KE-2026-0040', trader: 'Lagos Trading Co', amount: 156000, currency: 'KES', method: 'mobile_money', status: 'completed', initiated_at: '2026-02-22 13:15', completed_at: '2026-02-22 13:15' },
   { id: 'ph-003', reference: 'PAY-2026-0186', assessment_ref: 'KE-2026-0039', trader: 'Kampala Imports Inc', amount: 22500, currency: 'KES', method: 'card', status: 'completed', initiated_at: '2026-02-22 11:45', completed_at: '2026-02-22 11:46' },
   { id: 'ph-004', reference: 'PAY-2026-0185', assessment_ref: 'KE-2026-0038', trader: 'Accra Commodities Ltd', amount: 87000, currency: 'KES', method: 'bank_transfer', status: 'pending', initiated_at: '2026-02-22 10:20', completed_at: null },
-  { id: 'ph-005', reference: 'PAY-2026-0184', assessment_ref: 'KE-2026-0037', trader: 'Dar es Salaam Freight', amount: 31200, currency: 'KES', method: 'cbdc', status: 'completed', initiated_at: '2026-02-21 16:50', completed_at: '2026-02-21 16:50' },
+  { id: 'ph-005', reference: 'PAY-2026-0184', assessment_ref: 'KE-2026-0037', trader: 'Dar es Salaam Freight', amount: 31200, currency: 'KES', method: 'stablecoins', status: 'completed', initiated_at: '2026-02-21 16:50', completed_at: '2026-02-21 16:50' },
   { id: 'ph-006', reference: 'PAY-2026-0183', assessment_ref: 'KE-2026-0036', trader: 'Cairo Trade House', amount: 45000, currency: 'KES', method: 'bank_transfer', status: 'failed', initiated_at: '2026-02-21 15:30', completed_at: null },
   { id: 'ph-007', reference: 'PAY-2026-0182', assessment_ref: 'KE-2026-0035', trader: 'Nairobi Exports Ltd', amount: 12750, currency: 'KES', method: 'mobile_money', status: 'completed', initiated_at: '2026-02-21 09:15', completed_at: '2026-02-21 09:15' },
   { id: 'ph-008', reference: 'PAY-2026-0181', assessment_ref: 'KE-2026-0034', trader: 'Lagos Trading Co', amount: 9800, currency: 'KES', method: 'card', status: 'refunded', initiated_at: '2026-02-20 14:00', completed_at: '2026-02-20 14:01' },
   { id: 'ph-009', reference: 'PAY-2026-0180', assessment_ref: 'KE-2026-0033', trader: 'Kampala Imports Inc', amount: 68200, currency: 'KES', method: 'bank_transfer', status: 'completed', initiated_at: '2026-02-20 11:30', completed_at: '2026-02-20 11:33' },
-  { id: 'ph-010', reference: 'PAY-2026-0179', assessment_ref: 'KE-2026-0032', trader: 'Accra Commodities Ltd', amount: 41500, currency: 'KES', method: 'cbdc', status: 'processing', initiated_at: '2026-02-20 10:00', completed_at: null },
+  { id: 'ph-010', reference: 'PAY-2026-0179', assessment_ref: 'KE-2026-0032', trader: 'Accra Commodities Ltd', amount: 41500, currency: 'KES', method: 'stablecoins', status: 'processing', initiated_at: '2026-02-20 10:00', completed_at: null },
 ];
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
@@ -60,7 +60,7 @@ const METHOD_LABELS: Record<string, { label: string; color: string }> = {
   bank_transfer: { label: 'Bank Transfer', color: '#3B82F6' },
   mobile_money: { label: 'M-Pesa', color: '#22C55E' },
   card: { label: 'Card', color: '#E6A817' },
-  cbdc: { label: 'CBDC', color: '#8B5CF6' },
+  stablecoins: { label: 'Stable Coins', color: '#8B5CF6' },
 };
 
 // ─── Page ────────────────────────────────────────────────────────────────────

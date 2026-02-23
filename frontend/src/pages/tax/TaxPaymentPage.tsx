@@ -32,7 +32,7 @@ interface TaxPayment {
   document_ref: string;
   trader_name: string;
   amount: number;
-  method: 'bank_transfer' | 'mobile_money' | 'card' | 'cbdc';
+  method: 'bank_transfer' | 'mobile_money' | 'card' | 'stablecoins';
   payment_ref: string;
   status: 'completed' | 'pending' | 'processing' | 'failed' | 'refunded';
   paid_at: string | null;
@@ -67,8 +67,8 @@ const MOCK_PAYMENTS: TaxPayment[] = [
   },
   {
     id: 'tp-006', assessment_ref: 'TA-2026-0033', document_ref: 'KE-2026-0033',
-    trader_name: 'Nairobi Exports Ltd', amount: 31200, method: 'cbdc',
-    payment_ref: 'CBDC-20260222-3120', status: 'pending', paid_at: null, created_at: '2026-02-22T08:00:00Z',
+    trader_name: 'Nairobi Exports Ltd', amount: 31200, method: 'stablecoins',
+    payment_ref: 'SC-20260222-3120', status: 'pending', paid_at: null, created_at: '2026-02-22T08:00:00Z',
   },
   {
     id: 'tp-007', assessment_ref: 'TA-2026-0035', document_ref: 'KE-2026-0035',
@@ -89,7 +89,7 @@ const METHOD_LABELS: Record<string, string> = {
   bank_transfer: 'Bank Transfer',
   mobile_money: 'M-Pesa',
   card: 'Card',
-  cbdc: 'CBDC',
+  stablecoins: 'Stable Coins',
 };
 
 function formatCurrency(value: number): string {

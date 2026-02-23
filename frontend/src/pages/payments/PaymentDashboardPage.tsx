@@ -60,7 +60,7 @@ const RECENT_PAYMENTS: RecentPayment[] = [
   { id: 'pay-002', reference: 'PAY-2026-0187', trader: 'Lagos Trading Co', amount: 156000, currency: 'NGN', method: 'M-Pesa', status: 'processing', timestamp: '2026-02-22 13:15' },
   { id: 'pay-003', reference: 'PAY-2026-0186', trader: 'Kampala Imports Inc', amount: 22500, currency: 'UGX', method: 'Card', status: 'completed', timestamp: '2026-02-22 11:45' },
   { id: 'pay-004', reference: 'PAY-2026-0185', trader: 'Accra Commodities Ltd', amount: 87000, currency: 'GHS', method: 'Bank Transfer', status: 'pending', timestamp: '2026-02-22 10:20' },
-  { id: 'pay-005', reference: 'PAY-2026-0184', trader: 'Dar es Salaam Freight', amount: 31200, currency: 'TZS', method: 'CBDC', status: 'completed', timestamp: '2026-02-21 16:50' },
+  { id: 'pay-005', reference: 'PAY-2026-0184', trader: 'Dar es Salaam Freight', amount: 31200, currency: 'TZS', method: 'Stable Coins', status: 'completed', timestamp: '2026-02-21 16:50' },
   { id: 'pay-006', reference: 'PAY-2026-0183', trader: 'Cairo Trade House', amount: 45000, currency: 'EGP', method: 'Bank Transfer', status: 'failed', timestamp: '2026-02-21 15:30' },
 ];
 
@@ -75,7 +75,7 @@ const METHOD_BREAKDOWN: MethodBreakdown[] = [
   { method: 'Bank Transfer', count: 124, volume: 18500000, color: '#3B82F6' },
   { method: 'Mobile Money (M-Pesa)', count: 89, volume: 8200000, color: '#22C55E' },
   { method: 'Card Payment', count: 45, volume: 4100000, color: '#E6A817' },
-  { method: 'CBDC', count: 12, volume: 2800000, color: '#8B5CF6' },
+  { method: 'Stable Coins', count: 12, volume: 2800000, color: '#8B5CF6' },
 ];
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
