@@ -402,6 +402,13 @@ export const MODULE_NAV: Record<string, NavSection[]> = {
       ],
     },
     {
+      label: 'Trade Review',
+      collapsible: true,
+      items: [
+        { to: '/compliance/trade-review', label: 'Trade Documents', icon: 'Description' },
+      ],
+    },
+    {
       label: 'Reporting',
       collapsible: true,
       items: [
@@ -417,12 +424,22 @@ export const MODULE_NAV: Record<string, NavSection[]> = {
       ],
     },
     {
-      label: 'Analysis',
+      label: 'Trade Integration',
       collapsible: true,
       items: [
-        { to: '/afcfta/corridors', label: 'Trade Corridors', icon: 'MultipleStop' },
+        { to: '/afcfta/progress', label: 'Implementation Progress', icon: 'Flag' },
+        { to: '/afcfta/trade-flows', label: 'Intra-Africa Trade', icon: 'MultipleStop' },
+        { to: '/afcfta/corridors', label: 'Trade Corridors', icon: 'CompareArrows' },
         { to: '/afcfta/recs', label: 'RECs Performance', icon: 'Groups' },
+      ],
+    },
+    {
+      label: 'Tariffs & Rules',
+      collapsible: true,
+      items: [
         { to: '/afcfta/tariff-tracker', label: 'Tariff Tracker', icon: 'Gavel' },
+        { to: '/afcfta/tariffs', label: 'Tariff Schedules', icon: 'TableChart' },
+        { to: '/afcfta/rules-of-origin', label: 'Rules of Origin', icon: 'VerifiedUser' },
       ],
     },
   ],
