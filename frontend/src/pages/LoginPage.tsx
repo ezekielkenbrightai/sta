@@ -26,6 +26,7 @@ const DEMO_ACCOUNTS = [
   { email: 'agent@apa.co.ke', label: 'Insurance', color: '#EC4899' },
   { email: 'auditor@oag.go.ke', label: 'Auditor', color: '#EF4444' },
   { email: 'compliance@frc.go.ke', label: 'Compliance', color: '#14B8A6' },
+  { email: 'afcfta@au.int', label: 'AfCFTA', color: '#10B981' },
   { email: 'admin@sta.africa', label: 'Super Admin', color: '#D4AF37' },
 ];
 

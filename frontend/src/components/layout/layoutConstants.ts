@@ -104,6 +104,12 @@ export const MODULES: ModuleDef[] = [
     defaultRoute: '/compliance/dashboard',
   },
   {
+    id: 'afcfta',
+    label: 'AfCFTA Monitor',
+    description: 'AfCFTA Trade Integration Monitoring',
+    defaultRoute: '/afcfta/dashboard',
+  },
+  {
     id: 'admin',
     label: 'Administration',
     description: 'Platform Administration',
@@ -397,6 +403,23 @@ export const MODULE_NAV: Record<string, NavSection[]> = {
       ],
     },
   ],
+  afcfta: [
+    {
+      label: 'AfCFTA Overview',
+      items: [
+        { to: '/afcfta/dashboard', label: 'Trade Monitor', icon: 'Public' },
+      ],
+    },
+    {
+      label: 'Analysis',
+      collapsible: true,
+      items: [
+        { to: '/afcfta/corridors', label: 'Trade Corridors', icon: 'MultipleStop' },
+        { to: '/afcfta/recs', label: 'RECs Performance', icon: 'Groups' },
+        { to: '/afcfta/tariff-tracker', label: 'Tariff Tracker', icon: 'Gavel' },
+      ],
+    },
+  ],
   admin: [
     {
       label: 'Admin Overview',
@@ -438,12 +461,13 @@ export const DEFAULT_MODULE: Record<string, string> = {
   insurance_agent: 'insurance',
   auditor: 'ledger',
   compliance_officer: 'compliance',
+  afcfta_admin: 'afcfta',
 };
 
 /** Which modules each role can access */
 export const ROLE_MODULES: Record<string, string[]> = {
-  super_admin: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'cbdc', 'admin', 'compliance'],
-  govt_admin: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'cbdc', 'compliance'],
+  super_admin: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'cbdc', 'afcfta', 'admin', 'compliance'],
+  govt_admin: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'cbdc', 'afcfta', 'compliance'],
   govt_analyst: ['trade', 'tax', 'analytics'],
   bank_officer: ['payments', 'ledger'],
   trader: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'insurance', 'cbdc'],
@@ -452,4 +476,5 @@ export const ROLE_MODULES: Record<string, string[]> = {
   insurance_agent: ['insurance'],
   auditor: ['trade', 'tax', 'payments', 'ledger', 'supply_chain', 'customs', 'insurance', 'analytics', 'compliance'],
   compliance_officer: ['compliance', 'trade'],
+  afcfta_admin: ['trade', 'tax', 'analytics', 'customs', 'afcfta'],
 };

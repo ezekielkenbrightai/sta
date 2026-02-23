@@ -28,8 +28,10 @@ import {
 
 const COUNTRIES = [
   'Kenya', 'Nigeria', 'South Africa', 'Tanzania', 'Uganda', 'Rwanda',
-  'Ghana', 'Egypt', 'Ethiopia', 'China', 'India', 'Germany', 'Japan',
-  'United States', 'United Kingdom', 'UAE', 'Turkey', 'Brazil',
+  'Ghana', 'Egypt', 'Ethiopia', 'Morocco', 'Algeria', 'Tunisia',
+  'Senegal', "Cote d'Ivoire", 'Cameroon', 'DRC', 'Angola',
+  'Mozambique', 'Zimbabwe', 'Zambia', 'Malawi', 'Botswana',
+  'Namibia', 'Mauritius', 'Djibouti', 'Burundi', 'South Sudan', 'Madagascar',
 ];
 
 const INCOTERMS = ['EXW', 'FCA', 'FAS', 'FOB', 'CFR', 'CIF', 'CPT', 'CIP', 'DAP', 'DPU', 'DDP'];

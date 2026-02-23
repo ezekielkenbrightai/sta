@@ -19,7 +19,7 @@ import {
 const MOCK_QUEUE = [
   {
     id: 'td-003', reference: 'KE-2026-0040', trader: 'Lagos Trading Co',
-    origin: 'Germany', destination: 'Kenya', value: '€520,000',
+    origin: 'South Africa', destination: 'Kenya', value: 'ZAR 520,000',
     items: 24, priority: 'high', submitted: '2026-02-18', type: 'import',
   },
   {
@@ -29,7 +29,7 @@ const MOCK_QUEUE = [
   },
   {
     id: 'td-010', reference: 'KE-2026-0033', trader: 'Nairobi Exports Ltd',
-    origin: 'China', destination: 'Rwanda', value: '$120,000',
+    origin: 'Ethiopia', destination: 'Rwanda', value: '$120,000',
     items: 15, priority: 'normal', submitted: '2026-02-11', type: 're_export',
   },
 ];

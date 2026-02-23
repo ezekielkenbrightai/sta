@@ -93,6 +93,12 @@ const InvoiceFinancePage = lazy(() => import('./pages/cbdc/InvoiceFinancePage'))
 const TokenizationPage = lazy(() => import('./pages/cbdc/TokenizationPage'));
 const P2PLendingPage = lazy(() => import('./pages/cbdc/P2PLendingPage'));
 
+// AfCFTA Monitor pages
+const AfCFTADashboardPage = lazy(() => import('./pages/afcfta/AfCFTADashboardPage'));
+const AfCFTACorridorsPage = lazy(() => import('./pages/afcfta/AfCFTACorridorsPage'));
+const AfCFTARECsPage = lazy(() => import('./pages/afcfta/AfCFTARECsPage'));
+const AfCFTATariffTrackerPage = lazy(() => import('./pages/afcfta/AfCFTATariffTrackerPage'));
+
 // Analytics pages (Phase 8)
 const AnalyticsDashboardPage = lazy(() => import('./pages/analytics/AnalyticsDashboardPage'));
 const RevenueAnalyticsPage = lazy(() => import('./pages/analytics/RevenueAnalyticsPage'));
@@ -158,17 +164,19 @@ function P({ children, roles }: { children: React.ReactNode; roles?: string[] })
 const ADMIN = ['super_admin', 'govt_admin'];
 const SUPER = ['super_admin'];
 const BANK = ['super_admin', 'bank_officer'];
-const TRADER_ROLES = ['super_admin', 'trader', 'customs_officer', 'govt_admin'];
-const CUSTOMS = ['super_admin', 'customs_officer', 'govt_admin', 'auditor'];
+const TRADER_ROLES = ['super_admin', 'trader', 'customs_officer', 'govt_admin', 'afcfta_admin'];
+const CUSTOMS = ['super_admin', 'customs_officer', 'govt_admin', 'auditor', 'afcfta_admin'];
 const LOGISTICS = ['super_admin', 'logistics_officer', 'trader'];
 const INSURANCE = ['super_admin', 'insurance_agent', 'trader'];
 const AUDITOR_ROLES = ['super_admin', 'auditor', 'govt_admin', 'govt_analyst'];
 // Tax: govt + trader (view their own) + auditor (read-only)
-const TAX_VIEW = ['super_admin', 'govt_admin', 'govt_analyst', 'trader', 'auditor'];
+const TAX_VIEW = ['super_admin', 'govt_admin', 'govt_analyst', 'trader', 'auditor', 'afcfta_admin'];
 // Analytics: govt + auditor (read-only access per ROLE_MODULES)
-const ANALYTICS_VIEW = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor'];
+const ANALYTICS_VIEW = ['super_admin', 'govt_admin', 'govt_analyst', 'auditor', 'afcfta_admin'];
 // Compliance: compliance officer + govt + auditor
 const COMPLIANCE = ['super_admin', 'compliance_officer', 'govt_admin', 'auditor'];
+// AfCFTA: afcfta_admin + super_admin + govt + analyst
+const AFCFTA = ['super_admin', 'afcfta_admin', 'govt_admin', 'govt_analyst'];
 
 // ─── App ────────────────────────────────────────────────────────────────────────
 
@@ -297,6 +305,12 @@ export default function App() {
                 <Route path="/cbdc/invoice-finance" element={<P><InvoiceFinancePage /></P>} />
                 <Route path="/cbdc/tokenization" element={<P><TokenizationPage /></P>} />
                 <Route path="/cbdc/p2p-lending" element={<P><P2PLendingPage /></P>} />
+
+                {/* ── AfCFTA Monitor ────────────────────────────────── */}
+                <Route path="/afcfta/dashboard" element={<P roles={AFCFTA}><AfCFTADashboardPage /></P>} />
+                <Route path="/afcfta/corridors" element={<P roles={AFCFTA}><AfCFTACorridorsPage /></P>} />
+                <Route path="/afcfta/recs" element={<P roles={AFCFTA}><AfCFTARECsPage /></P>} />
+                <Route path="/afcfta/tariff-tracker" element={<P roles={AFCFTA}><AfCFTATariffTrackerPage /></P>} />
 
                 {/* ── Admin ──────────────────────────────────────────── */}
                 <Route path="/admin/dashboard" element={<P roles={ADMIN}><AdminDashboardPage /></P>} />

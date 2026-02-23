@@ -85,6 +85,14 @@ const DEV_USERS: Record<string, User> = {
     country_code: 'KEN', country_flag_emoji: '🇰🇪', is_active: true,
     modules: ['compliance', 'trade'],
   },
+  'afcfta@au.int': {
+    id: 'u-afcfta', email: 'afcfta@au.int',
+    first_name: 'Wamkele', last_name: 'Mene', role: 'afcfta_admin',
+    organization_id: 'o-afcfta', organization_name: 'AfCFTA Secretariat',
+    organization_type: 'government', country_id: 'c-gha', country_name: 'Ghana',
+    country_code: 'GHA', country_flag_emoji: '🇬🇭', is_active: true,
+    modules: ['trade', 'tax', 'analytics', 'customs', 'afcfta'],
+  },
 };
 
 const IS_MOCK = import.meta.env.VITE_MOCK_AUTH === 'true';

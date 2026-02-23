@@ -66,10 +66,10 @@ const KPIS: FinanceKpi[] = [
 ];
 
 const PIPELINE: FinancePipelineItem[] = [
-  { id: 'SCF-2026-301', supplier: 'Thika Garments Ltd', buyer: 'Marks & Spencer EA', amount: 'KES 42,800,000', term: '90 days', status: 'disbursed', submittedAt: '5 days ago' },
+  { id: 'SCF-2026-301', supplier: 'Thika Garments Ltd', buyer: 'Shoprite Holdings SA', amount: 'KES 42,800,000', term: '90 days', status: 'disbursed', submittedAt: '5 days ago' },
   { id: 'SCF-2026-302', supplier: 'Athi River Cement', buyer: 'National Construction Authority', amount: 'KES 28,500,000', term: '60 days', status: 'approved', submittedAt: '2 days ago' },
   { id: 'SCF-2026-303', supplier: 'Kisumu Sugar Mills', buyer: 'Nakumatt Holdings', amount: 'KES 15,200,000', term: '45 days', status: 'pending', submittedAt: '1 day ago' },
-  { id: 'SCF-2026-304', supplier: 'Nanyuki Horticulture', buyer: 'Dutch Flower Auctions', amount: 'KES 67,300,000', term: '30 days', status: 'repaid', submittedAt: '38 days ago' },
+  { id: 'SCF-2026-304', supplier: 'Nanyuki Horticulture', buyer: 'Multiflora SA Auctions', amount: 'KES 67,300,000', term: '30 days', status: 'repaid', submittedAt: '38 days ago' },
   { id: 'SCF-2026-305', supplier: 'Meru Dairy Co-op', buyer: 'Brookside Distributors', amount: 'KES 8,900,000', term: '45 days', status: 'disbursed', submittedAt: '12 days ago' },
   { id: 'SCF-2026-306', supplier: 'Mombasa Steel Works', buyer: 'SGR Kenya Ltd', amount: 'KES 124,000,000', term: '120 days', status: 'approved', submittedAt: '3 days ago' },
   { id: 'SCF-2026-307', supplier: 'Machakos Textiles', buyer: 'PVH Africa', amount: 'KES 19,400,000', term: '60 days', status: 'pending', submittedAt: '6 hrs ago' },

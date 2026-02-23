@@ -34,7 +34,7 @@ interface RiskAssessment {
 
 const MOCK_ASSESSMENTS: RiskAssessment[] = [
   {
-    id: 'ra-001', trader: 'Kenya Pharma Distributors', trade_doc_ref: 'TD-2026-1842', route: 'Mumbai → Mombasa', cargo_type: 'Pharmaceuticals (cold chain)', cargo_value_usd: 250000, transport_mode: 'sea', risk_score: 62, risk_level: 'medium',
+    id: 'ra-001', trader: 'Kenya Pharma Distributors', trade_doc_ref: 'TD-2026-1842', route: 'Dar es Salaam → Mombasa', cargo_type: 'Pharmaceuticals (cold chain)', cargo_value_usd: 250000, transport_mode: 'sea', risk_score: 62, risk_level: 'medium',
     factors: [
       { name: 'Route Piracy Risk', score: 4, max: 10, impact: 'negative' },
       { name: 'Cargo Perishability', score: 7, max: 10, impact: 'negative' },
@@ -45,7 +45,7 @@ const MOCK_ASSESSMENTS: RiskAssessment[] = [
     recommended_premium_rate: 1.5, last_assessed: '2026-02-22',
   },
   {
-    id: 'ra-002', trader: 'Lagos Electronics Ltd', trade_doc_ref: 'TD-2026-1838', route: 'Tokyo → Mombasa', cargo_type: 'Consumer Electronics', cargo_value_usd: 800000, transport_mode: 'sea', risk_score: 78, risk_level: 'high',
+    id: 'ra-002', trader: 'Lagos Electronics Ltd', trade_doc_ref: 'TD-2026-1838', route: 'Lagos → Mombasa', cargo_type: 'Consumer Electronics', cargo_value_usd: 800000, transport_mode: 'sea', risk_score: 78, risk_level: 'high',
     factors: [
       { name: 'High-Value Target', score: 8, max: 10, impact: 'negative' },
       { name: 'Theft History (Port)', score: 7, max: 10, impact: 'negative' },
@@ -78,7 +78,7 @@ const MOCK_ASSESSMENTS: RiskAssessment[] = [
     recommended_premium_rate: 1.2, last_assessed: '2026-02-21',
   },
   {
-    id: 'ra-005', trader: 'Dar es Salaam Freight', trade_doc_ref: 'TD-2026-1834', route: 'Dubai → Mombasa → Dar', cargo_type: 'Steel Pipes', cargo_value_usd: 600000, transport_mode: 'sea', risk_score: 85, risk_level: 'very_high',
+    id: 'ra-005', trader: 'Dar es Salaam Freight', trade_doc_ref: 'TD-2026-1834', route: 'Cairo → Mombasa → Dar', cargo_type: 'Steel Pipes', cargo_value_usd: 600000, transport_mode: 'sea', risk_score: 85, risk_level: 'very_high',
     factors: [
       { name: 'Weight Discrepancy', score: 9, max: 10, impact: 'negative' },
       { name: 'Origin Risk (Re-export)', score: 8, max: 10, impact: 'negative' },

@@ -26,6 +26,8 @@ function defaultLandingPage(role: string): string {
       return '/ledger/dashboard';
     case 'compliance_officer':
       return '/compliance/dashboard';
+    case 'afcfta_admin':
+      return '/afcfta/dashboard';
     default:
       return '/dashboard';
   }

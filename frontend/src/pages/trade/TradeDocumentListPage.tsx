@@ -27,7 +27,7 @@ const MOCK_DOCUMENTS: TradeDocument[] = [
   {
     id: 'td-001', type: 'import', status: 'completed', reference_number: 'KE-2026-0042',
     trader_id: 'o-nex', trader_name: 'Nairobi Exports Ltd',
-    origin_country: 'China', destination_country: 'Kenya',
+    origin_country: 'Nigeria', destination_country: 'Kenya',
     total_value: 245000, currency: 'USD', items_count: 12,
     created_at: '2026-02-20T10:30:00Z', updated_at: '2026-02-21T15:45:00Z',
   },
@@ -41,8 +41,8 @@ const MOCK_DOCUMENTS: TradeDocument[] = [
   {
     id: 'td-003', type: 'import', status: 'under_review', reference_number: 'KE-2026-0040',
     trader_id: 'o-lag', trader_name: 'Lagos Trading Co',
-    origin_country: 'Germany', destination_country: 'Kenya',
-    total_value: 520000, currency: 'EUR', items_count: 24,
+    origin_country: 'South Africa', destination_country: 'Kenya',
+    total_value: 520000, currency: 'ZAR', items_count: 24,
     created_at: '2026-02-18T14:00:00Z', updated_at: '2026-02-19T09:20:00Z',
   },
   {
@@ -55,7 +55,7 @@ const MOCK_DOCUMENTS: TradeDocument[] = [
   {
     id: 'td-005', type: 'import', status: 'paid', reference_number: 'KE-2026-0038',
     trader_id: 'o-nex', trader_name: 'Nairobi Exports Ltd',
-    origin_country: 'India', destination_country: 'Kenya',
+    origin_country: 'Tanzania', destination_country: 'Kenya',
     total_value: 185000, currency: 'USD', items_count: 18,
     created_at: '2026-02-16T09:00:00Z', updated_at: '2026-02-20T16:00:00Z',
   },
@@ -69,7 +69,7 @@ const MOCK_DOCUMENTS: TradeDocument[] = [
   {
     id: 'td-007', type: 'import', status: 'draft', reference_number: 'KE-2026-0036',
     trader_id: 'o-nex', trader_name: 'Nairobi Exports Ltd',
-    origin_country: 'Japan', destination_country: 'Kenya',
+    origin_country: 'Morocco', destination_country: 'Kenya',
     total_value: 410000, currency: 'USD', items_count: 6,
     created_at: '2026-02-14T16:15:00Z', updated_at: '2026-02-14T16:15:00Z',
   },
@@ -83,14 +83,14 @@ const MOCK_DOCUMENTS: TradeDocument[] = [
   {
     id: 'td-009', type: 'import', status: 'rejected', reference_number: 'KE-2026-0034',
     trader_id: 'o-lag', trader_name: 'Lagos Trading Co',
-    origin_country: 'UAE', destination_country: 'Nigeria',
+    origin_country: 'Egypt', destination_country: 'Nigeria',
     total_value: 150000, currency: 'USD', items_count: 10,
     created_at: '2026-02-12T09:30:00Z', updated_at: '2026-02-15T14:00:00Z',
   },
   {
     id: 'td-010', type: 're_export', status: 'submitted', reference_number: 'KE-2026-0033',
     trader_id: 'o-nex', trader_name: 'Nairobi Exports Ltd',
-    origin_country: 'China', destination_country: 'Rwanda',
+    origin_country: 'Ethiopia', destination_country: 'Rwanda',
     total_value: 120000, currency: 'USD', items_count: 15,
     created_at: '2026-02-11T08:00:00Z', updated_at: '2026-02-11T08:00:00Z',
   },

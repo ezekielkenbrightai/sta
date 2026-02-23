@@ -18,7 +18,7 @@ sta.com/
 ├── backend/                  # FastAPI Python backend
 │   ├── app/
 │   │   ├── main.py          # FastAPI app, CORS, route registration
-│   │   ├── seed.py          # DB seeder (9 countries, 9 orgs, 9 users)
+│   │   ├── seed.py          # DB seeder (9 countries, 10 orgs, 11 users)
 │   │   ├── api/v1/          # Route handlers (auth.py, dashboard.py)
 │   │   ├── core/            # config.py, database.py, security.py
 │   │   ├── models/          # SQLAlchemy models (7 files)
@@ -39,7 +39,7 @@ sta.com/
 │   │   ├── main.tsx         # React 19 entry point
 │   │   ├── api/             # client.ts (Axios), endpoints.ts
 │   │   ├── components/layout/ # AppLayout, ProtectedRoute, Sidebar, TopNav
-│   │   ├── pages/           # 77 pages across 12 modules
+│   │   ├── pages/           # 81 pages across 14 modules
 │   │   ├── stores/          # authStore.ts, appStore.ts (Zustand)
 │   │   ├── theme/           # theme.ts (MUI black/gold)
 │   │   ├── types/           # index.ts (all TypeScript interfaces)
@@ -76,7 +76,7 @@ sta.com/
 - Zustand for client state (auth, app UI), React Query for server state (5min staleTime)
 - JWT auth with access tokens (60min expiry), stored in localStorage
 - Axios interceptors: auto-attach JWT, auto-logout on 401, retry 502/503/504
-- Mock auth mode: `VITE_MOCK_AUTH=true` with 9 predefined dev users (all roles)
+- Mock auth mode: `VITE_MOCK_AUTH=true` with 11 predefined dev users (all roles)
 - MUI DataGrid for tabular data
 - Recharts for visualizations
 - i18next for en/sw/fr translations
@@ -85,26 +85,30 @@ sta.com/
 | Role | Modules |
 |------|---------|
 | super_admin | All modules |
-| govt_admin | trade, tax, payments, ledger, supply_chain, customs, analytics |
+| govt_admin | trade, tax, payments, ledger, supply_chain, customs, insurance, analytics, cbdc, afcfta, compliance |
 | govt_analyst | trade, tax, analytics |
-| bank_officer | payments, ledger, FX settlement |
+| bank_officer | payments, ledger |
 | trader | trade, tax, payments, ledger, supply_chain, insurance, cbdc |
 | logistics_officer | supply_chain |
 | customs_officer | trade, customs |
 | insurance_agent | insurance |
-| auditor | trade, tax, payments, ledger, supply_chain, customs, insurance, analytics |
+| auditor | trade, tax, payments, ledger, supply_chain, customs, insurance, analytics, compliance |
+| compliance_officer | compliance, trade |
+| afcfta_admin | trade, tax, analytics, customs, afcfta |
 
 Route guard role arrays (App.tsx):
 - `ADMIN` = super_admin, govt_admin
 - `SUPER` = super_admin
-- `TAX_VIEW` = super_admin, govt_admin, govt_analyst, trader, auditor
-- `ANALYTICS_VIEW` = super_admin, govt_admin, govt_analyst, auditor
+- `TAX_VIEW` = super_admin, govt_admin, govt_analyst, trader, auditor, afcfta_admin
+- `ANALYTICS_VIEW` = super_admin, govt_admin, govt_analyst, auditor, afcfta_admin
 - `BANK` = super_admin, bank_officer
-- `TRADER_ROLES` = super_admin, trader, customs_officer, govt_admin
-- `CUSTOMS` = super_admin, customs_officer, govt_admin, auditor
+- `TRADER_ROLES` = super_admin, trader, customs_officer, govt_admin, afcfta_admin
+- `CUSTOMS` = super_admin, customs_officer, govt_admin, auditor, afcfta_admin
 - `LOGISTICS` = super_admin, logistics_officer, trader
 - `INSURANCE` = super_admin, insurance_agent, trader
 - `AUDITOR_ROLES` = super_admin, auditor, govt_admin, govt_analyst
+- `AFCFTA` = super_admin, afcfta_admin, govt_admin, govt_analyst
+- `COMPLIANCE` = super_admin, compliance_officer, govt_admin, auditor
 
 **CRITICAL**: Route-level `roles` arrays MUST match `ROLE_MODULES` in layoutConstants.ts. If a role has module access in `ROLE_MODULES`, it MUST be included in the route's role array — otherwise the sidebar shows the module but the route redirects the user away.
 
@@ -131,7 +135,7 @@ Route guard role arrays (App.tsx):
 - analyst@kra.go.ke (govt_analyst), officer@kcb.co.ke (bank_officer)
 - trader@nairobiexports.co.ke (trader), ops@kenyalogistics.co.ke (logistics_officer)
 - officer@kpa.go.ke (customs_officer), agent@jubilee.co.ke (insurance_agent)
-- auditor@kra.go.ke (auditor)
+- auditor@deloitte.com (auditor), afcfta@au.int (afcfta_admin)
 
 ### Frontend Mock Users (authStore.ts DEV_USERS — used when VITE_MOCK_AUTH=true)
 - trader@nairobiexports.co.ke (trader, John Kipchoge, Nairobi Exports Ltd)
@@ -143,6 +147,8 @@ Route guard role arrays (App.tsx):
 - customs@kpa.go.ke (customs_officer, Peter Njoroge, Kenya Ports Authority)
 - logistics@bollore.co.ke (logistics_officer, Amina Hassan, Bolloré Logistics Kenya)
 - auditor@oag.go.ke (auditor, Michael Wekesa, Office of the Auditor General)
+- compliance@frc.go.ke (compliance_officer, Faith Njeri, Financial Reporting Centre)
+- afcfta@au.int (afcfta_admin, Wamkele Mene, AfCFTA Secretariat)
 
 ## Commands
 - Frontend dev: `cd frontend && npm run dev` (port 5173)
@@ -222,7 +228,7 @@ Route guard role arrays (App.tsx):
 14. **localStorage "undefined" string bug**: `localStorage.setItem('key', undefined)` stores the literal string `"undefined"`, which `!!` evaluates as truthy. The `getValidToken()` function in authStore guards against this.
 15. **Null-safe property access on user/module**: Always add fallback defaults when calling `.replace()` on values that could be null — e.g., `(selectedModule || 'trade').replace(...)` and `(user.role || 'trader').replace(...)`.
 
-## Frontend Pages (77 total across 12 modules)
+## Frontend Pages (81 total across 14 modules)
 | Module | Pages | Directory |
 |--------|-------|-----------|
 | Core (Dashboard, Login, Landing) | 3 | `pages/` |
@@ -235,10 +241,12 @@ Route guard role arrays (App.tsx):
 | Insurance | 5 | `pages/insurance/` |
 | Analytics & Government | 10 | `pages/analytics/` |
 | CBDC & Future Finance | 5 | `pages/cbdc/` |
+| Compliance & KYC | 7 | `pages/compliance/` |
+| AfCFTA Trade Monitor | 4 | `pages/afcfta/` |
 | Admin & Platform Management | 8 | `pages/admin/` |
 | Profile & Settings | 1 | `pages/profile/` |
 
-All pages use mock data with realistic East African trade scenarios. No PlaceholderPage routes remain.
+All pages use mock data with realistic African trade scenarios (Africa-to-Africa only). No PlaceholderPage routes remain.
 
 ## Current Gaps (areas needing implementation)
 - Most API endpoints (trade, tax, payments, ledger, supply_chain, customs, insurance)

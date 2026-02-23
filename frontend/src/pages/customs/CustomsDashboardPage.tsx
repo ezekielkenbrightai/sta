@@ -56,12 +56,12 @@ const QUEUE_SUMMARY: QueueSummary[] = [
 ];
 
 const RECENT_CLEARANCES: RecentClearance[] = [
-  { id: 'clr-001', reference: 'CUS-2026-5421', trader: 'Kenya Pharma Distributors', type: 'import', origin: 'India', destination: 'Kenya', value_kes: 4850000, status: 'cleared', officer: 'Jane Mwangi', submitted: '2026-02-22 09:15' },
+  { id: 'clr-001', reference: 'CUS-2026-5421', trader: 'Kenya Pharma Distributors', type: 'import', origin: 'Ghana', destination: 'Kenya', value_kes: 4850000, status: 'cleared', officer: 'Jane Mwangi', submitted: '2026-02-22 09:15' },
   { id: 'clr-002', reference: 'CUS-2026-5420', trader: 'Nairobi Exports Ltd', type: 'export', origin: 'Kenya', destination: 'Tanzania', value_kes: 12400000, status: 'released', officer: 'James Otieno', submitted: '2026-02-22 08:45' },
-  { id: 'clr-003', reference: 'CUS-2026-5419', trader: 'East Africa Cement Ltd', type: 'import', origin: 'China', destination: 'Kenya', value_kes: 36000000, status: 'pending_inspection', officer: '—', submitted: '2026-02-22 07:30' },
+  { id: 'clr-003', reference: 'CUS-2026-5419', trader: 'East Africa Cement Ltd', type: 'import', origin: 'Nigeria', destination: 'Kenya', value_kes: 36000000, status: 'pending_inspection', officer: '—', submitted: '2026-02-22 07:30' },
   { id: 'clr-004', reference: 'CUS-2026-5418', trader: 'Cairo Trade House', type: 'transit', origin: 'Egypt', destination: 'Uganda', value_kes: 8900000, status: 'under_review', officer: 'Grace Njeri', submitted: '2026-02-22 06:00' },
-  { id: 'clr-005', reference: 'CUS-2026-5417', trader: 'Lagos Electronics Ltd', type: 'import', origin: 'Japan', destination: 'Kenya', value_kes: 22000000, status: 'held', officer: 'David Maina', submitted: '2026-02-21 16:00' },
-  { id: 'clr-006', reference: 'CUS-2026-5416', trader: 'Addis Pharmaceutical', type: 'import', origin: 'Germany', destination: 'Ethiopia', value_kes: 7200000, status: 'cleared', officer: 'Jane Mwangi', submitted: '2026-02-21 14:30' },
+  { id: 'clr-005', reference: 'CUS-2026-5417', trader: 'Lagos Electronics Ltd', type: 'import', origin: 'Morocco', destination: 'Kenya', value_kes: 22000000, status: 'held', officer: 'David Maina', submitted: '2026-02-21 16:00' },
+  { id: 'clr-006', reference: 'CUS-2026-5416', trader: 'Addis Pharmaceutical', type: 'import', origin: 'South Africa', destination: 'Ethiopia', value_kes: 7200000, status: 'cleared', officer: 'Jane Mwangi', submitted: '2026-02-21 14:30' },
 ];
 
 const PORT_STATS: PortStat[] = [

@@ -12,6 +12,7 @@ const PATH_TO_MODULE: Record<string, string> = {
   '/insurance': 'insurance',
   '/analytics': 'analytics',
   '/cbdc': 'cbdc',
+  '/afcfta': 'afcfta',
   '/admin': 'admin',
 };
 

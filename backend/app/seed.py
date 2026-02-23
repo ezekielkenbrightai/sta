@@ -55,6 +55,7 @@ async def seed():
             Organization(id="o-frs", name="FIRS Nigeria", type="government", country_id="c-nga"),
             Organization(id="o-gtb", name="GTBank", type="bank", country_id="c-nga"),
             Organization(id="o-lag", name="Lagos Trading Co", type="trader", country_id="c-nga"),
+            Organization(id="o-afcfta", name="AfCFTA Secretariat", type="government", country_id="c-gha"),
         ]
         db.add_all(orgs)
 
@@ -64,12 +65,12 @@ async def seed():
             User(
                 id="u-super", email="admin@sta.africa", first_name="Platform", last_name="Admin",
                 role="super_admin", hashed_password=password,
-                modules="trade,tax,payments,ledger,supply_chain,customs,insurance,analytics,cbdc,admin",
+                modules="trade,tax,payments,ledger,supply_chain,customs,insurance,analytics,cbdc,admin,afcfta",
             ),
             User(
                 id="u-govt", email="govt@kra.go.ke", first_name="Jane", last_name="Mwangi",
                 role="govt_admin", organization_id="o-kra", hashed_password=password,
-                modules="trade,tax,payments,ledger,supply_chain,customs,insurance,analytics,cbdc",
+                modules="trade,tax,payments,ledger,supply_chain,customs,insurance,analytics,cbdc,afcfta",
             ),
             User(
                 id="u-analyst", email="analyst@kra.go.ke", first_name="David", last_name="Ochieng",
@@ -105,6 +106,11 @@ async def seed():
                 id="u-auditor", email="auditor@deloitte.com", first_name="James", last_name="Maina",
                 role="auditor", hashed_password=password,
                 modules="trade,tax,payments,ledger,supply_chain,customs,insurance,analytics",
+            ),
+            User(
+                id="u-afcfta", email="afcfta@au.int", first_name="Wamkele", last_name="Mene",
+                role="afcfta_admin", organization_id="o-afcfta", hashed_password=password,
+                modules="trade,tax,analytics,customs,afcfta",
             ),
         ]
         db.add_all(users)
